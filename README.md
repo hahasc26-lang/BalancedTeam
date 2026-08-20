@@ -16,7 +16,7 @@
 
 ---
 
-## ✨ 功能
+## 功能
 
 - **团队管理** — 创建、解散、邀请、踢人、转让队长、设置副队长、申请入队
 - **外交系统** — 结盟 / 解盟、宣战 / 求和，均有数量上限防止全服联合
@@ -28,7 +28,7 @@
 
 ---
 
-## 🚀 安装
+## 安装
 
 1. 从 [Releases](../../releases) 下载最新 `BalancedTeam-x.x.x.jar`
 2. 放入服务器 `plugins/` 目录并重启
@@ -45,7 +45,7 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
 
 ---
 
-## 📜 指令
+## 指令
 
 **`/team`**（别名：`/t` `/clan` `/bt`）
 
@@ -77,7 +77,7 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
 
 ---
 
-## 🔐 权限
+## 权限
 
 | 权限 | 默认 | 说明 |
 |------|------|------|
@@ -87,7 +87,7 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
 
 ---
 
-## 📄 许可证
+## 许可证
 
 [MIT License](LICENSE)
 
@@ -105,7 +105,7 @@ A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive**
 
 ---
 
-## ✨ Features
+## Features
 
 - **Team Management** — Create, disband, invite, kick, promote, transfer leadership, apply to join
 - **Diplomacy** — Ally / Unally, War / Peace with configurable caps to prevent server-wide coalitions
@@ -117,7 +117,7 @@ A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive**
 
 ---
 
-## 🚀 Installation
+## Installation
 
 1. Download the latest `BalancedTeam-x.x.x.jar` from [Releases](../../releases)
 2. Drop it into your server's `plugins/` folder and restart
@@ -134,7 +134,7 @@ mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
 
 ---
 
-## 📜 Commands
+## Commands
 
 **`/team`** (aliases: `/t` `/clan` `/bt`)
 
@@ -166,7 +166,7 @@ mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
 
 ---
 
-## 🔐 Permissions
+## Permissions
 
 | Permission | Default | Description |
 |------------|---------|-------------|
@@ -176,6 +176,6 @@ mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
 
 ---
 
-## 📄 License
+## License
 
 [MIT License](LICENSE)
