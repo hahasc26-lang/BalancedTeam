@@ -1,0 +1,583 @@
+# ===================================================================
+# BalancedTeam 简体中文语言与文本配置文件 (lang/zh_CN.yml)
+# 支持 & 传统颜色代码 与 &#RRGGBB / <#RRGGBB> 16进制 RGB 颜色
+# 所有文本（包括指令提示、帮助菜单、GUI界面名称与说明）均在此处集中管理
+# ===================================================================
+
+# 消息前缀 (若单条消息以 [NO_PREFIX] 开头或为列表，则不显示前缀)
+prefix: "&8[&bBalancedTeam&8] &r"
+
+# -------------------------------------------------------------------
+# 通用与错误提示
+# -------------------------------------------------------------------
+no_permission: "&c你没有权限执行此操作！"
+player_only: "&c此指令只能由玩家执行！"
+reload_success: "&a插件配置及语言文件已成功重载！"
+database_error: "&c数据库操作失败，请联系管理员查看后台日志！"
+cooldown: "&c该操作冷却中，请在 &e{TIME} &c秒后再试！"
+unknown_command: "&c未知子指令，请输入 &e/team help &c查看帮助。"
+target_player_not_found: "&c未找到在线玩家: &e{PLAYER}"
+
+# -------------------------------------------------------------------
+# 团队创建与解散
+# -------------------------------------------------------------------
+usage_create: "&c使用方法: /team create <团队名称>"
+team_create_success: "&a恭喜！团队 &e{TEAM} &a创建成功！你是该团队的队长。"
+team_create_invalid_name: "&c团队名称不符合规范！必须为 {MIN}-{MAX} 个字符，且仅支持中英文、数字和下划线。"
+team_create_already_exists: "&c名为 &e{TEAM} &c的团队已经存在，请更换名称！"
+team_already_in_team: "&c你已经在一个团队中了，必须先离开当前团队！"
+team_not_in_team: "&c你当前尚未加入任何团队！"
+team_not_found: "&c未找到名为 &e{TEAM} &c的团队！"
+team_not_leader: "&c只有团队队长才能执行此操作！"
+team_not_officer_or_leader: "&c只有团队队长或管理员才能执行此操作！"
+team_disband_success: "&e团队已成功解散！"
+team_disband_broadcast: "&c团队 &e{TEAM} &c已被队长解散！"
+
+# -------------------------------------------------------------------
+# 邀请与加入
+# -------------------------------------------------------------------
+usage_invite: "&c使用方法: /team invite <玩家名>"
+usage_accept: "&c使用方法: /team accept <团队名称>"
+usage_reject: "&c使用方法: /team reject <团队名称>"
+team_invite_sent: "&a已向玩家 &e{PLAYER} &a发送入队邀请！"
+team_invite_received: "&b团队 &e{TEAM} &b邀请你加入！输入 &a/team accept {TEAM} &b接受，或 &c/team reject {TEAM} &b拒绝 (60秒内有效)。"
+team_invite_already_sent: "&c你已经向该玩家发送过邀请了，请等待对方回应！"
+team_invite_no_pending: "&c你没有收到来自团队 &e{TEAM} &c的邀请或邀请已过期！"
+team_invite_rejected: "&e你已拒绝来自团队 &e{TEAM} &c的邀请。"
+team_invite_target_in_team: "&c该玩家已经在一个团队中了！"
+team_invite_target_in_your_team: "&c该玩家已经在你的团队中了！"
+team_invite_max_members: "&c团队成员人数已达到上限 ({MAX} 人)！"
+team_join_success: "&a你成功加入了团队 &e{TEAM} &a！"
+team_join_broadcast: "&a玩家 &e{PLAYER} &a加入了团队！"
+team_apply_sent: "&a已成功向团队 &e{TEAM} &a发送入队申请！请等待队长或管理员审理。"
+team_apply_received: "&6收到来自玩家 &e{PLAYER} &6的入队申请！请在 &e/team &6-> 消息中心中审理。"
+team_apply_already_sent: "&c你已经向团队 &e{TEAM} &c发送过入队申请了，请等待审理！"
+team_apply_target_in_team: "&c申请人 &e{PLAYER} &c已经加入了其他团队！"
+team_apply_rejected: "&e已拒绝玩家 &f{PLAYER} &e的入队申请。"
+team_apply_rejected_notify: "&c你向团队 &e{TEAM} &c发送的入队申请已被管理员拒绝。"
+team_apply_accepted_notify: "&a🎉 恭喜！你向团队 &e{TEAM} &a发送的入队申请已被批准！你已成功加入团队。"
+
+# -------------------------------------------------------------------
+# 退出与踢出
+# -------------------------------------------------------------------
+usage_kick: "&c使用方法: /team kick <玩家名>"
+usage_promote: "&c使用方法: /team promote <玩家名>"
+usage_demote: "&c使用方法: /team demote <玩家名>"
+usage_transfer: "&c使用方法: /team transfer <玩家名>"
+team_leave_leader_cant_leave: "&c队长无法直接离开团队！请转让队长职位或使用 &e/team disband &c解散团队。"
+team_leave_success: "&e你已退出了团队 &e{TEAM}&e。"
+team_leave_broadcast: "&e玩家 &e{PLAYER} &e离开了团队。"
+team_kick_self: "&c你不能踢出自己！"
+team_kick_leader: "&c你不能踢出队长！"
+team_kick_success: "&a已将玩家 &e{PLAYER} &a踢出团队！"
+team_kick_target_msg: "&c你已被移出团队 &e{TEAM}&c！"
+team_kick_broadcast: "&c玩家 &e{PLAYER} &c已被移出团队。"
+team_player_not_in_your_team: "&c该玩家不在你的团队中！"
+team_member_cant_manage_self: "&c你不能对自己执行此管理操作！"
+team_member_already_officer: "&c该玩家已经是团队管理员了，无法继续提升！"
+team_member_already_member: "&c该玩家已经是普通队员了，无法继续降级！"
+team_member_promote_success: "&a已将成员 &e{PLAYER} &a提升为团队管理员！"
+team_member_promoted_msg: "&a恭喜！你已被队长提升为团队管理员！"
+team_member_promote_broadcast: "&a成员 &e{PLAYER} &a已被队长提升为团队管理员！"
+team_member_demote_success: "&e已将管理员 &f{PLAYER} &e降职为普通队员。"
+team_member_demoted_msg: "&c你的团队职位已被队长调整为普通队员。"
+team_member_demote_broadcast: "&e管理员 &f{PLAYER} &e已被队长降职为普通队员。"
+team_transfer_success: "&a你已成功将队长职位转让给 &e{PLAYER}&a！"
+team_transfer_target_msg: "&6🎉 恭喜！你已成为团队 &e{TEAM} &6的新队长！"
+team_transfer_broadcast: "&6队长已将团队转让给 &e{PLAYER} &6，他现在是新的团队队长！"
+
+# -------------------------------------------------------------------
+# 友伤系统
+# -------------------------------------------------------------------
+team_ff_status: "&7当前团队友伤状态: {STATUS}"
+team_ff_toggle_on: "&c团队友伤已开启！队员之间可以互相攻击。"
+team_ff_toggle_off: "&a团队友伤已关闭！队员之间无法互相伤害。"
+team_ff_toggle_disabled: "&c服务器管理员已锁定队友伤害功能，队伍成员间伤害强制开启，禁止修改！"
+team_ff_protected: "&c友伤保护：你无法攻击同队成员 &e{PLAYER}&c！"
+ally_ff_protected: "&c同盟保护：你无法攻击盟友成员 &e{PLAYER}&c！"
+
+# -------------------------------------------------------------------
+# 同盟机制 (双向同意)
+# -------------------------------------------------------------------
+usage_ally: "&c使用方法: /team ally <add|accept|remove> <队伍名>"
+ally_specify_target: "&c请输入目标团队名称！"
+ally_unknown_sub: "&c未知结盟指令，支持: add, accept, remove"
+ally_request_sent: "&a已向团队 &e{TEAM} &a发送同盟申请！等待对方队长同意..."
+ally_request_received: "&6收到来自团队 &e{TEAM} &6的同盟申请！队长请输入 &a/team ally accept {TEAM} &6同意结盟。"
+ally_already_requested: "&c你已经向该团队发送过同盟申请了，请勿重复发送！"
+ally_max_reached: "&c你的团队同盟数量已达到上限 ({MAX})！"
+ally_target_max_reached: "&c目标团队的同盟数量已达到上限！"
+ally_cant_ally_self: "&c你不能与自己的团队结盟！"
+ally_already_allied: "&c你的团队已经与 &e{TEAM} &c是同盟关系了！"
+ally_established: "&6【同盟缔结】 你的团队与 &e{TEAM} &6已正式成为盟友！"
+ally_established_broadcast: "&6团队 &e{TEAM1} &6与 &e{TEAM2} &6正式缔结了同盟！"
+ally_no_pending_request: "&c未找到来自团队 &e{TEAM} &c的结盟申请或申请已失效！"
+ally_remove_success: "&c已解除与团队 &e{TEAM} &c的同盟关系！"
+ally_remove_broadcast: "&c团队 &e{TEAM1} &c与 &e{TEAM2} &c解除了同盟关系！"
+ally_not_allied: "&c你的团队与 &e{TEAM} &c并不是同盟关系！"
+
+# -------------------------------------------------------------------
+# 敌对机制
+# -------------------------------------------------------------------
+usage_enemy: "&c使用方法: /team enemy <add|remove> <队伍名>"
+enemy_specify_target: "&c请输入目标团队名称！"
+enemy_add_self: "&c你不能将自己的团队设为敌对！"
+enemy_cant_enemy_ally: "&c该团队是你的盟友，请先解除同盟关系再设为敌对！"
+enemy_already_enemy: "&c你的团队已经与 &e{TEAM} &c处于敌对状态了！"
+enemy_max_reached: "&c敌对队伍数量已达到上限 ({MAX})！"
+enemy_add_success: "&c【宣战】 你的团队已将团队 &e{TEAM} &c设为敌对！"
+enemy_add_broadcast: "&c团队 &e{TEAM1} &c向团队 &e{TEAM2} &c宣战！"
+enemy_declared_notify: "&c⚔ 团队 &e{TEAM} &c已向你的团队宣战！已进入敌对状态。"
+enemy_remove_success: "&a已取消对团队 &e{TEAM} &a的敌对标记！"
+enemy_not_enemy: "&c你的团队并没有将 &e{TEAM} &c设为敌对！"
+
+# -------------------------------------------------------------------
+# 聊天与监听系统
+# -------------------------------------------------------------------
+chat_team_toggle_on: "&a已切换至团队聊天模式！直接发送消息即可在队内交流。"
+chat_team_toggle_off: "&7已切回公共聊天模式。"
+spy_toggle_on: "&a[监听] 管理员团队聊天监听已开启！"
+spy_toggle_off: "&c[监听] 管理员团队聊天监听已关闭！"
+
+# -------------------------------------------------------------------
+# 管理员指令提示
+# -------------------------------------------------------------------
+admin_usage_disband: "&c使用方法: /teamadmin disband <团队名称>"
+admin_team_not_found: "&c未找到团队: &e{TEAM}"
+admin_force_disband_success: "&a已强制解散团队: &e{TEAM}"
+
+# -------------------------------------------------------------------
+# 职位与状态显示
+# -------------------------------------------------------------------
+role:
+  leader: "&c队长"
+  officer: "&6管理员"
+  member: "&7队员"
+  unknown: "&7成员"
+
+status:
+  on: "&c开启"
+  off: "&a关闭"
+  online: "&a● 在线"
+  offline: "&7○ 离线"
+  member_online: "&a●"
+  member_offline: "&7○"
+  none_ally: "&7(暂无同盟团队)"
+  none_enemy: "&7(暂无敌对团队)"
+
+# -------------------------------------------------------------------
+# 帮助菜单 (列表格式，支持自由增删和修改排版)
+# -------------------------------------------------------------------
+help:
+  player:
+    - "&b======= &8[&e BalancedTeam 团队指令帮助 &8] &b======="
+    - "&e/team &7- 打开团队控制面板或队伍列表"
+    - "&e/team list [页码] &7- 查看全服团队列表 (GUI)"
+    - "&e/team menu &7- 打开个人团队管理面板 (GUI)"
+    - "&e/team members &7- 打开团队成员管理面板 (GUI)"
+    - "&e/team create <名称> &7- 创建一个新的团队"
+    - "&e/team disband &7- 解散当前团队 (仅队长)"
+    - "&e/team invite <玩家> &7- 邀请玩家加入团队"
+    - "&e/team accept <队伍名> &7- 接受入队邀请"
+    - "&e/team reject <队伍名> &7- 拒绝入队邀请"
+    - "&e/team leave &7- 退出当前团队"
+    - "&e/team kick <玩家> &7- 将成员踢出团队"
+    - "&e/team promote <玩家> &7- 提升成员为管理员 (仅队长)"
+    - "&e/team demote <玩家> &7- 降级管理员为队员 (仅队长)"
+    - "&e/team transfer <玩家> &7- 转让队长职位 (仅队长)"
+    - "&e/team chat [消息] &7- 发送团队聊天或切换聊天模式"
+    - "&e/team ff [on/off] &7- 查看或切换团队友伤"
+    - "&e/team ally add/accept/remove <队伍> &7- 同盟管理 (需双方同意)"
+    - "&e/team enemy add/remove <队伍> &7- 敌对管理"
+    - "&e/team info [队伍名] &7- 查看团队详细信息"
+    - "&b========================================"
+
+  admin:
+    - "&c======= &8[&e BalancedTeam 管理员指令 &8] &c======="
+    - "&e/teamadmin spy &7- 开启/关闭团队聊天监听"
+    - "&e/teamadmin disband <队伍名> &7- 强制解散指定团队"
+    - "&e/teamadmin reload &7- 重载插件配置文件与语言包"
+    - "&c=========================================="
+
+# -------------------------------------------------------------------
+# 团队信息 (/team info) 输出格式
+# -------------------------------------------------------------------
+team_info:
+  - "&b======= &e团队信息: {TEAM} &b======="
+  - "&7队长: &f{LEADER}"
+  - "&7成员人数: &a{COUNT}人"
+  - "&7友伤状态: {FF}"
+  - "&7同盟数量: &6{ALLIES} &7支队伍"
+  - "&7敌对数量: &c{ENEMIES} &7支队伍"
+  - "&7创建时间: &8{DATE}"
+  - "&b========================================"
+
+# -------------------------------------------------------------------
+# GUI 界面文本配置
+# -------------------------------------------------------------------
+gui:
+  # 1. /team list 队伍列表界面
+  list:
+    title: "&8团队列表 (第 {PAGE}/{TOTAL_PAGE} 页)"
+    team_item_name: "&e⚔ {TEAM}"
+    team_item_lore:
+      - "&7队长: &f{LEADER}"
+      - "&7成员: &a{ONLINE}&7/&f{TOTAL} &8(在线/总数)"
+      - "&7友伤: {FF}"
+      - "&7盟友数量: &6{ALLIES}"
+      - "&7敌对数量: &c{ENEMIES}"
+      - "&7创建时间: &8{DATE}"
+      - ""
+      - "&e▶ 点击查看该团队详细信息"
+    prev_page: "&a« 上一页 ({PAGE})"
+    next_page: "&a下一页 ({PAGE}) »"
+    summary_item_name: "&e服务器团队概况"
+    summary_item_lore:
+      - "&7总团队数: &b{TOTAL_TEAMS}"
+      - "&7当前页码: &e{PAGE} &7/ &f{TOTAL_PAGES}"
+
+  # 2. 团队详情界面
+  detail:
+    title: "&8团队详情: &b{TEAM}"
+    leader_item_name: "&c👑 团队队长: &f{LEADER}"
+    leader_item_lore:
+      - "&7在线状态: {STATUS}"
+      - "&7创队时间: &8{DATE}"
+      - "&7团队友伤: {FF}"
+    members_item_name: "&a👥 团队成员 (&f{COUNT}&a人)"
+    relation_item_name: "&e🤝 外交关系"
+    relation_allies_header: "&6【同盟队伍】 ({COUNT}):"
+    relation_enemies_header: "&c【敌对队伍】 ({COUNT}):"
+    relation_ally_prefix: "&6✦ "
+    relation_enemy_prefix: "&c⚔ "
+    back_button: "&c« 返回列表"
+    apply_button_name: "&a✉ 申请加入该团队"
+    apply_button_lore:
+      - "&7点击向该团队队长与管理员发送入队申请"
+      - ""
+      - "&e▶ 点击提交入队申请"
+    applied_item_name: "&e⏳ 入队申请审理中"
+    applied_item_lore:
+      - "&7你已向该团队提交了入队申请"
+      - "&7正在等待队长或管理员审理"
+      - ""
+      - "&e▶ 请耐心等待"
+    full_item_name: "&c✖ 团队人数已达上限"
+    full_item_lore:
+      - "&7该团队成员人数已达到最大上限 ({MAX} 人)"
+      - "&c当前暂无法申请加入"
+
+  # 3. 个人团队控制面板 (/team menu)
+  menu:
+    title: "&8团队控制面板"
+    info_item_name: "&e✦ 团队: &b{TEAM}"
+    info_item_lore:
+      - "&7我的职位: {ROLE}"
+      - "&7成员人数: &a{COUNT} &7/ &f{MAX}"
+      - "&7友伤状态: {FF}"
+      - ""
+      - "&e▶ 点击查看当前团队详情"
+    ff_item_name: "&6⚔ 团队友伤开关"
+    ff_status_on: "&c开启 (互相可造成伤害)"
+    ff_status_off: "&a关闭 (互相免疫伤害)"
+    ff_leader_tip: "&e▶ 点击切换友伤状态 (冷却: 30秒)"
+    ff_non_leader_tip: "&c✖ 仅队长有权修改此设置"
+    ff_disabled_tip: "&c✖ 服务器已锁定友伤开启，禁止修改"
+    invite_item_name: "&a✉ 邀请成员"
+    invite_item_lore:
+      - "&7点击打开在线玩家列表直接发送邀请"
+      - "&7支持一键邀请在线玩家或输入名称"
+      - ""
+      - "&7提示: 被邀请玩家有 60 秒时间确认。"
+      - ""
+      - "&e▶ 点击打开玩家选择界面"
+    disband_item_name: "&c✖ 解散团队"
+    disband_item_lore:
+      - "&c警告: 解散将永久销毁此团队及其所有同盟关系！"
+      - ""
+      - "&e▶ 点击打开解散确认界面"
+    leave_item_name: "&c🚪 离开团队"
+    leave_item_lore:
+      - "&7点击离开当前团队"
+      - ""
+      - "&e▶ 点击确认离开"
+    # 成员管理按钮
+    members_button_name: "&a👥 成员管理"
+    members_button_lore:
+      - "&7当前成员: &a{COUNT} &7/ &f{MAX}"
+      - "&7队长与管理员可管理成员职位与踢人"
+      - ""
+      - "&e▶ 点击打开成员管理面板"
+    # 新增：盟友管理按钮
+    ally_button_name: "&a🤝 盟友管理"
+    ally_button_lore:
+      - "&7当前盟友: &a{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&e▶ 点击管理同盟关系"
+    # 新增：通知中心按钮
+    notification_button_name: "&e🔔 通知中心 &7({PENDING})"
+    notification_button_lore:
+      - "&7当前无待处理的同盟申请"
+      - ""
+      - "&e▶ 点击查看通知"
+    notification_button_lore_pending:
+      - "&6⚠ 有 &e{PENDING} &6条待处理的同盟申请！"
+      - ""
+      - "&e▶ 点击查看并处理"
+    # 新增：敌对管理按钮
+    enemy_button_name: "&c⚔ 敌对管理"
+    enemy_button_lore:
+      - "&7当前敌对: &c{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&e▶ 点击管理敌对关系"
+
+  # 4. 解散团队确认界面
+  disband_confirm:
+    title: "&4⚠ 确认解散团队？"
+    confirm_name: "&c✔ 确认解散"
+    confirm_lore:
+      - "&c此操作不可撤销！"
+      - "&7团队及全部同盟关系将被永久删除。"
+      - ""
+      - "&c▶ 点击确认解散团队"
+    cancel_name: "&a✖ 取消"
+    cancel_lore:
+      - "&7点击返回团队控制面板"
+
+  # 退出团队确认界面
+  leave_confirm:
+    title: "&4⚠ 确认退出团队？"
+    confirm_name: "&c✔ 确认退出"
+    confirm_lore:
+      - "&c警告: 退出后将失去该团队的一切成员权限！"
+      - "&7退出后将进入退队冷却时间。"
+      - ""
+      - "&c▶ 点击确认离开当前团队"
+    cancel_name: "&a✖ 取消"
+    cancel_lore:
+      - "&7点击返回团队控制面板"
+
+  # 5. 盟友管理界面
+  ally_manage:
+    title: "&a🤝 盟友管理 (第 {PAGE}/{TOTAL_PAGE} 页)"
+    ally_item_name: "&a✦ 盟友: &f{TEAM}"
+    ally_item_lore:
+      - "&7成员人数: &a{COUNT} 人"
+    ally_item_lore_leader:
+      - "&7成员人数: &a{COUNT} 人"
+      - ""
+      - "&c▶ 点击解除与该队的同盟关系"
+    no_ally_name: "&7(暂无同盟队伍)"
+    no_ally_lore:
+      - "&7你的团队还没有盟友。"
+      - "&7使用 /team ally add <队伍名> 发送申请。"
+    add_button_name: "&a✉ 发送同盟申请"
+    add_button_lore:
+      - "&c✖ 仅队长有权发送同盟申请"
+    add_button_lore_leader:
+      - "&7关闭此界面后在聊天框输入:"
+      - "&f/team ally add <目标队伍名>"
+    add_tip: "&e提示: 请在聊天框输入 &f/team ally add <队伍名> &e发送同盟申请！"
+    back_button: "&c« 返回控制面板"
+    prev_page: "&a« 上一页 ({PAGE})"
+    next_page: "&a下一页 ({PAGE}) »"
+
+  # 6. 敌对管理界面
+  enemy_manage:
+    title: "&c⚔ 敌对管理 (第 {PAGE}/{TOTAL_PAGE} 页)"
+    enemy_item_name: "&c⚔ 敌对: &f{TEAM}"
+    enemy_item_lore:
+      - "&7成员人数: &c{COUNT} 人"
+    enemy_item_lore_leader:
+      - "&7成员人数: &c{COUNT} 人"
+      - ""
+      - "&a▶ 点击移除对该队的敌对标记"
+    no_enemy_name: "&7(暂无敌对队伍)"
+    no_enemy_lore:
+      - "&7你的团队还没有敌对队伍。"
+      - "&7使用 /team enemy add <队伍名> 宣战。"
+    add_button_name: "&c🗡 宣战"
+    add_button_lore:
+      - "&c✖ 仅队长有权宣战"
+    add_button_lore_leader:
+      - "&7关闭此界面后在聊天框输入:"
+      - "&f/team enemy add <目标队伍名>"
+    add_tip: "&e提示: 请在聊天框输入 &f/team enemy add <队伍名> &e宣战！"
+    back_button: "&c« 返回控制面板"
+    prev_page: "&a« 上一页 ({PAGE})"
+    next_page: "&a下一页 ({PAGE}) »"
+
+  # 7. 通知中心界面 (包含入队邀请与同盟申请)
+  notification:
+    title: "&e🔔 消息与通知中心 &7({COUNT})"
+    # 入队邀请
+    invite_item_name: "&a✉ 入队邀请: &e{TEAM}"
+    invite_item_lore:
+      - "&7邀请人: &f{INVITER}"
+      - "&7团队人数: &a{COUNT} &7/ &f{MAX}"
+      - "&7有效时间剩余: &e{REMAINING} &7秒"
+      - ""
+      - "&a▶ 左键点击接受邀请加入"
+      - "&c▶ 右键点击拒绝该邀请"
+    # 同盟申请
+    request_item_name: "&6⚔ 同盟申请: &f{TEAM}"
+    request_item_lore:
+      - "&7对方成员人数: &a{COUNT} 人"
+      - ""
+      - "&7等待队长处理..."
+    request_item_lore_leader:
+      - "&7对方成员人数: &a{COUNT} 人"
+      - ""
+      - "&a▶ 点击接受该队的同盟申请"
+    # 入队申请
+    application_item_name: "&b✉ 入队申请: &f{PLAYER}"
+    application_item_lore:
+      - "&7申请玩家: &e{PLAYER}"
+      - "&7当前本队人数: &a{COUNT} &7/ &f{MAX}"
+      - "&7有效时间剩余: &e{REMAINING} &7秒"
+      - ""
+      - "&a▶ 左键点击: 批准入队"
+      - "&c▶ 右键点击: 拒绝申请"
+    no_request_name: "&7(暂无待处理通知)"
+    no_request_lore:
+      - "&7目前没有任何待处理的入队邀请或同盟申请。"
+    back_button: "&c« 返回"
+    prev_page: "&a« 上一页 ({PAGE})"
+    next_page: "&a下一页 ({PAGE}) »"
+
+  # 8. 未加入队伍主菜单界面 (/team 或 /team menu)
+  not_joined:
+    title: "&8团队系统 (未加入队伍)"
+    list_button_name: "&b📋 服务器队伍列表"
+    list_button_lore:
+      - "&7查看全服所有已创建的团队"
+      - "&7了解各团队的人数与外交关系"
+      - ""
+      - "&e▶ 点击浏览团队列表"
+    create_info_name: "&a✦ 创建属于你的团队"
+    create_info_lore:
+      - "&7在聊天框输入以下指令创建新团队:"
+      - "&f/team create <团队名称>"
+      - ""
+      - "&7创建后你将成为团队队长！"
+    notification_button_name: "&e🔔 消息与邀请 &7({COUNT})"
+    notification_button_lore:
+      - "&7当前暂无新的入队邀请"
+      - ""
+      - "&e▶ 点击打开消息页面"
+    notification_button_lore_pending:
+      - "&6⚠ 你收到了 &e{COUNT} &6条入队邀请！"
+      - ""
+      - "&e▶ 点击查看并处理入队邀请"
+    close_button: "&c✖ 关闭"
+
+  # 9. 邀请成员 - 在线玩家选择界面
+  player_select:
+    title: "&8选择要邀请的玩家 (第 {PAGE}/{TOTAL_PAGE} 页)"
+    player_item_available_name: "&a👤 {PLAYER}"
+    player_item_available_lore:
+      - "&7状态: &a未加入任何队伍"
+      - ""
+      - "&a▶ 点击直接发送入队邀请"
+    player_item_in_team_name: "&7👤 {PLAYER}"
+    player_item_in_team_lore:
+      - "&7状态: &c已加入团队: &e{TEAM}"
+      - "&c✖ 该玩家已有队伍，无法邀请"
+    player_item_in_my_team_name: "&7👤 {PLAYER}"
+    player_item_in_my_team_lore:
+      - "&7职位: {ROLE}"
+      - "&7状态: &e本团队成员"
+      - "&c✖ 该玩家已在当前团队中"
+    player_item_already_invited_name: "&e👤 {PLAYER}"
+    player_item_already_invited_lore:
+      - "&7状态: &e已发送入队邀请"
+      - "&7剩余有效时间: &e{REMAINING}秒"
+      - "&6⚠ 正在等待对方回应"
+    no_players_name: "&7(暂无可邀请的在线玩家)"
+    no_players_lore:
+      - "&7当前服务器没有其他可邀请的在线玩家。"
+      - "&7你可以点击下方按钮手动输入玩家名。"
+    manual_input_name: "&e🔍 聊天框手动输入玩家名"
+    manual_input_lore:
+      - "&7点击后将在聊天栏提示你输入玩家名称"
+      - ""
+      - "&e▶ 点击进入手动输入模式"
+    chat_prompt: "&b[BalancedTeam] &e请在聊天框中直接输入要邀请的玩家名 (输入 &ccancel &e取消输入):"
+    chat_prompt_suggest: "&a[点此自动填入指令: /team invite <玩家名>]"
+    chat_cancel: "&7已取消邀请玩家。"
+    back_button: "&c« 返回控制面板"
+    prev_page: "&a« 上一页 ({PAGE})"
+    next_page: "&a下一页 ({PAGE}) »"
+
+  # 10. 团队成员管理界面 (/team members)
+  member_manage:
+    title: "&8团队成员管理 (第 {PAGE}/{TOTAL_PAGE} 页)"
+    member_item_name: "{ROLE_ICON} &f{PLAYER}"
+    member_item_lore:
+      - "&7职位: {ROLE}"
+      - "&7状态: {STATUS}"
+      - "&7入队时间: &8{DATE}"
+    tip_self: "&7(这是你自己)"
+    tip_promote: "&a▶ 左键点击: 提升为管理员"
+    tip_demote: "&e▶ 左键点击: 降职为普通队员"
+    tip_kick: "&c▶ 右键点击: 踢出团队"
+    tip_transfer: "&6▶ Shift+左键: 转让队长职位"
+    tip_no_perm: "&c✖ 无权管理同级或更高职位成员"
+    tip_view_only: "&7(仅队长与管理员可进行管理操作)"
+    invite_button_name: "&a✉ 邀请新成员"
+    invite_button_lore:
+      - "&7点击直接打开在线玩家列表发送邀请"
+      - ""
+      - "&e▶ 点击前往邀请界面"
+    back_button: "&c« 返回控制面板"
+    prev_page: "&a« 上一页 ({PAGE})"
+    next_page: "&a下一页 ({PAGE}) »"
+
+  # 11. 目标团队选择界面 (同盟申请 / 宣战选择)
+  team_select:
+    title_ally: "&8选择要结盟的团队 (第 {PAGE}/{TOTAL_PAGE} 页)"
+    title_enemy: "&8选择要宣战的团队 (第 {PAGE}/{TOTAL_PAGE} 页)"
+    item_available_ally_name: "&a✦ 团队: &f{TEAM}"
+    item_available_ally_lore:
+      - "&7队长: &f{LEADER}"
+      - "&7成员人数: &a{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&a▶ 点击发送同盟申请"
+    item_available_enemy_name: "&c⚔ 团队: &f{TEAM}"
+    item_available_enemy_lore:
+      - "&7队长: &f{LEADER}"
+      - "&7成员人数: &a{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&c▶ 点击向该团队宣战"
+    item_is_ally_name: "&6✦ 团队: &e{TEAM} &7(已是盟友)"
+    item_is_ally_lore:
+      - "&7队长: &f{LEADER}"
+      - "&7成员人数: &a{COUNT} &7/ &f{MAX}"
+      - "&6✦ 已经是同盟团队"
+    item_is_enemy_name: "&c⚔ 团队: &c{TEAM} &7(已是敌对)"
+    item_is_enemy_lore:
+      - "&7队长: &f{LEADER}"
+      - "&7成员人数: &a{COUNT} &7/ &f{MAX}"
+      - "&c⚔ 已经是敌对团队"
+    item_pending_name: "&e⏳ 团队: &f{TEAM} &7(申请中)"
+    item_pending_lore:
+      - "&7队长: &f{LEADER}"
+      - "&7成员人数: &a{COUNT} &7/ &f{MAX}"
+      - "&e⏳ 同盟申请审理中，等待对方队长处理"
+    item_max_reached_name: "&7✖ 团队: {TEAM} (上限)"
+    item_max_reached_lore:
+      - "&c同盟或敌对数量已达上限，暂无法操作"
+    no_teams_name: "&7(暂无其他可用团队)"
+    no_teams_lore:
+      - "&7服务器中暂无其他可选择的团队。"
+      - "&7你可以点击下方按钮手动输入团队名。"
+    manual_input_name: "&e🔍 聊天框手动输入团队名"
+    manual_input_lore:
+      - "&7点击后将在聊天栏提示你输入团队名称"
+      - ""
+      - "&e▶ 点击进入手动输入模式"
+    chat_prompt_ally: "&b[BalancedTeam] &e请在聊天框中输入要结盟的团队名 (输入 &ccancel &e取消):"
+    chat_prompt_enemy: "&b[BalancedTeam] &e请在聊天框中输入要宣战的团队名 (输入 &ccancel &e取消):"
+    back_button: "&c« 返回管理"
+    prev_page: "&a« 上一页 ({PAGE})"
+    next_page: "&a下一页 ({PAGE}) »"

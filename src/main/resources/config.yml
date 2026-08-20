@@ -1,0 +1,70 @@
+# ===================================================================
+# BalancedTeam 插件配置文件 (config.yml)
+# 支持 MySQL / SQLite 异步数据存储与高并发防卡顿优化
+# ===================================================================
+
+# 语言设置 (对应 plugins/BalancedTeam/lang/ 下的文件名，无需加 .yml 后缀)
+# 内置支持: zh_CN (简体中文), zh_TW (繁体中文), en_US (English)
+# 你可以在 lang/ 目录下自定义、添加新的语言文件并在此处填入文件名
+language: "zh_CN"
+
+# 数据库配置
+database:
+  type: "mysql" # 支持 mysql 或 sqlite
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "minecraft"
+    username: "root"
+    password: "password"
+    ssl: false
+    table_prefix: "bt_"
+    pool:
+      maximum_pool_size: 10
+      minimum_idle: 5
+      connection_timeout: 5000
+      idle_timeout: 600000
+      max_lifetime: 1800000
+  sqlite:
+    file: "teams.db"
+
+# 时间与日期显示格式 (遵循 Java SimpleDateFormat 格式规范，例如 yyyy-MM-dd HH:mm:ss 或 yyyy/MM/dd HH:mm)
+date_format: "yyyy-MM-dd HH:mm:ss"
+
+# 无规则服务器平衡性与防作弊机制配置
+balance:
+  # 每个团队允许的最大成员数量（防止特大公会垄断服务器）
+  max_members: 10
+  # 每个团队允许的最大结盟队伍数量（防止全服联合霸服）
+  max_allies: 3
+  # 每个团队允许的最大敌对队伍数量
+  max_enemies: 10
+  # 是否允许玩家/队长开启或关闭队友伤害功能 (true = 允许自由开关, false = 禁止切换且队伍成员间伤害强制开启)
+  allow_friendly_fire_toggle: true
+  # 队伍创建后默认是否开启友伤 (false = 无法互相伤害, true = 允许互相伤害)
+  friendly_fire_default: false
+  # 是否开启同盟队伍之间的友伤保护 (false = 同盟不能互相伤害, true = 同盟可互相伤害)
+  ally_friendly_fire: false
+  # 切换友伤的冷却时间（秒，防止在 PvP 交火时秒切友伤规避误伤）
+  friendly_fire_cooldown_seconds: 30
+  # 离开/更换队伍的冷却时间（秒，防止在战斗中退队背刺）
+  leave_team_cooldown_seconds: 60
+  # 团队名称最小字符长度
+  name_min_length: 2
+  # 团队名称最大字符长度
+  name_max_length: 16
+  # 团队名称正则匹配（默认支持中英文字母、数字和下划线，防止特殊字符注入/乱码）
+  name_regex: "^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$"
+  # 邀请玩家超时时间（秒）
+  invite_timeout_seconds: 3600
+  # 结盟申请超时时间（秒）
+  ally_request_timeout_seconds: 3600
+
+# 聊天相关配置
+chat:
+  # 团队聊天格式: {TEAM} 队名, {ROLE} 职位, {PLAYER} 玩家名, {MESSAGE} 内容
+  format: "&8[&b团队&8] &7[{ROLE}&7] &f{PLAYER}&7: &b{MESSAGE}"
+  # 管理员监听团队聊天格式
+  spy_format: "&8[&c监听&8] &7[&e{TEAM}&7] &7[{ROLE}&7] &f{PLAYER}&7: &f{MESSAGE}"
+  # 是否允许使用快捷指令 /tc <内容> 发送
+  enable_tc_command: true

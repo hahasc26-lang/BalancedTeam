@@ -1,0 +1,37 @@
+name: BalancedTeam
+version: '${project.version}'
+main: com.balancedteam.BalancedTeamPlugin
+api-version: '1.20'
+author: Antigravity
+description: High-performance Clan/Team plugin for Anarchy servers with MySQL, GUI and balanced combat.
+
+libraries:
+  - com.zaxxer:HikariCP:5.1.0
+  - com.mysql:mysql-connector-j:8.3.0
+  - org.xerial:sqlite-jdbc:3.45.1.0
+
+commands:
+  team:
+    description: 团队系统主指令
+    aliases: [t, clan, bt]
+    usage: /team help
+  teamadmin:
+    description: 团队系统管理员指令
+    aliases: [ta, btadmin]
+    permission: balancedteam.admin
+    usage: /teamadmin help
+  teammsg:
+    description: 发送团队聊天消息或切换团队聊天锁定模式
+    aliases: [tc, tm, teamchat]
+    usage: /teammsg [消息内容]
+
+permissions:
+  balancedteam.use:
+    description: 允许使用团队基础指令
+    default: true
+  balancedteam.admin:
+    description: 允许使用团队管理员指令
+    default: op
+  balancedteam.admin.spy:
+    description: 允许监听所有团队聊天
+    default: op

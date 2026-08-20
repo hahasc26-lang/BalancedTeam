@@ -1,0 +1,583 @@
+# ===================================================================
+# BalancedTeam English Language Configuration (lang/en_US.yml)
+# Supports legacy color codes '&' and hex RGB colors &#RRGGBB / <#RRGGBB>
+# All texts (command messages, help menus, GUI titles & lores) are centralized here.
+# ===================================================================
+
+# Message prefix (If a single message begins with [NO_PREFIX] or is a list, prefix is omitted)
+prefix: "&8[&bBalancedTeam&8] &r"
+
+# -------------------------------------------------------------------
+# General & Error Messages
+# -------------------------------------------------------------------
+no_permission: "&cYou do not have permission to execute this command!"
+player_only: "&cThis command can only be executed by players!"
+reload_success: "&aPlugin configuration and language files reloaded successfully!"
+database_error: "&cDatabase operation failed. Please contact server administrators!"
+cooldown: "&cThis action is on cooldown. Please wait &e{TIME} &cseconds!"
+unknown_command: "&cUnknown sub-command. Type &e/team help &cfor assistance."
+target_player_not_found: "&cOnline player not found: &e{PLAYER}"
+
+# -------------------------------------------------------------------
+# Team Creation & Disbanding
+# -------------------------------------------------------------------
+usage_create: "&cUsage: /team create <TeamName>"
+team_create_success: "&aCongratulations! Team &e{TEAM} &ahas been created! You are the leader."
+team_create_invalid_name: "&cInvalid team name! Must be {MIN}-{MAX} characters, letters/numbers/underscores only."
+team_create_already_exists: "&cA team named &e{TEAM} &calready exists! Please choose another name."
+team_already_in_team: "&cYou are already in a team! You must leave your current team first."
+team_not_in_team: "&cYou are currently not in any team!"
+team_not_found: "&cCould not find team named &e{TEAM}&c!"
+team_not_leader: "&cOnly the team leader can perform this action!"
+team_not_officer_or_leader: "&cOnly the team leader or officers can perform this action!"
+team_disband_success: "&eThe team has been disbanded successfully!"
+team_disband_broadcast: "&cTeam &e{TEAM} &chas been disbanded by the leader!"
+
+# -------------------------------------------------------------------
+# Invites & Joining
+# -------------------------------------------------------------------
+usage_invite: "&cUsage: /team invite <Player>"
+usage_accept: "&cUsage: /team accept <TeamName>"
+usage_reject: "&cUsage: /team reject <TeamName>"
+team_invite_sent: "&aTeam invite sent to &e{PLAYER}&a!"
+team_invite_received: "&bTeam &e{TEAM} &binvited you to join! Type &a/team accept {TEAM} &bto accept, or &c/team reject {TEAM} &bto decline (expires in 60s)."
+team_invite_already_sent: "&cYou have already sent an invite to this player. Please wait for their response!"
+team_invite_no_pending: "&cNo pending invite from team &e{TEAM} &cor the invite has expired!"
+team_invite_rejected: "&eYou declined the invite from team &e{TEAM}&e."
+team_invite_target_in_team: "&cThat player is already in a team!"
+team_invite_target_in_your_team: "&cThat player is already in your team!"
+team_invite_max_members: "&cTeam member limit reached ({MAX} players)!"
+team_join_success: "&aYou have successfully joined team &e{TEAM}&a!"
+team_join_broadcast: "&aPlayer &e{PLAYER} &ahas joined the team!"
+team_apply_sent: "&aSuccessfully sent join application to team &e{TEAM}&a! Waiting for officer/leader approval."
+team_apply_received: "&6Received join application from player &e{PLAYER}&6! Review it in &e/team &6-> Notification Center."
+team_apply_already_sent: "&cYou have already applied to join team &e{TEAM}&c. Please wait for review!"
+team_apply_target_in_team: "&cApplicant &e{PLAYER} &chas already joined another team!"
+team_apply_rejected: "&eRejected join application from player &f{PLAYER}&e."
+team_apply_rejected_notify: "&cYour application to join team &e{TEAM} &cwas rejected by the team management."
+team_apply_accepted_notify: "&a🎉 Congratulations! Your application to team &e{TEAM} &awas accepted! You have joined the team."
+
+# -------------------------------------------------------------------
+# Leaving & Kicking & Promoting
+# -------------------------------------------------------------------
+usage_kick: "&cUsage: /team kick <Player>"
+usage_promote: "&cUsage: /team promote <Player>"
+usage_demote: "&cUsage: /team demote <Player>"
+usage_transfer: "&cUsage: /team transfer <Player>"
+team_leave_leader_cant_leave: "&cThe leader cannot leave the team! Transfer leadership or use &e/team disband&c."
+team_leave_success: "&eYou left team &e{TEAM}&e."
+team_leave_broadcast: "&ePlayer &e{PLAYER} &eleft the team."
+team_kick_self: "&cYou cannot kick yourself!"
+team_kick_leader: "&cYou cannot kick the leader!"
+team_kick_success: "&aPlayer &e{PLAYER} &ahas been kicked from the team!"
+team_kick_target_msg: "&cYou have been removed from team &e{TEAM}&c!"
+team_kick_broadcast: "&cPlayer &e{PLAYER} &cwas removed from the team."
+team_player_not_in_your_team: "&cThat player is not in your team!"
+team_member_cant_manage_self: "&cYou cannot perform management actions on yourself!"
+team_member_already_officer: "&cThat player is already an officer and cannot be promoted further!"
+team_member_already_member: "&cThat player is already a regular member and cannot be demoted further!"
+team_member_promote_success: "&aPromoted &e{PLAYER} &ato team officer!"
+team_member_promoted_msg: "&aCongratulations! You have been promoted to team officer by the leader!"
+team_member_promote_broadcast: "&aMember &e{PLAYER} &awas promoted to officer by the leader!"
+team_member_demote_success: "&eDemoted officer &f{PLAYER} &eto regular member."
+team_member_demoted_msg: "&cYour team rank has been demoted to regular member by the leader."
+team_member_demote_broadcast: "&eOfficer &f{PLAYER} &ewas demoted to regular member by the leader."
+team_transfer_success: "&aYou transferred team leadership to &e{PLAYER}&a!"
+team_transfer_target_msg: "&6🎉 Congratulations! You are now the new leader of team &e{TEAM}&6!"
+team_transfer_broadcast: "&6The leader transferred team leadership to &e{PLAYER}&6!"
+
+# -------------------------------------------------------------------
+# Friendly Fire System
+# -------------------------------------------------------------------
+team_ff_status: "&7Current team friendly fire status: {STATUS}"
+team_ff_toggle_on: "&cTeam friendly fire enabled! Members can now damage each other."
+team_ff_toggle_off: "&aTeam friendly fire disabled! Members cannot damage each other."
+team_ff_toggle_disabled: "&cServer administrator has locked friendly fire to ON. Toggling is disabled!"
+team_ff_protected: "&cFriendly Fire Protection: You cannot damage teammate &e{PLAYER}&c!"
+ally_ff_protected: "&cAlliance Protection: You cannot damage ally &e{PLAYER}&c!"
+
+# -------------------------------------------------------------------
+# Alliance System
+# -------------------------------------------------------------------
+usage_ally: "&cUsage: /team ally <add|accept|remove> <TeamName>"
+ally_specify_target: "&cPlease specify the target team name!"
+ally_unknown_sub: "&cUnknown alliance sub-command. Supported: add, accept, remove"
+ally_request_sent: "&aAlliance request sent to team &e{TEAM}&a! Waiting for their leader's approval..."
+ally_request_received: "&6Received an alliance request from team &e{TEAM}&6! Leader can type &a/team ally accept {TEAM} &6to accept."
+ally_already_requested: "&cYou have already sent an alliance request to this team!"
+ally_max_reached: "&cYour team has reached the maximum number of allies ({MAX})!"
+ally_target_max_reached: "&cTarget team has reached their maximum number of allies!"
+ally_cant_ally_self: "&cYou cannot ally with your own team!"
+ally_already_allied: "&cYour team is already allied with &e{TEAM}&c!"
+ally_established: "&6[Alliance Formed] Your team is now officially allied with &e{TEAM}&6!"
+ally_established_broadcast: "&6Team &e{TEAM1} &6and team &e{TEAM2} &6have formed an alliance!"
+ally_no_pending_request: "&cNo pending alliance request from team &e{TEAM} &cor it has expired!"
+ally_remove_success: "&cTerminated alliance with team &e{TEAM}&c!"
+ally_remove_broadcast: "&cTeam &e{TEAM1} &cand team &e{TEAM2} &charmed/dissolved their alliance!"
+ally_not_allied: "&cYour team is not allied with &e{TEAM}&c!"
+
+# -------------------------------------------------------------------
+# Enemy System
+# -------------------------------------------------------------------
+usage_enemy: "&cUsage: /team enemy <add|remove> <TeamName>"
+enemy_specify_target: "&cPlease specify the target team name!"
+enemy_add_self: "&cYou cannot declare war against your own team!"
+enemy_cant_enemy_ally: "&cThat team is your ally. Terminate the alliance before declaring war!"
+enemy_already_enemy: "&cYour team is already at war with &e{TEAM}&c!"
+enemy_max_reached: "&cEnemy team limit reached ({MAX})!"
+enemy_add_success: "&c【War】 Your team declared war on team &e{TEAM}&c!"
+enemy_add_broadcast: "&cTeam &e{TEAM1} &chas declared war on Team &e{TEAM2}&c!"
+enemy_declared_notify: "&c⚔ Team &e{TEAM} &chas declared war on your team! Entered hostile state."
+enemy_remove_success: "&aRemoved hostility against team &e{TEAM}&a!"
+enemy_not_enemy: "&cYour team has not marked &e{TEAM} &cas an enemy!"
+
+# -------------------------------------------------------------------
+# Chat & Spy System
+# -------------------------------------------------------------------
+chat_team_toggle_on: "&aSwitched to Team Chat mode! Messages sent will be private to your team."
+chat_team_toggle_off: "&7Switched back to Public Chat mode."
+spy_toggle_on: "&a[Spy] Admin team chat spy has been enabled!"
+spy_toggle_off: "&c[Spy] Admin team chat spy has been disabled!"
+
+# -------------------------------------------------------------------
+# Admin Commands
+# -------------------------------------------------------------------
+admin_usage_disband: "&cUsage: /teamadmin disband <TeamName>"
+admin_team_not_found: "&cTeam not found: &e{TEAM}"
+admin_force_disband_success: "&aForcefully disbanded team: &e{TEAM}"
+
+# -------------------------------------------------------------------
+# Role & Status Displays
+# -------------------------------------------------------------------
+role:
+  leader: "&cLeader"
+  officer: "&6Officer"
+  member: "&7Member"
+  unknown: "&7Member"
+
+status:
+  on: "&cEnabled"
+  off: "&aDisabled"
+  online: "&a● Online"
+  offline: "&7○ Offline"
+  member_online: "&a●"
+  member_offline: "&7○"
+  none_ally: "&7(No Allies)"
+  none_enemy: "&7(No Enemies)"
+
+# -------------------------------------------------------------------
+# Help Menus
+# -------------------------------------------------------------------
+help:
+  player:
+    - "&b======= &8[&e BalancedTeam Commands &8] &b======="
+    - "&e/team &7- Open team dashboard or team list"
+    - "&e/team list [page] &7- View server team list (GUI)"
+    - "&e/team menu &7- Open team management panel (GUI)"
+    - "&e/team members &7- Open team member manager (GUI)"
+    - "&e/team create <name> &7- Create a new team"
+    - "&e/team disband &7- Disband current team (Leader only)"
+    - "&e/team invite <player> &7- Invite a player to team"
+    - "&e/team accept <team> &7- Accept a team invitation"
+    - "&e/team reject <team> &7- Reject a team invitation"
+    - "&e/team leave &7- Leave current team"
+    - "&e/team kick <player> &7- Kick a member from team"
+    - "&e/team promote <player> &7- Promote member to officer (Leader only)"
+    - "&e/team demote <player> &7- Demote officer to member (Leader only)"
+    - "&e/team transfer <player> &7- Transfer team leadership (Leader only)"
+    - "&e/team chat [msg] &7- Send team chat or toggle chat mode"
+    - "&e/team ff [on/off] &7- View or toggle friendly fire"
+    - "&e/team ally add/accept/remove <team> &7- Manage alliances (Mutual consent)"
+    - "&e/team enemy add/remove <team> &7- Manage enemy relations"
+    - "&e/team info [team] &7- View detailed team information"
+    - "&b========================================"
+
+  admin:
+    - "&c======= &8[&e BalancedTeam Admin Commands &8] &c======="
+    - "&e/teamadmin spy &7- Toggle team chat spy"
+    - "&e/teamadmin disband <team> &7- Forcefully disband a team"
+    - "&e/teamadmin reload &7- Reload config and language files"
+    - "&c=========================================="
+
+# -------------------------------------------------------------------
+# Team Info (/team info) Output
+# -------------------------------------------------------------------
+team_info:
+  - "&b======= &eTeam Info: {TEAM} &b======="
+  - "&7Leader: &f{LEADER}"
+  - "&7Members: &a{COUNT} players"
+  - "&7Friendly Fire: {FF}"
+  - "&7Allies: &6{ALLIES} &7teams"
+  - "&7Enemies: &c{ENEMIES} &7teams"
+  - "&7Created At: &8{DATE}"
+  - "&b========================================"
+
+# -------------------------------------------------------------------
+# GUI Configuration
+# -------------------------------------------------------------------
+gui:
+  # 1. /team list Team List GUI
+  list:
+    title: "&8Team List (Page {PAGE}/{TOTAL_PAGE})"
+    team_item_name: "&e⚔ {TEAM}"
+    team_item_lore:
+      - "&7Leader: &f{LEADER}"
+      - "&7Members: &a{ONLINE}&7/&f{TOTAL} &8(Online/Total)"
+      - "&7Friendly Fire: {FF}"
+      - "&7Allies: &6{ALLIES}"
+      - "&7Enemies: &c{ENEMIES}"
+      - "&7Created: &8{DATE}"
+      - ""
+      - "&e▶ Click to view team details"
+    prev_page: "&a« Prev Page ({PAGE})"
+    next_page: "&aNext Page ({PAGE}) »"
+    summary_item_name: "&eServer Team Summary"
+    summary_item_lore:
+      - "&7Total Teams: &b{TOTAL_TEAMS}"
+      - "&7Current Page: &e{PAGE} &7/ &f{TOTAL_PAGES}"
+
+  # 2. Team Details GUI
+  detail:
+    title: "&8Team Details: &b{TEAM}"
+    leader_item_name: "&c👑 Team Leader: &f{LEADER}"
+    leader_item_lore:
+      - "&7Status: {STATUS}"
+      - "&7Created: &8{DATE}"
+      - "&7Friendly Fire: {FF}"
+    members_item_name: "&a👥 Team Members (&f{COUNT}&a)"
+    relation_item_name: "&e🤝 Foreign Relations"
+    relation_allies_header: "&6[Allied Teams] ({COUNT}):"
+    relation_enemies_header: "&c[Enemy Teams] ({COUNT}):"
+    relation_ally_prefix: "&6✦ "
+    relation_enemy_prefix: "&c⚔ "
+    back_button: "&c« Back to List"
+    apply_button_name: "&a✉ Apply to Join Team"
+    apply_button_lore:
+      - "&7Click to submit a join application to team management"
+      - ""
+      - "&e▶ Click to submit application"
+    applied_item_name: "&e⏳ Application Pending"
+    applied_item_lore:
+      - "&7You have applied to this team"
+      - "&7Waiting for leader or officer to review"
+      - ""
+      - "&e▶ Please wait patiently"
+    full_item_name: "&c✖ Team is Full"
+    full_item_lore:
+      - "&7This team has reached the member limit ({MAX})"
+      - "&cCannot apply to join at this time"
+
+  # 3. Personal Team Menu (/team menu)
+  menu:
+    title: "&8Team Dashboard"
+    info_item_name: "&e✦ Team: &b{TEAM}"
+    info_item_lore:
+      - "&7My Role: {ROLE}"
+      - "&7Members: &a{COUNT} &7/ &f{MAX}"
+      - "&7Friendly Fire: {FF}"
+      - ""
+      - "&e▶ Click to view team details"
+    ff_item_name: "&6⚔ Friendly Fire Toggle"
+    ff_status_on: "&cEnabled (Can damage teammates)"
+    ff_status_off: "&aDisabled (Immune to team damage)"
+    ff_leader_tip: "&e▶ Click to toggle friendly fire (Cooldown: 30s)"
+    ff_non_leader_tip: "&c✖ Only the leader can toggle this setting"
+    ff_disabled_tip: "&c✖ Server has locked friendly fire ON, toggling disabled"
+    invite_item_name: "&a✉ Invite Member"
+    invite_item_lore:
+      - "&7Click to open online players list and send invite"
+      - "&7Supports one-click invite or manual name input"
+      - ""
+      - "&7Note: Invited player has 60 seconds to confirm."
+      - ""
+      - "&e▶ Click to open player selection"
+    disband_item_name: "&c✖ Disband Team"
+    disband_item_lore:
+      - "&cWarning: Disbanding permanently removes this team and all relations!"
+      - ""
+      - "&e▶ Click to open confirmation"
+    leave_item_name: "&c🚪 Leave Team"
+    leave_item_lore:
+      - "&7Click to leave current team"
+      - ""
+      - "&e▶ Click to confirm leaving"
+    # Member Manager Button
+    members_button_name: "&a👥 Member Management"
+    members_button_lore:
+      - "&7Current Members: &a{COUNT} &7/ &f{MAX}"
+      - "&7Leader and Officers can manage ranks and kick"
+      - ""
+      - "&e▶ Click to open member manager"
+    # Alliance Manager Button
+    ally_button_name: "&a🤝 Alliance Management"
+    ally_button_lore:
+      - "&7Current Allies: &a{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&e▶ Click to manage alliances"
+    # Notification Center Button
+    notification_button_name: "&e🔔 Notification Center &7({PENDING})"
+    notification_button_lore:
+      - "&7No pending alliance requests"
+      - ""
+      - "&e▶ Click to view notifications"
+    notification_button_lore_pending:
+      - "&6⚠ You have &e{PENDING} &6pending alliance request(s)!"
+      - ""
+      - "&e▶ Click to view and manage"
+    # Enemy Manager Button
+    enemy_button_name: "&c⚔ Enemy Management"
+    enemy_button_lore:
+      - "&7Current Enemies: &c{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&e▶ Click to manage enemy relations"
+
+  # 4. Disband Confirmation Menu
+  disband_confirm:
+    title: "&4⚠ Confirm Disband Team?"
+    confirm_name: "&c✔ Confirm Disband"
+    confirm_lore:
+      - "&cThis action cannot be undone!"
+      - "&7The team and all alliance relations will be permanently deleted."
+      - ""
+      - "&c▶ Click to confirm disbanding team"
+    cancel_name: "&a✖ Cancel"
+    cancel_lore:
+      - "&7Click to return to dashboard"
+
+  # Leave Team Confirmation Menu
+  leave_confirm:
+    title: "&4⚠ Confirm Leave Team?"
+    confirm_name: "&c✔ Confirm Leave"
+    confirm_lore:
+      - "&cWarning: Leaving will revoke all your team permissions!"
+      - "&7A leave cooldown will be applied after exiting."
+      - ""
+      - "&c▶ Click to confirm leaving team"
+    cancel_name: "&a✖ Cancel"
+    cancel_lore:
+      - "&7Click to return to dashboard"
+
+  # 5. Alliance Manager GUI
+  ally_manage:
+    title: "&a🤝 Alliance Manager (Page {PAGE}/{TOTAL_PAGE})"
+    ally_item_name: "&a✦ Ally: &f{TEAM}"
+    ally_item_lore:
+      - "&7Members: &a{COUNT} players"
+    ally_item_lore_leader:
+      - "&7Members: &a{COUNT} players"
+      - ""
+      - "&c▶ Click to terminate alliance"
+    no_ally_name: "&7(No Allied Teams)"
+    no_ally_lore:
+      - "&7Your team does not have any allies."
+      - "&7Use /team ally add <team> to send a request."
+    add_button_name: "&a✉ Send Alliance Request"
+    add_button_lore:
+      - "&c✖ Only leader can send alliance requests"
+    add_button_lore_leader:
+      - "&7Close this GUI and type in chat:"
+      - "&f/team ally add <TargetTeam>"
+    add_tip: "&eTip: Type &f/team ally add <team> &ein chat to request alliance!"
+    back_button: "&c« Back to Dashboard"
+    prev_page: "&a« Prev Page ({PAGE})"
+    next_page: "&aNext Page ({PAGE}) »"
+
+  # 6. Enemy Manager GUI
+  enemy_manage:
+    title: "&c⚔ Enemy Manager (Page {PAGE}/{TOTAL_PAGE})"
+    enemy_item_name: "&c⚔ Enemy: &f{TEAM}"
+    enemy_item_lore:
+      - "&7Members: &c{COUNT} players"
+    enemy_item_lore_leader:
+      - "&7Members: &c{COUNT} players"
+      - ""
+      - "&a▶ Click to remove enemy status"
+    no_enemy_name: "&7(No Enemy Teams)"
+    no_enemy_lore:
+      - "&7Your team does not have any marked enemies."
+      - "&7Use /team enemy add <team> to declare war."
+    add_button_name: "&c🗡 Declare War"
+    add_button_lore:
+      - "&c✖ Only leader can declare war"
+    add_button_lore_leader:
+      - "&7Close this GUI and type in chat:"
+      - "&f/team enemy add <TargetTeam>"
+    add_tip: "&eTip: Type &f/team enemy add <team> &ein chat to declare war!"
+    back_button: "&c« Back to Dashboard"
+    prev_page: "&a« Prev Page ({PAGE})"
+    next_page: "&aNext Page ({PAGE}) »"
+
+  # 7. Notification Center GUI
+  notification:
+    title: "&e🔔 Notification Center &7({COUNT})"
+    # Team Invite
+    invite_item_name: "&a✉ Team Invite: &e{TEAM}"
+    invite_item_lore:
+      - "&7Invited by: &f{INVITER}"
+      - "&7Team Size: &a{COUNT} &7/ &f{MAX}"
+      - "&7Expires in: &e{REMAINING}s"
+      - ""
+      - "&a▶ Left-Click to accept and join"
+      - "&c▶ Right-Click to decline invite"
+    # Alliance Request
+    request_item_name: "&6⚔ Alliance Request: &f{TEAM}"
+    request_item_lore:
+      - "&7Target Members: &a{COUNT} players"
+      - ""
+      - "&7Waiting for leader's decision..."
+    request_item_lore_leader:
+      - "&7Target Members: &a{COUNT} players"
+      - ""
+      - "&a▶ Click to accept alliance request"
+    # Join Application
+    application_item_name: "&b✉ Join Application: &f{PLAYER}"
+    application_item_lore:
+      - "&7Applicant: &e{PLAYER}"
+      - "&7Current Team Size: &a{COUNT} &7/ &f{MAX}"
+      - "&7Expires in: &e{REMAINING} &7seconds"
+      - ""
+      - "&a▶ Left-Click: Accept and Add to Team"
+      - "&c▶ Right-Click: Decline Application"
+    no_request_name: "&7(No Pending Notifications)"
+    no_request_lore:
+      - "&7There are currently no pending team invites or alliance requests."
+    back_button: "&c« Back"
+    prev_page: "&a« Prev Page ({PAGE})"
+    next_page: "&aNext Page ({PAGE}) »"
+
+  # 8. Not Joined Team Menu (/team or /team menu)
+  not_joined:
+    title: "&8Team System (No Team)"
+    list_button_name: "&b📋 Server Team List"
+    list_button_lore:
+      - "&7Browse all created teams on the server"
+      - "&7Inspect member counts and foreign relations"
+      - ""
+      - "&e▶ Click to browse team list"
+    create_info_name: "&a✦ Create Your Own Team"
+    create_info_lore:
+      - "&7Type the following command in chat to create:"
+      - "&f/team create <TeamName>"
+      - ""
+      - "&7You will become the leader upon creation!"
+    notification_button_name: "&e🔔 Messages & Invites &7({COUNT})"
+    notification_button_lore:
+      - "&7No new team invitations"
+      - ""
+      - "&e▶ Click to open notifications"
+    notification_button_lore_pending:
+      - "&6⚠ You have &e{COUNT} &6pending team invite(s)!"
+      - ""
+      - "&e▶ Click to view and respond"
+    close_button: "&c✖ Close"
+
+  # 9. Invite Member - Online Players GUI
+  player_select:
+    title: "&8Select Player to Invite (Page {PAGE}/{TOTAL_PAGE})"
+    player_item_available_name: "&a👤 {PLAYER}"
+    player_item_available_lore:
+      - "&7Status: &aNot in any team"
+      - ""
+      - "&a▶ Click to send team invite"
+    player_item_in_team_name: "&7👤 {PLAYER}"
+    player_item_in_team_lore:
+      - "&7Status: &cIn team: &e{TEAM}"
+      - "&c✖ Player already has a team"
+    player_item_in_my_team_name: "&7👤 {PLAYER}"
+    player_item_in_my_team_lore:
+      - "&7Role: {ROLE}"
+      - "&7Status: &eCurrent team member"
+      - "&c✖ Already in your team"
+    player_item_already_invited_name: "&e👤 {PLAYER}"
+    player_item_already_invited_lore:
+      - "&7Status: &eInvite sent"
+      - "&7Expires in: &e{REMAINING}s"
+      - "&6⚠ Waiting for response"
+    no_players_name: "&7(No Available Online Players)"
+    no_players_lore:
+      - "&7No other inviteable players online currently."
+      - "&7You can click the button below to type a name manually."
+    manual_input_name: "&e🔍 Enter Player Name in Chat"
+    manual_input_lore:
+      - "&7Click to prompt player name input in chat"
+      - ""
+      - "&e▶ Click to enter manual mode"
+    chat_prompt: "&b[BalancedTeam] &ePlease type the player name to invite in chat (type &ccancel &eto abort):"
+    chat_prompt_suggest: "&a[Click to autofill command: /team invite <player>]"
+    chat_cancel: "&7Player invite aborted."
+    back_button: "&c« Back to Dashboard"
+    prev_page: "&a« Prev Page ({PAGE})"
+    next_page: "&aNext Page ({PAGE}) »"
+
+  # 10. Team Member Manager GUI (/team members)
+  member_manage:
+    title: "&8Team Member Manager (Page {PAGE}/{TOTAL_PAGE})"
+    member_item_name: "{ROLE_ICON} &f{PLAYER}"
+    member_item_lore:
+      - "&7Role: {ROLE}"
+      - "&7Status: {STATUS}"
+      - "&7Joined: &8{DATE}"
+    tip_self: "&7(This is you)"
+    tip_promote: "&a▶ Left-Click: Promote to Officer"
+    tip_demote: "&e▶ Left-Click: Demote to Member"
+    tip_kick: "&c▶ Right-Click: Kick from Team"
+    tip_transfer: "&6▶ Shift+Left-Click: Transfer Leadership"
+    tip_no_perm: "&c✖ Cannot manage members of equal or higher rank"
+    tip_view_only: "&7(Only leader and officers can perform actions)"
+    invite_button_name: "&a✉ Invite New Member"
+    invite_button_lore:
+      - "&7Click to open online players list and invite"
+      - ""
+      - "&e▶ Click to go to invite GUI"
+    back_button: "&c« Back to Dashboard"
+    prev_page: "&a« Prev Page ({PAGE})"
+    next_page: "&aNext Page ({PAGE}) »"
+
+  # 11. Target Team Select Menu (Alliance Request / Declare War)
+  team_select:
+    title_ally: "&8Select Team to Ally (Page {PAGE}/{TOTAL_PAGE})"
+    title_enemy: "&8Select Team to War (Page {PAGE}/{TOTAL_PAGE})"
+    item_available_ally_name: "&a✦ Team: &f{TEAM}"
+    item_available_ally_lore:
+      - "&7Leader: &f{LEADER}"
+      - "&7Members: &a{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&a▶ Click to send alliance request"
+    item_available_enemy_name: "&c⚔ Team: &f{TEAM}"
+    item_available_enemy_lore:
+      - "&7Leader: &f{LEADER}"
+      - "&7Members: &a{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&c▶ Click to declare war"
+    item_is_ally_name: "&6✦ Team: &e{TEAM} &7(Allied)"
+    item_is_ally_lore:
+      - "&7Leader: &f{LEADER}"
+      - "&7Members: &a{COUNT} &7/ &f{MAX}"
+      - "&6✦ Already an ally"
+    item_is_enemy_name: "&c⚔ Team: &c{TEAM} &7(Hostile)"
+    item_is_enemy_lore:
+      - "&7Leader: &f{LEADER}"
+      - "&7Members: &a{COUNT} &7/ &f{MAX}"
+      - "&c⚔ Already hostile"
+    item_pending_name: "&e⏳ Team: &f{TEAM} &7(Pending)"
+    item_pending_lore:
+      - "&7Leader: &f{LEADER}"
+      - "&7Members: &a{COUNT} &7/ &f{MAX}"
+      - "&e⏳ Alliance request pending review"
+    item_max_reached_name: "&7✖ Team: {TEAM} (Limit)"
+    item_max_reached_lore:
+      - "&cRelation limit reached, action not possible"
+    no_teams_name: "&7(No Other Teams Available)"
+    no_teams_lore:
+      - "&7There are currently no other selectable teams on the server."
+      - "&7You can click the button below to enter a team name manually."
+    manual_input_name: "&e🔍 Enter Team Name in Chat"
+    manual_input_lore:
+      - "&7Click to type the team name into chat"
+      - ""
+      - "&e▶ Click to enter manual mode"
+    chat_prompt_ally: "&b[BalancedTeam] &ePlease type the team name to ally with (type &ccancel &eto exit):"
+    chat_prompt_enemy: "&b[BalancedTeam] &ePlease type the team name to declare war on (type &ccancel &eto exit):"
+    back_button: "&c« Back"
+    prev_page: "&a« Prev Page ({PAGE})"
+    next_page: "&aNext Page ({PAGE}) »"

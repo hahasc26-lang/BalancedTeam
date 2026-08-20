@@ -1,0 +1,583 @@
+# ===================================================================
+# BalancedTeam 繁體中文語言與文本配置文件 (lang/zh_TW.yml)
+# 支持 & 傳統顏色代碼 與 &#RRGGBB / <#RRGGBB> 16進制 RGB 顏色
+# 所有文本（包括指令提示、幫助選單、GUI介面名稱與說明）均在此處集中管理
+# ===================================================================
+
+# 消息前綴 (若單條消息以 [NO_PREFIX] 開頭或為列表，則不顯示前綴)
+prefix: "&8[&bBalancedTeam&8] &r"
+
+# -------------------------------------------------------------------
+# 通用與錯誤提示
+# -------------------------------------------------------------------
+no_permission: "&c你沒有權限執行此操作！"
+player_only: "&c此指令只能由玩家執行！"
+reload_success: "&a插件配置及語言檔案已成功重載！"
+database_error: "&c資料庫操作失敗，請聯繫管理員查看後台日誌！"
+cooldown: "&c該操作冷卻中，請在 &e{TIME} &c秒後再試！"
+unknown_command: "&c未知子指令，請輸入 &e/team help &c查看幫助。"
+target_player_not_found: "&c未找到在線玩家: &e{PLAYER}"
+
+# -------------------------------------------------------------------
+# 團隊創建與解散
+# -------------------------------------------------------------------
+usage_create: "&c使用方法: /team create <團隊名稱>"
+team_create_success: "&a恭喜！團隊 &e{TEAM} &a創建成功！你是該團隊的隊長。"
+team_create_invalid_name: "&c團隊名稱不符合規範！必須為 {MIN}-{MAX} 個字元，且僅支持中英文字母、數字與底線。"
+team_create_already_exists: "&c名為 &e{TEAM} &c的團隊已經存在，請更換名稱！"
+team_already_in_team: "&c你已經在一個團隊中了，必須先離開當前團隊！"
+team_not_in_team: "&c你當前尚未加入任何團隊！"
+team_not_found: "&c未找到名為 &e{TEAM} &c的團隊！"
+team_not_leader: "&c只有團隊隊長才能執行此操作！"
+team_not_officer_or_leader: "&c只有團隊隊長或管理員才能執行此操作！"
+team_disband_success: "&e團隊已成功解散！"
+team_disband_broadcast: "&c團隊 &e{TEAM} &c已被隊長解散！"
+
+# -------------------------------------------------------------------
+# 邀請與加入
+# -------------------------------------------------------------------
+usage_invite: "&c使用方法: /team invite <玩家名>"
+usage_accept: "&c使用方法: /team accept <團隊名稱>"
+usage_reject: "&c使用方法: /team reject <團隊名稱>"
+team_invite_sent: "&a已向玩家 &e{PLAYER} &a發送入隊邀請！"
+team_invite_received: "&b團隊 &e{TEAM} &b邀請你加入！輸入 &a/team accept {TEAM} &b接受，或 &c/team reject {TEAM} &b拒絕 (60秒內有效)。"
+team_invite_already_sent: "&c你已經向該玩家發送過邀請了，請等待對方回應！"
+team_invite_no_pending: "&c你沒有收到來自團隊 &e{TEAM} &c的邀請或邀請已過期！"
+team_invite_rejected: "&e你已拒絕來自團隊 &e{TEAM} &c的邀請。"
+team_invite_target_in_team: "&c該玩家已經在一個團隊中了！"
+team_invite_target_in_your_team: "&c該玩家已經在你的團隊中了！"
+team_invite_max_members: "&c團隊成員人數已達到上限 ({MAX} 人)！"
+team_join_success: "&a你成功加入了團隊 &e{TEAM} &a！"
+team_join_broadcast: "&a玩家 &e{PLAYER} &a加入了團隊！"
+team_apply_sent: "&a已成功向團隊 &e{TEAM} &a發送入隊申請！請等待隊長或管理員審理。"
+team_apply_received: "&6收到來自玩家 &e{PLAYER} &6的入隊申請！請在 &e/team &6-> 消息中心中審理。"
+team_apply_already_sent: "&c你已經向團隊 &e{TEAM} &c發送過入隊申請了，請等待審理！"
+team_apply_target_in_team: "&c申請人 &e{PLAYER} &c已經加入了其他團隊！"
+team_apply_rejected: "&e已拒絕玩家 &f{PLAYER} &e的入隊申請。"
+team_apply_rejected_notify: "&c你向團隊 &e{TEAM} &c發送的入隊申請已被管理員拒絕。"
+team_apply_accepted_notify: "&a🎉 恭喜！你向團隊 &e{TEAM} &a發送的入隊申請已被批准！你已成功加入團隊。"
+
+# -------------------------------------------------------------------
+# 退出與踢出
+# -------------------------------------------------------------------
+usage_kick: "&c使用方法: /team kick <玩家名>"
+usage_promote: "&c使用方法: /team promote <玩家名>"
+usage_demote: "&c使用方法: /team demote <玩家名>"
+usage_transfer: "&c使用方法: /team transfer <玩家名>"
+team_leave_leader_cant_leave: "&c隊長無法直接離開團隊！請轉讓隊長職位或使用 &e/team disband &c解散團隊。"
+team_leave_success: "&e你已退出了團隊 &e{TEAM}&e。"
+team_leave_broadcast: "&e玩家 &e{PLAYER} &e離開了團隊。"
+team_kick_self: "&c你不能踢出自己！"
+team_kick_leader: "&c你不能踢出隊長！"
+team_kick_success: "&a已將玩家 &e{PLAYER} &a踢出團隊！"
+team_kick_target_msg: "&c你已被移出團隊 &e{TEAM}&c！"
+team_kick_broadcast: "&c玩家 &e{PLAYER} &c已被移出團隊。"
+team_player_not_in_your_team: "&c該玩家不在你的團隊中！"
+team_member_cant_manage_self: "&c你不能對自己執行此管理操作！"
+team_member_already_officer: "&c該玩家已經是團隊管理員了，無法繼續提升！"
+team_member_already_member: "&c該玩家已經是普通隊員了，無法繼續降級！"
+team_member_promote_success: "&a已將成員 &e{PLAYER} &a提升為團隊管理員！"
+team_member_promoted_msg: "&a恭喜！你已被隊長提升為團隊管理員！"
+team_member_promote_broadcast: "&a成員 &e{PLAYER} &a已被隊長提升為團隊管理員！"
+team_member_demote_success: "&e已將管理員 &f{PLAYER} &e降職為普通隊員。"
+team_member_demoted_msg: "&c你的團隊職位已被隊長調整為普通隊員。"
+team_member_demote_broadcast: "&e管理員 &f{PLAYER} &e已被隊長降職為普通隊員。"
+team_transfer_success: "&a你已成功將隊長職位轉讓給 &e{PLAYER}&a！"
+team_transfer_target_msg: "&6🎉 恭喜！你已成為團隊 &e{TEAM} &6的新隊長！"
+team_transfer_broadcast: "&6隊長已將團隊轉讓給 &e{PLAYER} &6，他現在是新的團隊隊長！"
+
+# -------------------------------------------------------------------
+# 友傷系統
+# -------------------------------------------------------------------
+team_ff_status: "&7當前團隊友傷狀態: {STATUS}"
+team_ff_toggle_on: "&c團隊友傷已開啟！隊員之間可以互相攻擊。"
+team_ff_toggle_off: "&a團隊友傷已關閉！隊員之間無法互相傷害。"
+team_ff_toggle_disabled: "&c伺服器管理員已鎖定隊友傷害功能，隊伍成員間傷害強制開啟，禁止修改！"
+team_ff_protected: "&c友傷保護：你無法攻擊同隊成員 &e{PLAYER}&c！"
+ally_ff_protected: "&c同盟保護：你無法攻擊盟友成員 &e{PLAYER}&c！"
+
+# -------------------------------------------------------------------
+# 同盟機制 (雙向同意)
+# -------------------------------------------------------------------
+usage_ally: "&c使用方法: /team ally <add|accept|remove> <隊伍名>"
+ally_specify_target: "&c請輸入目標團隊名稱！"
+ally_unknown_sub: "&c未知結盟指令，支持: add, accept, remove"
+ally_request_sent: "&a已向團隊 &e{TEAM} &a發送同盟申請！等待對方隊長同意..."
+ally_request_received: "&6收到來自團隊 &e{TEAM} &6的同盟申請！隊長請輸入 &a/team ally accept {TEAM} &6同意結盟。"
+ally_already_requested: "&c你已經向該團隊發送過同盟申請了，請勿重複發送！"
+ally_max_reached: "&c你的團隊同盟數量已達到上限 ({MAX})！"
+ally_target_max_reached: "&c目標團隊的同盟數量已達到上限！"
+ally_cant_ally_self: "&c你不能與自己的團隊結盟！"
+ally_already_allied: "&c你的團隊已經與 &e{TEAM} &c是同盟關係了！"
+ally_established: "&6【同盟締結】 你的團隊與 &e{TEAM} &6已正式成為盟友！"
+ally_established_broadcast: "&6團隊 &e{TEAM1} &6與 &e{TEAM2} &6正式締結了同盟！"
+ally_no_pending_request: "&c未找到來自團隊 &e{TEAM} &c的結盟申請或申請已失效！"
+ally_remove_success: "&c已解除與團隊 &e{TEAM} &c的同盟關係！"
+ally_remove_broadcast: "&c團隊 &e{TEAM1} &c與 &e{TEAM2} &c解除了同盟關係！"
+ally_not_allied: "&c你的團隊與 &e{TEAM} &c並不是同盟關係！"
+
+# -------------------------------------------------------------------
+# 敵對機制
+# -------------------------------------------------------------------
+usage_enemy: "&c使用方法: /team enemy <add|remove> <隊伍名>"
+enemy_specify_target: "&c請輸入目標團隊名稱！"
+enemy_add_self: "&c你不能將自己的團隊設為敵對！"
+enemy_cant_enemy_ally: "&c該團隊是你的盟友，請先解除同盟關係再設為敵對！"
+enemy_already_enemy: "&c你的團隊已經與 &e{TEAM} &c處於敵對狀態了！"
+enemy_max_reached: "&c敵對隊伍數量已達到上限 ({MAX})！"
+enemy_add_success: "&c【宣戰】 你的團隊已將團隊 &e{TEAM} &c設為敵對！"
+enemy_add_broadcast: "&c團隊 &e{TEAM1} &c向團隊 &e{TEAM2} &c宣戰！"
+enemy_declared_notify: "&c⚔ 團隊 &e{TEAM} &c已向你的團隊宣戰！已進入敵對狀態。"
+enemy_remove_success: "&a已取消對團隊 &e{TEAM} &a的敵對標記！"
+enemy_not_enemy: "&c你的團隊並沒有將 &e{TEAM} &c設為敵對！"
+
+# -------------------------------------------------------------------
+# 聊天與監聽系統
+# -------------------------------------------------------------------
+chat_team_toggle_on: "&a已切換至團隊聊天模式！直接發送訊息即可在隊內交流。"
+chat_team_toggle_off: "&7已切回公共聊天模式。"
+spy_toggle_on: "&a[監聽] 管理員團隊聊天監聽已開啟！"
+spy_toggle_off: "&c[監聽] 管理員團隊聊天監聽已關閉！"
+
+# -------------------------------------------------------------------
+# 管理員指令提示
+# -------------------------------------------------------------------
+admin_usage_disband: "&c使用方法: /teamadmin disband <團隊名稱>"
+admin_team_not_found: "&c未找到團隊: &e{TEAM}"
+admin_force_disband_success: "&a已強制解散團隊: &e{TEAM}"
+
+# -------------------------------------------------------------------
+# 職位與狀態顯示
+# -------------------------------------------------------------------
+role:
+  leader: "&c隊長"
+  officer: "&6管理員"
+  member: "&7隊員"
+  unknown: "&7成員"
+
+status:
+  on: "&c開啟"
+  off: "&a關閉"
+  online: "&a● 在線"
+  offline: "&7○ 離線"
+  member_online: "&a●"
+  member_offline: "&7○"
+  none_ally: "&7(暫無同盟團隊)"
+  none_enemy: "&7(暫無敵對團隊)"
+
+# -------------------------------------------------------------------
+# 幫助選單 (列表格式，支持自由增刪和修改排版)
+# -------------------------------------------------------------------
+help:
+  player:
+    - "&b======= &8[&e BalancedTeam 團隊指令幫助 &8] &b======="
+    - "&e/team &7- 打開團隊控制面板或隊伍列表"
+    - "&e/team list [頁碼] &7- 查看全服團隊列表 (GUI)"
+    - "&e/team menu &7- 打開個人團隊管理面板 (GUI)"
+    - "&e/team members &7- 打開團隊成員管理面板 (GUI)"
+    - "&e/team create <名稱> &7- 創建一個新的團隊"
+    - "&e/team disband &7- 解散當前團隊 (僅隊長)"
+    - "&e/team invite <玩家> &7- 邀請玩家加入團隊"
+    - "&e/team accept <隊伍名> &7- 接受入隊邀請"
+    - "&e/team reject <隊伍名> &7- 拒絕入隊邀請"
+    - "&e/team leave &7- 退出當前團隊"
+    - "&e/team kick <玩家> &7- 將成員踢出團隊"
+    - "&e/team promote <玩家> &7- 提升成員為管理員 (僅隊長)"
+    - "&e/team demote <玩家> &7- 降級管理員為隊員 (僅隊长)"
+    - "&e/team transfer <玩家> &7- 轉讓隊長職位 (僅隊長)"
+    - "&e/team chat [訊息] &7- 發送團隊聊天或切換聊天模式"
+    - "&e/team ff [on/off] &7- 查看或切換團隊友傷"
+    - "&e/team ally add/accept/remove <隊伍> &7- 同盟管理 (需雙方同意)"
+    - "&e/team enemy add/remove <隊伍> &7- 敵對管理"
+    - "&e/team info [隊伍名] &7- 查看團隊詳細資訊"
+    - "&b========================================"
+
+  admin:
+    - "&c======= &8[&e BalancedTeam 管理員指令 &8] &c======="
+    - "&e/teamadmin spy &7- 開啟/關閉團隊聊天監聽"
+    - "&e/teamadmin disband <隊伍名> &7- 強制解散指定團隊"
+    - "&e/teamadmin reload &7- 重載插件配置文件與語言包"
+    - "&c=========================================="
+
+# -------------------------------------------------------------------
+# 團隊資訊 (/team info) 輸出格式
+# -------------------------------------------------------------------
+team_info:
+  - "&b======= &e團隊資訊: {TEAM} &b======="
+  - "&7隊長: &f{LEADER}"
+  - "&7成員人數: &a{COUNT}人"
+  - "&7友傷狀態: {FF}"
+  - "&7同盟數量: &6{ALLIES} &7支隊伍"
+  - "&7敵對數量: &c{ENEMIES} &7支隊伍"
+  - "&7創建時間: &8{DATE}"
+  - "&b========================================"
+
+# -------------------------------------------------------------------
+# GUI 介面文本配置
+# -------------------------------------------------------------------
+gui:
+  # 1. /team list 隊伍列表介面
+  list:
+    title: "&8團隊列表 (第 {PAGE}/{TOTAL_PAGE} 頁)"
+    team_item_name: "&e⚔ {TEAM}"
+    team_item_lore:
+      - "&7隊長: &f{LEADER}"
+      - "&7成員: &a{ONLINE}&7/&f{TOTAL} &8(在線/總數)"
+      - "&7友傷: {FF}"
+      - "&7盟友數量: &6{ALLIES}"
+      - "&7敵對數量: &c{ENEMIES}"
+      - "&7創建時間: &8{DATE}"
+      - ""
+      - "&e▶ 點擊查看該團隊詳細資訊"
+    prev_page: "&a« 上一頁 ({PAGE})"
+    next_page: "&a下一頁 ({PAGE}) »"
+    summary_item_name: "&e伺服器團隊概況"
+    summary_item_lore:
+      - "&7總團隊數: &b{TOTAL_TEAMS}"
+      - "&7當前頁碼: &e{PAGE} &7/ &f{TOTAL_PAGES}"
+
+  # 2. 團隊詳情介面
+  detail:
+    title: "&8團隊詳情: &b{TEAM}"
+    leader_item_name: "&c👑 團隊隊長: &f{LEADER}"
+    leader_item_lore:
+      - "&7在線狀態: {STATUS}"
+      - "&7創隊時間: &8{DATE}"
+      - "&7團隊友傷: {FF}"
+    members_item_name: "&a👥 團隊成員 (&f{COUNT}&a人)"
+    relation_item_name: "&e🤝 外交關係"
+    relation_allies_header: "&6【同盟隊伍】 ({COUNT}):"
+    relation_enemies_header: "&c【敵對隊伍】 ({COUNT}):"
+    relation_ally_prefix: "&6✦ "
+    relation_enemy_prefix: "&c⚔ "
+    back_button: "&c« 返回列表"
+    apply_button_name: "&a✉ 申請加入該團隊"
+    apply_button_lore:
+      - "&7點擊向該團隊隊長與管理員發送入隊申請"
+      - ""
+      - "&e▶ 點擊提交入隊申請"
+    applied_item_name: "&e⏳ 入隊申請審理中"
+    applied_item_lore:
+      - "&7你已向該團隊提交了入隊申請"
+      - "&7正在等待隊長或管理員審理"
+      - ""
+      - "&e▶ 請耐心等待"
+    full_item_name: "&c✖ 團隊人數已達上限"
+    full_item_lore:
+      - "&7該團隊成員人數已達到最大上限 ({MAX} 人)"
+      - "&c當前暫無法申請加入"
+
+  # 3. 個人團隊控制面板 (/team menu)
+  menu:
+    title: "&8團隊控制面板"
+    info_item_name: "&e✦ 團隊: &b{TEAM}"
+    info_item_lore:
+      - "&7我的職位: {ROLE}"
+      - "&7成員人數: &a{COUNT} &7/ &f{MAX}"
+      - "&7友傷狀態: {FF}"
+      - ""
+      - "&e▶ 點擊查看當前團隊詳情"
+    ff_item_name: "&6⚔ 團隊友傷開關"
+    ff_status_on: "&c開啟 (互相可造成傷害)"
+    ff_status_off: "&a關閉 (互相免疫傷害)"
+    ff_leader_tip: "&e▶ 點擊切換友傷狀態 (冷卻: 30秒)"
+    ff_non_leader_tip: "&c✖ 僅隊長有權修改此設置"
+    ff_disabled_tip: "&c✖ 伺服器已鎖定友傷開啟，禁止修改"
+    invite_item_name: "&a✉ 邀請成員"
+    invite_item_lore:
+      - "&7點擊打開在線玩家列表直接發送邀請"
+      - "&7支持一鍵邀請在線玩家或輸入名稱"
+      - ""
+      - "&7提示: 被邀請玩家有 60 秒時間確認。"
+      - ""
+      - "&e▶ 點擊打開玩家選擇介面"
+    disband_item_name: "&c✖ 解散團隊"
+    disband_item_lore:
+      - "&c警告: 解散將永久銷毀此團隊及其所有同盟關係！"
+      - ""
+      - "&e▶ 點擊打開解散確認介面"
+    leave_item_name: "&c🚪 離開團隊"
+    leave_item_lore:
+      - "&7點擊離開當前團隊"
+      - ""
+      - "&e▶ 點擊確認離開"
+    # 成員管理按鈕
+    members_button_name: "&a👥 成員管理"
+    members_button_lore:
+      - "&7當前成員: &a{COUNT} &7/ &f{MAX}"
+      - "&7隊長與管理員可管理成員職位與踢人"
+      - ""
+      - "&e▶ 點擊打開成員管理面板"
+    # 盟友管理按鈕
+    ally_button_name: "&a🤝 盟友管理"
+    ally_button_lore:
+      - "&7當前盟友: &a{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&e▶ 點擊管理同盟關係"
+    # 通知中心按鈕
+    notification_button_name: "&e🔔 通知中心 &7({PENDING})"
+    notification_button_lore:
+      - "&7當前無待處理的同盟申請"
+      - ""
+      - "&e▶ 點擊查看通知"
+    notification_button_lore_pending:
+      - "&6⚠ 有 &e{PENDING} &6條待處理的同盟申請！"
+      - ""
+      - "&e▶ 點擊查看並處理"
+    # 敵對管理按鈕
+    enemy_button_name: "&c⚔ 敵對管理"
+    enemy_button_lore:
+      - "&7當前敵對: &c{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&e▶ 點擊管理敵對關係"
+
+  # 4. 解散團隊確認介面
+  disband_confirm:
+    title: "&4⚠ 確認解散團隊？"
+    confirm_name: "&c✔ 確認解散"
+    confirm_lore:
+      - "&c此操作不可撤銷！"
+      - "&7團隊及全部同盟關係將被永久刪除。"
+      - ""
+      - "&c▶ 點擊確認解散團隊"
+    cancel_name: "&a✖ 取消"
+    cancel_lore:
+      - "&7點擊返回團隊控制面板"
+
+  # 退出團隊確認介面
+  leave_confirm:
+    title: "&4⚠ 確認退出團隊？"
+    confirm_name: "&c✔ 確認退出"
+    confirm_lore:
+      - "&c警告: 退出後將失去該團隊的一切成員權限！"
+      - "&7退出後將進入退隊冷卻時間。"
+      - ""
+      - "&c▶ 點擊確認離開當前團隊"
+    cancel_name: "&a✖ 取消"
+    cancel_lore:
+      - "&7點擊返回團隊控制面板"
+
+  # 5. 盟友管理介面
+  ally_manage:
+    title: "&a🤝 盟友管理 (第 {PAGE}/{TOTAL_PAGE} 頁)"
+    ally_item_name: "&a✦ 盟友: &f{TEAM}"
+    ally_item_lore:
+      - "&7成員人數: &a{COUNT} 人"
+    ally_item_lore_leader:
+      - "&7成員人數: &a{COUNT} 人"
+      - ""
+      - "&c▶ 點擊解除與該隊的同盟關係"
+    no_ally_name: "&7(暫無同盟隊伍)"
+    no_ally_lore:
+      - "&7你的團隊還沒有盟友。"
+      - "&7使用 /team ally add <隊伍名> 發送申請。"
+    add_button_name: "&a✉ 發送同盟申請"
+    add_button_lore:
+      - "&c✖ 僅隊長有權發送同盟申請"
+    add_button_lore_leader:
+      - "&7關閉此介面後在聊天框輸入:"
+      - "&f/team ally add <目標隊伍名>"
+    add_tip: "&e提示: 請在聊天框輸入 &f/team ally add <隊伍名> &e發送同盟申請！"
+    back_button: "&c« 返回控制面板"
+    prev_page: "&a« 上一頁 ({PAGE})"
+    next_page: "&a下一頁 ({PAGE}) »"
+
+  # 6. 敵對管理介面
+  enemy_manage:
+    title: "&c⚔ 敵對管理 (第 {PAGE}/{TOTAL_PAGE} 頁)"
+    enemy_item_name: "&c⚔ 敵對: &f{TEAM}"
+    enemy_item_lore:
+      - "&7成員人數: &c{COUNT} 人"
+    enemy_item_lore_leader:
+      - "&7成員人數: &c{COUNT} 人"
+      - ""
+      - "&a▶ 點擊移除對該隊的敵對標記"
+    no_enemy_name: "&7(暫無敵對隊伍)"
+    no_enemy_lore:
+      - "&7你的團隊還沒有敵對隊伍。"
+      - "&7使用 /team enemy add <隊伍名> 宣戰。"
+    add_button_name: "&c🗡 宣戰"
+    add_button_lore:
+      - "&c✖ 僅隊長有權宣戰"
+    add_button_lore_leader:
+      - "&7關閉此介面後在聊天框輸入:"
+      - "&f/team enemy add <目標隊伍名>"
+    add_tip: "&e提示: 請在聊天框輸入 &f/team enemy add <隊伍名> &e宣戰！"
+    back_button: "&c« 返回控制面板"
+    prev_page: "&a« 上一頁 ({PAGE})"
+    next_page: "&a下一頁 ({PAGE}) »"
+
+  # 7. 通知中心介面 (包含入隊邀請與同盟申請)
+  notification:
+    title: "&e🔔 消息與通知中心 &7({COUNT})"
+    # 入隊邀請
+    invite_item_name: "&a✉ 入隊邀請: &e{TEAM}"
+    invite_item_lore:
+      - "&7邀請人: &f{INVITER}"
+      - "&7團隊人數: &a{COUNT} &7/ &f{MAX}"
+      - "&7有效時間剩餘: &e{REMAINING} &7秒"
+      - ""
+      - "&a▶ 左鍵點擊接受邀請加入"
+      - "&c▶ 右鍵點擊拒絕該邀請"
+    # 同盟申請
+    request_item_name: "&6⚔ 同盟申請: &f{TEAM}"
+    request_item_lore:
+      - "&7對方成員人數: &a{COUNT} 人"
+      - ""
+      - "&7等待隊長處理..."
+    request_item_lore_leader:
+      - "&7對方成員人數: &a{COUNT} 人"
+      - ""
+      - "&a▶ 點擊接受該隊的同盟申請"
+    # 入隊申請
+    application_item_name: "&b✉ 入隊申請: &f{PLAYER}"
+    application_item_lore:
+      - "&7申請玩家: &e{PLAYER}"
+      - "&7當前本隊人數: &a{COUNT} &7/ &f{MAX}"
+      - "&7有效時間剩餘: &e{REMAINING} &7秒"
+      - ""
+      - "&a▶ 左鍵點擊: 批准入隊"
+      - "&c▶ 右鍵點擊: 拒絕申請"
+    no_request_name: "&7(暫無待處理通知)"
+    no_request_lore:
+      - "&7目前沒有任何待處理的入隊邀請或同盟申請。"
+    back_button: "&c« 返回"
+    prev_page: "&a« 上一頁 ({PAGE})"
+    next_page: "&a下一頁 ({PAGE}) »"
+
+  # 8. 未加入隊伍主選單介面 (/team 或 /team menu)
+  not_joined:
+    title: "&8團隊系統 (未加入隊伍)"
+    list_button_name: "&b📋 伺服器隊伍列表"
+    list_button_lore:
+      - "&7查看全服所有已創建的團隊"
+      - "&7了解各團隊的人數與外交關係"
+      - ""
+      - "&e▶ 點擊瀏覽團隊列表"
+    create_info_name: "&a✦ 創建屬於你的團隊"
+    create_info_lore:
+      - "&7在聊天框輸入以下指令創建新團隊:"
+      - "&f/team create <團隊名稱>"
+      - ""
+      - "&7創建後你將成為團隊隊長！"
+    notification_button_name: "&e🔔 消息與邀請 &7({COUNT})"
+    notification_button_lore:
+      - "&7當前暫無新的入隊邀請"
+      - ""
+      - "&e▶ 點擊打開消息頁面"
+    notification_button_lore_pending:
+      - "&6⚠ 你收到了 &e{COUNT} &6條入隊邀請！"
+      - ""
+      - "&e▶ 點擊查看並處理入隊邀請"
+    close_button: "&c✖ 關閉"
+
+  # 9. 邀請成員 - 在線玩家選擇介面
+  player_select:
+    title: "&8選擇要邀請的玩家 (第 {PAGE}/{TOTAL_PAGE} 頁)"
+    player_item_available_name: "&a👤 {PLAYER}"
+    player_item_available_lore:
+      - "&7狀態: &a未加入任何隊伍"
+      - ""
+      - "&a▶ 點擊直接發送入隊邀請"
+    player_item_in_team_name: "&7👤 {PLAYER}"
+    player_item_in_team_lore:
+      - "&7狀態: &c已加入團隊: &e{TEAM}"
+      - "&c✖ 該玩家已有隊伍，無法邀請"
+    player_item_in_my_team_name: "&7👤 {PLAYER}"
+    player_item_in_my_team_lore:
+      - "&7職位: {ROLE}"
+      - "&7狀態: &e本團隊成員"
+      - "&c✖ 該玩家已在當前團隊中"
+    player_item_already_invited_name: "&e👤 {PLAYER}"
+    player_item_already_invited_lore:
+      - "&7狀態: &e已發送入隊邀請"
+      - "&7剩餘有效時間: &e{REMAINING}秒"
+      - "&6⚠ 正在等待對方回應"
+    no_players_name: "&7(暫無可邀請的在線玩家)"
+    no_players_lore:
+      - "&7當前伺服器沒有其他可邀請的在線玩家。"
+      - "&7你可以點擊下方按鈕手動輸入玩家名。"
+    manual_input_name: "&e🔍 聊天框手動輸入玩家名"
+    manual_input_lore:
+      - "&7點擊後將在聊天欄提示你輸入玩家名稱"
+      - ""
+      - "&e▶ 點擊進入手動輸入模式"
+    chat_prompt: "&b[BalancedTeam] &e請在聊天框中直接輸入要邀請的玩家名 (輸入 &ccancel &e取消輸入):"
+    chat_prompt_suggest: "&a[點此自動填入指令: /team invite <玩家名>]"
+    chat_cancel: "&7已取消邀請玩家。"
+    back_button: "&c« 返回控制面板"
+    prev_page: "&a« 上一頁 ({PAGE})"
+    next_page: "&a下一頁 ({PAGE}) »"
+
+  # 10. 團隊成員管理介面 (/team members)
+  member_manage:
+    title: "&8團隊成員管理 (第 {PAGE}/{TOTAL_PAGE} 頁)"
+    member_item_name: "{ROLE_ICON} &f{PLAYER}"
+    member_item_lore:
+      - "&7職位: {ROLE}"
+      - "&7狀態: {STATUS}"
+      - "&7入隊時間: &8{DATE}"
+    tip_self: "&7(這是你自己)"
+    tip_promote: "&a▶ 左鍵點擊: 提升為管理員"
+    tip_demote: "&e▶ 左鍵點擊: 降職為普通隊員"
+    tip_kick: "&c▶ 右鍵點擊: 踢出團隊"
+    tip_transfer: "&6▶ Shift+左鍵: 轉讓隊長職位"
+    tip_no_perm: "&c✖ 無權管理同級或更高職位成員"
+    tip_view_only: "&7(僅隊長與管理員可進行管理操作)"
+    invite_button_name: "&a✉ 邀請新成員"
+    invite_button_lore:
+      - "&7點擊直接打開在線玩家列表發送邀請"
+      - ""
+      - "&e▶ 點擊前往邀請介面"
+    back_button: "&c« 返回控制面板"
+    prev_page: "&a« 上一頁 ({PAGE})"
+    next_page: "&a下一頁 ({PAGE}) »"
+
+  # 11. 目標團隊選擇介面 (同盟申請 / 宣戰選擇)
+  team_select:
+    title_ally: "&8選擇要結盟的團隊 (第 {PAGE}/{TOTAL_PAGE} 頁)"
+    title_enemy: "&8選擇要宣戰的團隊 (第 {PAGE}/{TOTAL_PAGE} 頁)"
+    item_available_ally_name: "&a✦ 團隊: &f{TEAM}"
+    item_available_ally_lore:
+      - "&7隊長: &f{LEADER}"
+      - "&7成員人數: &a{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&a▶ 點擊發送同盟申請"
+    item_available_enemy_name: "&c⚔ 團隊: &f{TEAM}"
+    item_available_enemy_lore:
+      - "&7隊長: &f{LEADER}"
+      - "&7成員人數: &a{COUNT} &7/ &f{MAX}"
+      - ""
+      - "&c▶ 點擊向該團隊宣戰"
+    item_is_ally_name: "&6✦ 團隊: &e{TEAM} &7(已是盟友)"
+    item_is_ally_lore:
+      - "&7隊長: &f{LEADER}"
+      - "&7成員人數: &a{COUNT} &7/ &f{MAX}"
+      - "&6✦ 已經是同盟團隊"
+    item_is_enemy_name: "&c⚔ 團隊: &c{TEAM} &7(已是敵對)"
+    item_is_enemy_lore:
+      - "&7隊長: &f{LEADER}"
+      - "&7成員人數: &a{COUNT} &7/ &f{MAX}"
+      - "&c⚔ 已經是敵對團隊"
+    item_pending_name: "&e⏳ 團隊: &f{TEAM} &7(申請中)"
+    item_pending_lore:
+      - "&7隊長: &f{LEADER}"
+      - "&7成員人數: &a{COUNT} &7/ &f{MAX}"
+      - "&e⏳ 同盟申請審理中，等待對方隊長處理"
+    item_max_reached_name: "&7✖ 團隊: {TEAM} (上限)"
+    item_max_reached_lore:
+      - "&c同盟或敵對數量已達上限，暫無法操作"
+    no_teams_name: "&7(暫無其他可用團隊)"
+    no_teams_lore:
+      - "&7伺服器中暫無其他可選擇的團隊。"
+      - "&7你可以點擊下方按鈕手動輸入團隊名。"
+    manual_input_name: "&e🔍 聊天框手動輸入團隊名"
+    manual_input_lore:
+      - "&7點擊後將在聊天欄提示你輸入團隊名稱"
+      - ""
+      - "&e▶ 點擊進入手動輸入模式"
+    chat_prompt_ally: "&b[BalancedTeam] &e請在聊天框中輸入要結盟的團隊名 (輸入 &ccancel &e取消):"
+    chat_prompt_enemy: "&b[BalancedTeam] &e請在聊天框中輸入要宣戰的團隊名 (輸入 &ccancel &e取消):"
+    back_button: "&c« 返回管理"
+    prev_page: "&a« 上一頁 ({PAGE})"
+    next_page: "&a下一頁 ({PAGE}) »"
