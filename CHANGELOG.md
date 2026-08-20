@@ -1,10 +1,24 @@
-﻿# Changelog / 更新日志
+# Changelog / 更新日志
 
 所有版本的重要变更均记录于此。  
 All notable changes to this project are documented here.
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+---
+
+## [1.0.2] - 2026-08-20
+
+### 新增 / Added
+
+- **邀请有效期动态提示**：邀请接收消息中加入 `{TIMEOUT}` 占位符，显示的有效秒数直接读取 `config.yml` 中的 `invite_timeout_seconds`，不再硬编码。
+- **Dynamic invite expiry display**: The invite-received message now uses a `{TIMEOUT}` placeholder populated from `invite_timeout_seconds` in `config.yml`, replacing the previous hardcoded value.
+
+### 变更 / Changed
+
+- **邀请默认超时改为 1 小时**：`config.yml` 中 `invite_timeout_seconds` 默认值从 `60` 秒调整为 `3600` 秒（1 小时）；`ConfigManager` 的代码 fallback 同步更新。管理员可在 `config.yml` 中自由调整此值。
+- **Invite timeout default changed to 1 hour**: `invite_timeout_seconds` in `config.yml` updated from `60` to `3600` (1 hour); the Java fallback in `ConfigManager` was synchronized. Server admins can freely adjust this value in `config.yml`.
 
 ---
 
@@ -21,13 +35,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **`RelationManager.denyAllyRequest()`**: New method to deny an alliance request — removes it from memory and database without creating an alliance.
 - **拒绝通知消息**：所有三个语言文件（`zh_CN` / `zh_TW` / `en_US`）新增 `ally_request_denied`（队长侧提示）与 `ally_request_denied_notify`（申请方通知）消息键。
 - **Deny notification messages**: Added `ally_request_denied` and `ally_request_denied_notify` message keys to all three language files (`zh_CN` / `zh_TW` / `en_US`).
-- **邀请有效期动态提示**：邀请接收消息中加入 `{TIMEOUT}` 占位符，显示的有效秒数直接读取 `config.yml` 中的 `invite_timeout_seconds`，不再硬编码。
-- **Dynamic invite expiry display**: The invite-received message now uses a `{TIMEOUT}` placeholder populated from `invite_timeout_seconds` in `config.yml`, replacing the previous hardcoded value.
 
 ### 变更 / Changed
 
-- **邀请默认超时改为 1 小时**：`config.yml` 中 `invite_timeout_seconds` 默认值从 `60` 秒调整为 `3600` 秒（1 小时）；`ConfigManager` 的代码 fallback 同步更新。
-- **Invite timeout default changed to 1 hour**: `invite_timeout_seconds` in `config.yml` updated from `60` to `3600` (1 hour); the Java fallback in `ConfigManager` was synchronized accordingly.
 - **通知 GUI lore 更新**：同盟申请条目（队长视角）的 lore 提示由「点击接受」更新为「左键接受 / 右键拒绝」（适用于三个语言文件）。
 - **Notification GUI lore updated**: The ally request item lore (leader view) now reads "Left-click to accept / Right-click to deny" instead of a single "Click to accept" hint, across all three language files.
 - **README 精简**：移除冗余的配置代码块和逐行展开的指令表格，以更简洁的分组格式重写双语 README，文件行数从 359 行压缩至 159 行。
