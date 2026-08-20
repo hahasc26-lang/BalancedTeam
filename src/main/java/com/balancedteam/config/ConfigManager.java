@@ -274,7 +274,7 @@ public class ConfigManager {
     }
 
     public int getInviteTimeout() {
-        return config.getInt("balance.invite_timeout_seconds", 60);
+        return config.getInt("balance.invite_timeout_seconds", 3600);
     }
 
     public int getAllyRequestTimeout() {
