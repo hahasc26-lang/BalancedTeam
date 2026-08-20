@@ -115,6 +115,8 @@ ally_no_pending_request: "&c未找到來自團隊 &e{TEAM} &c的結盟申請或�
 ally_remove_success: "&c已解除與團隊 &e{TEAM} &c的同盟關係！"
 ally_remove_broadcast: "&c團隊 &e{TEAM1} &c與 &e{TEAM2} &c解除了同盟關係！"
 ally_not_allied: "&c你的團隊與 &e{TEAM} &c並不是同盟關係！"
+ally_request_denied: "&e已拒絕來自團隊 &f{TEAM} &e的同盟申請。"
+ally_request_denied_notify: "&c你向團隊 &e{TEAM} &c發送的同盟申請已被拒絕。"
 
 # -------------------------------------------------------------------
 # 敵對機制
@@ -428,7 +430,8 @@ gui:
     request_item_lore_leader:
       - "&7對方成員人數: &a{COUNT} 人"
       - ""
-      - "&a▶ 點擊接受該隊的同盟申請"
+      - "&a▶ 左鍵點擊接受同盟申請"
+      - "&c▶ 右鍵點擊拒絕同盟申請"
     # 入隊申請
     application_item_name: "&b✉ 入隊申請: &f{PLAYER}"
     application_item_lore:

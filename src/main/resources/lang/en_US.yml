@@ -115,6 +115,8 @@ ally_no_pending_request: "&cNo pending alliance request from team &e{TEAM} &cor 
 ally_remove_success: "&cTerminated alliance with team &e{TEAM}&c!"
 ally_remove_broadcast: "&cTeam &e{TEAM1} &cand team &e{TEAM2} &charmed/dissolved their alliance!"
 ally_not_allied: "&cYour team is not allied with &e{TEAM}&c!"
+ally_request_denied: "&eDeclined the alliance request from team &f{TEAM}&e."
+ally_request_denied_notify: "&cYour alliance request to team &e{TEAM} &chas been declined."
 
 # -------------------------------------------------------------------
 # Enemy System
@@ -428,7 +430,8 @@ gui:
     request_item_lore_leader:
       - "&7Target Members: &a{COUNT} players"
       - ""
-      - "&a▶ Click to accept alliance request"
+      - "&a▶ Left-click to accept alliance request"
+      - "&c▶ Right-click to deny alliance request"
     # Join Application
     application_item_name: "&b✉ Join Application: &f{PLAYER}"
     application_item_lore:

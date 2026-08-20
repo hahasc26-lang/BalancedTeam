@@ -208,58 +208,76 @@ public class NotificationGui {
                         .build();
                 inv.setItem(slot, item);
 
-                // 队长点击接受申请
+                // 队长点击处理申请（左键接受 / 右键拒绝）
                 if (isLeader) {
                     final Team currentMyTeam = myTeam;
                     final Team finalRequesterTeam = requesterTeam;
                     holder.setClickHandler(slot, e -> {
-                        int currentAllyCount = plugin.getRelationManager().getAllies(currentMyTeam.getId()).size();
-                        int maxAllies = plugin.getConfigManager().getMaxAllies();
-                        if (currentAllyCount >= maxAllies) {
-                            SoundUtil.playError(player);
-                            Map<String, String> msgMap = new HashMap<>();
-                            msgMap.put("MAX", String.valueOf(maxAllies));
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_max_reached", msgMap));
-                            return;
-                        }
-                        int requesterAllyCount = plugin.getRelationManager().getAllies(finalRequesterTeam.getId()).size();
-                        if (requesterAllyCount >= maxAllies) {
-                            SoundUtil.playError(player);
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_target_max_reached"));
-                            return;
-                        }
-
-                        plugin.getRelationManager().acceptAllyRequest(finalRequesterTeam.getId(), currentMyTeam.getId()).thenAccept(success -> {
-                            if (success) {
-                                SoundUtil.playSuccess(player);
-                                // 通知本队在线成员
-                                Map<String, String> msgMap = new HashMap<>();
-                                msgMap.put("TEAM", finalRequesterTeam.getName());
-                                for (UUID uuid : currentMyTeam.getMembers().keySet()) {
-                                    Player p = Bukkit.getPlayer(uuid);
-                                    if (p != null && p.isOnline()) {
-                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("ally_established", msgMap));
-                                    }
-                                }
-                                // 通知申请方在线成员
-                                for (UUID uuid : finalRequesterTeam.getMembers().keySet()) {
-                                    Player p = Bukkit.getPlayer(uuid);
-                                    if (p != null && p.isOnline()) {
-                                        Map<String, String> bMap = new HashMap<>();
-                                        bMap.put("TEAM", currentMyTeam.getName());
-                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("ally_established", bMap));
-                                    }
-                                }
-                                // 全服广播
-                                Map<String, String> broadcastMap = new HashMap<>();
-                                broadcastMap.put("TEAM1", finalRequesterTeam.getName());
-                                broadcastMap.put("TEAM2", currentMyTeam.getName());
-                                for (Player online : Bukkit.getOnlinePlayers()) {
-                                    MessageUtil.sendMessage(online, plugin.getConfigManager().getMessage("ally_established_broadcast", broadcastMap));
-                                }
-                                holder.refresh(player);
+                        if (e.isRightClick()) {
+                            // 右键拒绝
+                            plugin.getRelationManager().denyAllyRequest(finalRequesterTeam.getId(), currentMyTeam.getId());
+                            SoundUtil.playDing(player);
+                            Map<String, String> rejectMap = new HashMap<>();
+                            rejectMap.put("TEAM", finalRequesterTeam.getName());
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_request_denied", rejectMap));
+                            // 通知申请方队长（如在线）
+                            Player requesterLeader = Bukkit.getPlayer(finalRequesterTeam.getLeaderUuid());
+                            if (requesterLeader != null && requesterLeader.isOnline()) {
+                                Map<String, String> notifyMap = new HashMap<>();
+                                notifyMap.put("TEAM", currentMyTeam.getName());
+                                MessageUtil.sendMessage(requesterLeader, plugin.getConfigManager().getMessage("ally_request_denied_notify", notifyMap));
                             }
-                        });
+                            holder.refresh(player);
+                        } else {
+                            // 左键接受
+                            int currentAllyCount = plugin.getRelationManager().getAllies(currentMyTeam.getId()).size();
+                            int maxAllies = plugin.getConfigManager().getMaxAllies();
+                            if (currentAllyCount >= maxAllies) {
+                                SoundUtil.playError(player);
+                                Map<String, String> msgMap = new HashMap<>();
+                                msgMap.put("MAX", String.valueOf(maxAllies));
+                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_max_reached", msgMap));
+                                return;
+                            }
+                            int requesterAllyCount = plugin.getRelationManager().getAllies(finalRequesterTeam.getId()).size();
+                            if (requesterAllyCount >= maxAllies) {
+                                SoundUtil.playError(player);
+                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_target_max_reached"));
+                                return;
+                            }
+
+                            plugin.getRelationManager().acceptAllyRequest(finalRequesterTeam.getId(), currentMyTeam.getId()).thenAccept(success -> {
+                                if (success) {
+                                    SoundUtil.playSuccess(player);
+                                    // 通知本队在线成员
+                                    Map<String, String> msgMap = new HashMap<>();
+                                    msgMap.put("TEAM", finalRequesterTeam.getName());
+                                    for (UUID uuid : currentMyTeam.getMembers().keySet()) {
+                                        Player p = Bukkit.getPlayer(uuid);
+                                        if (p != null && p.isOnline()) {
+                                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("ally_established", msgMap));
+                                        }
+                                    }
+                                    // 通知申请方在线成员
+                                    for (UUID uuid : finalRequesterTeam.getMembers().keySet()) {
+                                        Player p = Bukkit.getPlayer(uuid);
+                                        if (p != null && p.isOnline()) {
+                                            Map<String, String> bMap = new HashMap<>();
+                                            bMap.put("TEAM", currentMyTeam.getName());
+                                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("ally_established", bMap));
+                                        }
+                                    }
+                                    // 全服广播
+                                    Map<String, String> broadcastMap = new HashMap<>();
+                                    broadcastMap.put("TEAM1", finalRequesterTeam.getName());
+                                    broadcastMap.put("TEAM2", currentMyTeam.getName());
+                                    for (Player online : Bukkit.getOnlinePlayers()) {
+                                        MessageUtil.sendMessage(online, plugin.getConfigManager().getMessage("ally_established_broadcast", broadcastMap));
+                                    }
+                                    holder.refresh(player);
+                                }
+                            });
+                        }
                     });
                 }
             } else if (entry.type == NotificationType.JOIN_APPLICATION) {

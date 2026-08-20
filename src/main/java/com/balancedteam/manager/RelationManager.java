@@ -122,6 +122,22 @@ public class RelationManager {
     }
 
     /**
+     * 拒绝结盟申请（从内存与数据库中删除，不建立关系）
+     */
+    public void denyAllyRequest(int requesterTeamId, int acceptingTeamId) {
+        Map<Integer, Long> map = pendingAllyRequests.get(acceptingTeamId);
+        if (map != null) {
+            map.remove(requesterTeamId);
+            if (map.isEmpty()) {
+                pendingAllyRequests.remove(acceptingTeamId);
+            }
+        }
+        if (allyRequestDao != null) {
+            allyRequestDao.deleteRequest(requesterTeamId, acceptingTeamId);
+        }
+    }
+
+    /**
      * 解除同盟关系
      */
     public CompletableFuture<Boolean> removeAlly(int teamId1, int teamId2) {
