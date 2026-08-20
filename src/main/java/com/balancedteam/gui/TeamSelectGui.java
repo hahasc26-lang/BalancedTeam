@@ -36,7 +36,7 @@ public class TeamSelectGui {
     public static void open(BalancedTeamPlugin plugin, Player player, SelectMode mode, int page) {
         Team myTeam = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (myTeam == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             return;
         }
 
@@ -64,7 +64,7 @@ public class TeamSelectGui {
         titleMap.put("PAGE", String.valueOf(currentPage));
         titleMap.put("TOTAL_PAGE", String.valueOf(totalPages));
         String titleKey = (mode == SelectMode.ALLY) ? GuiConfigKeys.TEAM_SELECT_TITLE_ALLY : GuiConfigKeys.TEAM_SELECT_TITLE_ENEMY;
-        String title = plugin.getConfigManager().getRawMessage(titleKey, titleMap);
+        String title = plugin.getConfigManager().getRawMessage(player, titleKey, titleMap);
 
         GuiHolder holder = new GuiHolder();
         Inventory inv = Bukkit.createInventory(holder, 54, MessageUtil.color(title));
@@ -97,50 +97,50 @@ public class TeamSelectGui {
                 // ==================== 同盟申请模式 ====================
                 if (isAlly) {
                     // 已是盟友
-                    String name = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_ITEM_IS_ALLY_NAME, itemMap);
-                    List<String> lore = plugin.getConfigManager().getMessageList(GuiConfigKeys.TEAM_SELECT_ITEM_IS_ALLY_LORE, itemMap);
+                    String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ALLY_NAME, itemMap);
+                    List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ALLY_LORE, itemMap);
                     item = new ItemBuilder(Material.EMERALD_BLOCK).name(name).lore(lore).build();
                     holder.setClickHandler(slot, e -> {
                         SoundUtil.playError(player);
                         Map<String, String> m = new HashMap<>();
                         m.put("TEAM", targetTeam.getName());
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_already_allied", m));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_already_allied", m));
                     });
                 } else if (isEnemy) {
                     // 是敌对队伍，不可结盟
-                    String name = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_NAME, itemMap);
-                    List<String> lore = plugin.getConfigManager().getMessageList(GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_LORE, itemMap);
+                    String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_NAME, itemMap);
+                    List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_LORE, itemMap);
                     item = new ItemBuilder(Material.REDSTONE_BLOCK).name(name).lore(lore).build();
                     holder.setClickHandler(slot, e -> {
                         SoundUtil.playError(player);
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_cant_enemy_ally"));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_cant_enemy_ally"));
                     });
                 } else if (hasPendingRequest) {
                     // 已发送结盟申请待审理中
-                    String name = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_ITEM_PENDING_NAME, itemMap);
-                    List<String> lore = plugin.getConfigManager().getMessageList(GuiConfigKeys.TEAM_SELECT_ITEM_PENDING_LORE, itemMap);
+                    String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_PENDING_NAME, itemMap);
+                    List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_ITEM_PENDING_LORE, itemMap);
                     item = new ItemBuilder(Material.CLOCK).name(name).lore(lore).build();
                     holder.setClickHandler(slot, e -> {
                         SoundUtil.playError(player);
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_already_requested"));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_already_requested"));
                     });
                 } else if (plugin.getRelationManager().getAllies(myTeam.getId()).size() >= plugin.getConfigManager().getMaxAllies()) {
                     // 本队盟友已达上限
                     Map<String, String> maxMap = new HashMap<>(itemMap);
                     maxMap.put("MAX_ALLY", String.valueOf(plugin.getConfigManager().getMaxAllies()));
-                    String name = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_ITEM_MAX_REACHED_NAME, maxMap);
-                    List<String> lore = plugin.getConfigManager().getMessageList(GuiConfigKeys.TEAM_SELECT_ITEM_MAX_REACHED_LORE, maxMap);
+                    String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_MAX_REACHED_NAME, maxMap);
+                    List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_ITEM_MAX_REACHED_LORE, maxMap);
                     item = new ItemBuilder(Material.BARRIER).name(name).lore(lore).build();
                     holder.setClickHandler(slot, e -> {
                         SoundUtil.playError(player);
                         Map<String, String> m = new HashMap<>();
                         m.put("MAX", String.valueOf(plugin.getConfigManager().getMaxAllies()));
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_max_reached", m));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_max_reached", m));
                     });
                 } else {
                     // 可发送同盟申请
-                    String name = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_ITEM_AVAILABLE_ALLY_NAME, itemMap);
-                    List<String> lore = plugin.getConfigManager().getMessageList(GuiConfigKeys.TEAM_SELECT_ITEM_AVAILABLE_ALLY_LORE, itemMap);
+                    String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_AVAILABLE_ALLY_NAME, itemMap);
+                    List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_ITEM_AVAILABLE_ALLY_LORE, itemMap);
                     item = new ItemBuilder(Material.PLAYER_HEAD)
                             .skullOwner(targetTeam.getLeaderUuid())
                             .name(name)
@@ -155,41 +155,41 @@ public class TeamSelectGui {
                 // ==================== 宣战模式 ====================
                 if (isEnemy) {
                     // 已经是敌对团队
-                    String name = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_NAME, itemMap);
-                    List<String> lore = plugin.getConfigManager().getMessageList(GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_LORE, itemMap);
+                    String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_NAME, itemMap);
+                    List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_LORE, itemMap);
                     item = new ItemBuilder(Material.REDSTONE_BLOCK).name(name).lore(lore).build();
                     holder.setClickHandler(slot, e -> {
                         SoundUtil.playError(player);
                         Map<String, String> m = new HashMap<>();
                         m.put("TEAM", targetTeam.getName());
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_already_enemy", m));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_already_enemy", m));
                     });
                 } else if (isAlly) {
                     // 是盟友团队，不可直接宣战
-                    String name = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_ITEM_IS_ALLY_NAME, itemMap);
-                    List<String> lore = plugin.getConfigManager().getMessageList(GuiConfigKeys.TEAM_SELECT_ITEM_IS_ALLY_LORE, itemMap);
+                    String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ALLY_NAME, itemMap);
+                    List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ALLY_LORE, itemMap);
                     item = new ItemBuilder(Material.EMERALD_BLOCK).name(name).lore(lore).build();
                     holder.setClickHandler(slot, e -> {
                         SoundUtil.playError(player);
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_cant_enemy_ally"));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_cant_enemy_ally"));
                     });
                 } else if (plugin.getRelationManager().getEnemies(myTeam.getId()).size() >= plugin.getConfigManager().getMaxEnemies()) {
                     // 敌对数量已达上限
                     Map<String, String> maxMap = new HashMap<>(itemMap);
                     maxMap.put("MAX_ENEMY", String.valueOf(plugin.getConfigManager().getMaxEnemies()));
-                    String name = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_ITEM_MAX_REACHED_NAME, maxMap);
-                    List<String> lore = plugin.getConfigManager().getMessageList(GuiConfigKeys.TEAM_SELECT_ITEM_MAX_REACHED_LORE, maxMap);
+                    String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_MAX_REACHED_NAME, maxMap);
+                    List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_ITEM_MAX_REACHED_LORE, maxMap);
                     item = new ItemBuilder(Material.BARRIER).name(name).lore(lore).build();
                     holder.setClickHandler(slot, e -> {
                         SoundUtil.playError(player);
                         Map<String, String> m = new HashMap<>();
                         m.put("MAX", String.valueOf(plugin.getConfigManager().getMaxEnemies()));
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_max_reached", m));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_max_reached", m));
                     });
                 } else {
                     // 可宣战
-                    String name = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_ITEM_AVAILABLE_ENEMY_NAME, itemMap);
-                    List<String> lore = plugin.getConfigManager().getMessageList(GuiConfigKeys.TEAM_SELECT_ITEM_AVAILABLE_ENEMY_LORE, itemMap);
+                    String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_AVAILABLE_ENEMY_NAME, itemMap);
+                    List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_ITEM_AVAILABLE_ENEMY_LORE, itemMap);
                     item = new ItemBuilder(Material.PLAYER_HEAD)
                             .skullOwner(targetTeam.getLeaderUuid())
                             .name(name)
@@ -207,8 +207,8 @@ public class TeamSelectGui {
 
         // 若全服无其他团队，显示占位提示 (槽位 22)
         if (targetTeams.isEmpty()) {
-            String emptyName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_NO_TEAMS_NAME);
-            List<String> emptyLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.TEAM_SELECT_NO_TEAMS_LORE, Collections.emptyMap());
+            String emptyName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_NO_TEAMS_NAME);
+            List<String> emptyLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_NO_TEAMS_LORE, Collections.emptyMap());
             PagedGuiHelper.setupEmptyPlaceholder(inv, 22, Material.PAPER, emptyName, emptyLore);
         }
 
@@ -219,20 +219,20 @@ public class TeamSelectGui {
         if (currentPage > 1) {
             Map<String, String> prevMap = new HashMap<>();
             prevMap.put("PAGE", String.valueOf(currentPage - 1));
-            String prevName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_PREV_PAGE, prevMap);
+            String prevName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_PREV_PAGE, prevMap);
             PagedGuiHelper.setupPrevButton(holder, inv, 45, player, currentPage, prevName, () -> open(plugin, player, mode, currentPage - 1));
         }
 
         // 手动输入团队名按钮 (槽位 48)
-        String manualName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_MANUAL_INPUT_NAME);
-        List<String> manualLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.TEAM_SELECT_MANUAL_INPUT_LORE, Collections.emptyMap());
+        String manualName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_MANUAL_INPUT_NAME);
+        List<String> manualLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_MANUAL_INPUT_LORE, Collections.emptyMap());
         ItemStack manualItem = new ItemBuilder(Material.SPYGLASS).name(manualName).lore(manualLore).build();
         inv.setItem(48, manualItem);
         holder.setClickHandler(48, e -> {
             SoundUtil.playClick(player);
             player.closeInventory();
             String promptKey = (mode == SelectMode.ALLY) ? GuiConfigKeys.TEAM_SELECT_CHAT_PROMPT_ALLY : GuiConfigKeys.TEAM_SELECT_CHAT_PROMPT_ENEMY;
-            String prompt = plugin.getConfigManager().getRawMessage(promptKey);
+            String prompt = plugin.getConfigManager().getRawMessage(player, promptKey);
             plugin.getChatInputManager().requestInput(player, prompt, targetTeamName -> {
                 if (mode == SelectMode.ALLY) {
                     executeAllyRequestByName(plugin, player, myTeam, targetTeamName);
@@ -249,7 +249,7 @@ public class TeamSelectGui {
         });
 
         // 返回按钮 (槽位 49)
-        String backName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_BACK_BUTTON);
+        String backName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_BACK_BUTTON);
         PagedGuiHelper.setupBackButton(holder, inv, 49, player, backName, () -> {
             if (mode == SelectMode.ALLY) {
                 AllyManageGui.open(plugin, player, 1);
@@ -262,7 +262,7 @@ public class TeamSelectGui {
         if (currentPage < totalPages) {
             Map<String, String> nextMap = new HashMap<>();
             nextMap.put("PAGE", String.valueOf(currentPage + 1));
-            String nextName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.TEAM_SELECT_NEXT_PAGE, nextMap);
+            String nextName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_NEXT_PAGE, nextMap);
             PagedGuiHelper.setupNextButton(holder, inv, 53, player, currentPage, totalPages, nextName, () -> open(plugin, player, mode, currentPage + 1));
         }
 
@@ -276,7 +276,7 @@ public class TeamSelectGui {
         if (targetTeam == null) return;
 
         if (myTeam.getId() == targetTeam.getId()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_cant_ally_self"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_cant_ally_self"));
             SoundUtil.playError(player);
             return;
         }
@@ -284,13 +284,13 @@ public class TeamSelectGui {
         if (plugin.getRelationManager().isAlly(myTeam.getId(), targetTeam.getId())) {
             Map<String, String> map = new HashMap<>();
             map.put("TEAM", targetTeam.getName());
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_already_allied", map));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_already_allied", map));
             SoundUtil.playError(player);
             return;
         }
 
         if (plugin.getRelationManager().isEnemy(myTeam.getId(), targetTeam.getId())) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_cant_enemy_ally"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_cant_enemy_ally"));
             SoundUtil.playError(player);
             return;
         }
@@ -298,19 +298,19 @@ public class TeamSelectGui {
         if (plugin.getRelationManager().getAllies(myTeam.getId()).size() >= plugin.getConfigManager().getMaxAllies()) {
             Map<String, String> map = new HashMap<>();
             map.put("MAX", String.valueOf(plugin.getConfigManager().getMaxAllies()));
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_max_reached", map));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_max_reached", map));
             SoundUtil.playError(player);
             return;
         }
 
         if (plugin.getRelationManager().getAllies(targetTeam.getId()).size() >= plugin.getConfigManager().getMaxAllies()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_target_max_reached"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_target_max_reached"));
             SoundUtil.playError(player);
             return;
         }
 
         if (plugin.getRelationManager().hasPendingAllyRequest(myTeam.getId(), targetTeam.getId())) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_already_requested"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_already_requested"));
             SoundUtil.playError(player);
             return;
         }
@@ -320,14 +320,14 @@ public class TeamSelectGui {
 
         Map<String, String> map = new HashMap<>();
         map.put("TEAM", targetTeam.getName());
-        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_request_sent", map));
+        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_request_sent", map));
         SoundUtil.playSuccess(player);
 
         Player targetLeader = Bukkit.getPlayer(targetTeam.getLeaderUuid());
         if (targetLeader != null && targetLeader.isOnline()) {
             Map<String, String> reqMap = new HashMap<>();
             reqMap.put("TEAM", myTeam.getName());
-            MessageUtil.sendMessage(targetLeader, plugin.getConfigManager().getMessage("ally_request_received", reqMap));
+            MessageUtil.sendMessage(targetLeader, plugin.getConfigManager().getMessage(targetLeader, "ally_request_received", reqMap));
             SoundUtil.playDing(targetLeader);
         }
     }
@@ -342,7 +342,7 @@ public class TeamSelectGui {
         if (targetTeam == null) {
             Map<String, String> map = new HashMap<>();
             map.put("TEAM", cleanName);
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_found", map));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_found", map));
             SoundUtil.playError(player);
             return;
         }
@@ -356,13 +356,13 @@ public class TeamSelectGui {
         if (targetTeam == null) return;
 
         if (myTeam.getId() == targetTeam.getId()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_add_self"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_add_self"));
             SoundUtil.playError(player);
             return;
         }
 
         if (plugin.getRelationManager().isAlly(myTeam.getId(), targetTeam.getId())) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_cant_enemy_ally"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_cant_enemy_ally"));
             SoundUtil.playError(player);
             return;
         }
@@ -370,7 +370,7 @@ public class TeamSelectGui {
         if (plugin.getRelationManager().isEnemy(myTeam.getId(), targetTeam.getId())) {
             Map<String, String> map = new HashMap<>();
             map.put("TEAM", targetTeam.getName());
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_already_enemy", map));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_already_enemy", map));
             SoundUtil.playError(player);
             return;
         }
@@ -378,7 +378,7 @@ public class TeamSelectGui {
         if (plugin.getRelationManager().getEnemies(myTeam.getId()).size() >= plugin.getConfigManager().getMaxEnemies()) {
             Map<String, String> map = new HashMap<>();
             map.put("MAX", String.valueOf(plugin.getConfigManager().getMaxEnemies()));
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_max_reached", map));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_max_reached", map));
             SoundUtil.playError(player);
             return;
         }
@@ -388,7 +388,7 @@ public class TeamSelectGui {
                 SoundUtil.playSuccess(player);
                 Map<String, String> map = new HashMap<>();
                 map.put("TEAM", targetTeam.getName());
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_add_success", map));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_add_success", map));
 
                 // 向目标团队在线成员广播宣战提示
                 for (UUID u : targetTeam.getMembers().keySet()) {
@@ -397,12 +397,12 @@ public class TeamSelectGui {
                         SoundUtil.playWarning(p);
                         Map<String, String> enemyNotify = new HashMap<>();
                         enemyNotify.put("TEAM", myTeam.getName());
-                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("enemy_declared_notify", enemyNotify));
+                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "enemy_declared_notify", enemyNotify));
                     }
                 }
             } else {
                 SoundUtil.playError(player);
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("database_error"));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "database_error"));
             }
         });
     }
@@ -417,7 +417,7 @@ public class TeamSelectGui {
         if (targetTeam == null) {
             Map<String, String> map = new HashMap<>();
             map.put("TEAM", cleanName);
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_found", map));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_found", map));
             SoundUtil.playError(player);
             return;
         }

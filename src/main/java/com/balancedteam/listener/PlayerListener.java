@@ -1,16 +1,18 @@
 package com.balancedteam.listener;
 
 import com.balancedteam.BalancedTeamPlugin;
+import com.balancedteam.manager.LanguageManager;
 import com.balancedteam.model.Team;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
- * 玩家行为与聊天监听器
+ * 玩家行为、登录与聊天监听器
  * 采用 Bukkit / Spigot 通用标准事件，兼容所有服务端
  */
 public class PlayerListener implements Listener {
@@ -19,6 +21,22 @@ public class PlayerListener implements Listener {
 
     public PlayerListener(BalancedTeamPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        LanguageManager langMgr = plugin.getLanguageManager();
+        if (langMgr != null) {
+            String clientLocale = "unknown";
+            try {
+                clientLocale = player.getLocale();
+            } catch (Throwable ignored) {}
+            String effectiveCode = langMgr.getEffectiveLanguageCode(player);
+            plugin.getLogger().info("[Lang] 玩家 " + player.getName() + " 加入，客户端 Locale: " 
+                    + clientLocale + "，匹配生效语言: " + langMgr.getCanonicalCode(effectiveCode) 
+                    + " (" + langMgr.getDisplayName(effectiveCode) + ")");
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

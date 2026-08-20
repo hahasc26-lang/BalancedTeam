@@ -32,10 +32,10 @@ public class TeamMenuGui {
         TeamMember myMember = team.getMember(player.getUniqueId());
         boolean isLeader = (myMember != null && myMember.isLeader());
         boolean isOfficerOrLeader = (myMember != null && (myMember.isLeader() || myMember.getRole() == com.balancedteam.model.TeamRole.OFFICER));
-        String roleName = myMember != null ? plugin.getConfigManager().getRoleDisplayName(myMember.getRole())
-                : plugin.getConfigManager().getRawMessage("role.unknown");
+        String roleName = myMember != null ? plugin.getConfigManager().getRoleDisplayName(player, myMember.getRole())
+                : plugin.getConfigManager().getRawMessage(player, "role.unknown");
 
-        String title = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_TITLE);
+        String title = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_TITLE);
         GuiHolder holder = new GuiHolder();
         Inventory inv = Bukkit.createInventory(holder, 45, MessageUtil.color(title));
         holder.setInventory(inv);
@@ -46,8 +46,8 @@ public class TeamMenuGui {
 
         // 1. 团队基本信息 (槽位 10)
         String ffStatus = plugin.getConfigManager().isFriendlyFireActive(team)
-                ? plugin.getConfigManager().getRawMessage("status.on")
-                : plugin.getConfigManager().getRawMessage("status.off");
+                ? plugin.getConfigManager().getRawMessage(player, "status.on")
+                : plugin.getConfigManager().getRawMessage(player, "status.off");
         Map<String, String> infoMap = new HashMap<>();
         infoMap.put("TEAM", team.getName());
         infoMap.put("ROLE", roleName);
@@ -55,8 +55,8 @@ public class TeamMenuGui {
         infoMap.put("MAX", String.valueOf(plugin.getConfigManager().getMaxMembers()));
         infoMap.put("FF", ffStatus);
 
-        String infoName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_INFO_ITEM_NAME, infoMap);
-        List<String> infoLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.MENU_INFO_ITEM_LORE, infoMap);
+        String infoName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_INFO_ITEM_NAME, infoMap);
+        List<String> infoLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.MENU_INFO_ITEM_LORE, infoMap);
 
         ItemStack infoItem = new ItemBuilder(Material.BEACON)
                 .name(infoName)
@@ -72,8 +72,8 @@ public class TeamMenuGui {
         Map<String, String> memberBtnMap = new HashMap<>();
         memberBtnMap.put("COUNT", String.valueOf(team.getMemberCount()));
         memberBtnMap.put("MAX", String.valueOf(plugin.getConfigManager().getMaxMembers()));
-        String memberBtnName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_MEMBERS_BUTTON_NAME, memberBtnMap);
-        List<String> memberBtnLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.MENU_MEMBERS_BUTTON_LORE, memberBtnMap);
+        String memberBtnName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_MEMBERS_BUTTON_NAME, memberBtnMap);
+        List<String> memberBtnLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.MENU_MEMBERS_BUTTON_LORE, memberBtnMap);
         ItemStack memberBtnItem = new ItemBuilder(Material.PLAYER_HEAD)
                 .skullOwner(player.getUniqueId())
                 .name(memberBtnName)
@@ -86,8 +86,8 @@ public class TeamMenuGui {
         });
 
         // 3. 邀请新成员 (槽位 14)
-        String inviteName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_INVITE_ITEM_NAME);
-        List<String> inviteLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.MENU_INVITE_ITEM_LORE,
+        String inviteName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_INVITE_ITEM_NAME);
+        List<String> inviteLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.MENU_INVITE_ITEM_LORE,
                 Collections.emptyMap());
 
         ItemStack inviteItem = new ItemBuilder(Material.WRITABLE_BOOK)
@@ -103,7 +103,7 @@ public class TeamMenuGui {
             if (team.getMemberCount() >= plugin.getConfigManager().getMaxMembers()) {
                 Map<String, String> map = new HashMap<>();
                 map.put("MAX", String.valueOf(plugin.getConfigManager().getMaxMembers()));
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_invite_max_members", map));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_invite_max_members", map));
                 SoundUtil.playError(player);
                 return;
             }
@@ -116,16 +116,16 @@ public class TeamMenuGui {
         boolean ffActive = plugin.getConfigManager().isFriendlyFireActive(team);
         Material ffMaterial = ffActive ? Material.NETHERITE_SWORD : Material.SHIELD;
         String ffStatusText = ffActive
-                ? plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_FF_STATUS_ON)
-                : plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_FF_STATUS_OFF);
+                ? plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_STATUS_ON)
+                : plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_STATUS_OFF);
 
         String ffTip;
         if (!plugin.getConfigManager().isAllowFriendlyFireToggle()) {
-            ffTip = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_FF_DISABLED_TIP);
+            ffTip = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_DISABLED_TIP);
         } else if (isLeader) {
-            ffTip = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_FF_LEADER_TIP);
+            ffTip = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_LEADER_TIP);
         } else {
-            ffTip = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_FF_NON_LEADER_TIP);
+            ffTip = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_NON_LEADER_TIP);
         }
 
         List<String> ffLore = new ArrayList<>();
@@ -133,7 +133,7 @@ public class TeamMenuGui {
         ffLore.add("");
         ffLore.add(ffTip);
 
-        String ffName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_FF_ITEM_NAME);
+        String ffName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_ITEM_NAME);
         ItemStack ffItem = new ItemBuilder(ffMaterial)
                 .name(ffName)
                 .lore(ffLore)
@@ -141,7 +141,7 @@ public class TeamMenuGui {
         inv.setItem(16, ffItem);
         holder.setClickHandler(16, e -> {
             if (!plugin.getConfigManager().isAllowFriendlyFireToggle()) {
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_ff_toggle_disabled"));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_ff_toggle_disabled"));
                 SoundUtil.playError(player);
                 return;
             }
@@ -152,7 +152,7 @@ public class TeamMenuGui {
             if (cd > 0) {
                 Map<String, String> map = new HashMap<>();
                 map.put("TIME", String.valueOf(cd));
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("cooldown", map));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "cooldown", map));
                 SoundUtil.playError(player);
                 return;
             }
@@ -160,7 +160,7 @@ public class TeamMenuGui {
             plugin.getTeamManager().setFriendlyFire(team, newState, player.getUniqueId()).thenAccept(success -> {
                 if (success) {
                     String msgKey = newState ? "team_ff_toggle_on" : "team_ff_toggle_off";
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(msgKey));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, msgKey));
                     SoundUtil.playSuccess(player);
                     holder.refresh(player);
                 }
@@ -174,8 +174,8 @@ public class TeamMenuGui {
         allyMap.put("COUNT", String.valueOf(allyCount));
         allyMap.put("MAX", String.valueOf(plugin.getConfigManager().getMaxAllies()));
         allyMap.put("PENDING", String.valueOf(pendingAllyCount));
-        String allyBtnName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_ALLY_BUTTON_NAME, allyMap);
-        List<String> allyBtnLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.MENU_ALLY_BUTTON_LORE, allyMap);
+        String allyBtnName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_ALLY_BUTTON_NAME, allyMap);
+        List<String> allyBtnLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.MENU_ALLY_BUTTON_LORE, allyMap);
         ItemStack allyBtnItem = new ItemBuilder(Material.LIME_BANNER)
                 .name(allyBtnName)
                 .lore(allyBtnLore)
@@ -193,8 +193,9 @@ public class TeamMenuGui {
         Map<String, String> notifMap = new HashMap<>();
         notifMap.put("PENDING", String.valueOf(totalPending));
         Material notifMaterial = totalPending > 0 ? Material.BELL : Material.PAPER;
-        String notifName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_NOTIFICATION_BUTTON_NAME, notifMap);
+        String notifName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_NOTIFICATION_BUTTON_NAME, notifMap);
         List<String> notifLore = plugin.getConfigManager().getMessageList(
+                player,
                 totalPending > 0 ? GuiConfigKeys.MENU_NOTIFICATION_BUTTON_LORE_PENDING : GuiConfigKeys.MENU_NOTIFICATION_BUTTON_LORE,
                 notifMap);
         ItemStack notifItem = new ItemBuilder(notifMaterial)
@@ -212,8 +213,8 @@ public class TeamMenuGui {
         Map<String, String> enemyMap = new HashMap<>();
         enemyMap.put("COUNT", String.valueOf(enemyCount));
         enemyMap.put("MAX", String.valueOf(plugin.getConfigManager().getMaxEnemies()));
-        String enemyBtnName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_ENEMY_BUTTON_NAME, enemyMap);
-        List<String> enemyBtnLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.MENU_ENEMY_BUTTON_LORE, enemyMap);
+        String enemyBtnName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_ENEMY_BUTTON_NAME, enemyMap);
+        List<String> enemyBtnLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.MENU_ENEMY_BUTTON_LORE, enemyMap);
         ItemStack enemyBtnItem = new ItemBuilder(Material.RED_BANNER)
                 .name(enemyBtnName)
                 .lore(enemyBtnLore)
@@ -226,8 +227,8 @@ public class TeamMenuGui {
 
         // 7. 退出/解散团队 (槽位 31)
         if (isLeader) {
-            String disbandName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_DISBAND_ITEM_NAME);
-            List<String> disbandLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.MENU_DISBAND_ITEM_LORE,
+            String disbandName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_DISBAND_ITEM_NAME);
+            List<String> disbandLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.MENU_DISBAND_ITEM_LORE,
                     Collections.emptyMap());
 
             ItemStack disbandItem = new ItemBuilder(Material.TNT)
@@ -240,8 +241,8 @@ public class TeamMenuGui {
                 DisbandConfirmGui.open(plugin, player);
             });
         } else {
-            String leaveName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MENU_LEAVE_ITEM_NAME);
-            List<String> leaveLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.MENU_LEAVE_ITEM_LORE,
+            String leaveName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_LEAVE_ITEM_NAME);
+            List<String> leaveLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.MENU_LEAVE_ITEM_LORE,
                     Collections.emptyMap());
 
             ItemStack leaveItem = new ItemBuilder(Material.OAK_DOOR)

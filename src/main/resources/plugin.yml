@@ -24,6 +24,10 @@ commands:
     description: 发送团队聊天消息或切换团队聊天锁定模式
     aliases: [tc, tm, teamchat]
     usage: /teammsg [消息内容]
+  teamlang:
+    description: 切换或查看语言设置
+    aliases: [tlang, btlang, clanlang]
+    usage: /teamlang [list|auto|<语言代码>]
 
 permissions:
   balancedteam.use:

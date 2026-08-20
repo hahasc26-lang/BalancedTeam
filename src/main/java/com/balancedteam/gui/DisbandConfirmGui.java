@@ -37,7 +37,7 @@ public class DisbandConfirmGui {
         }
 
         // 构建 GUI
-        String title = plugin.getConfigManager().getRawMessage(GuiConfigKeys.DISBAND_CONFIRM_TITLE);
+        String title = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.DISBAND_CONFIRM_TITLE);
         GuiHolder holder = new GuiHolder();
         Inventory inv = Bukkit.createInventory(holder, 27, MessageUtil.color(title));
         holder.setInventory(inv);
@@ -46,8 +46,9 @@ public class DisbandConfirmGui {
         PagedGuiHelper.fillAll(inv, ItemBuilder.redGlass());
 
         // ── 确认解散按钮（槽 11，一次性点击处理器，防止连击）──
-        String confirmName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.DISBAND_CONFIRM_NAME);
+        String confirmName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.DISBAND_CONFIRM_NAME);
         List<String> confirmLore = plugin.getConfigManager().getMessageList(
+                player,
                 GuiConfigKeys.DISBAND_CONFIRM_LORE, Collections.emptyMap());
 
         ItemStack confirmItem = new ItemBuilder(Material.TNT)
@@ -68,13 +69,14 @@ public class DisbandConfirmGui {
             // 执行解散
             plugin.getTeamManager().disbandTeam(currentTeam).thenRun(() -> {
                 SoundUtil.playWarning(player);
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_disband_success"));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_disband_success"));
             });
         });
 
         // ── 取消按钮（槽 15）──
-        String cancelName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.DISBAND_CANCEL_NAME);
+        String cancelName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.DISBAND_CANCEL_NAME);
         List<String> cancelLore = plugin.getConfigManager().getMessageList(
+                player,
                 GuiConfigKeys.DISBAND_CANCEL_LORE, Collections.emptyMap());
 
         ItemStack cancelItem = new ItemBuilder(Material.LIME_CONCRETE)

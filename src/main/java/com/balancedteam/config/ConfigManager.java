@@ -3,33 +3,23 @@ package com.balancedteam.config;
 import com.balancedteam.BalancedTeamPlugin;
 import com.balancedteam.model.TeamRole;
 import com.balancedteam.util.MessageUtil;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
- * 配置文件与集中多语言文本管理器
- * 支持从 lang/ 文件夹动态加载多语言文件，内置支持 zh_CN, zh_TW, en_US
+ * 配置文件管理器
+ * 代理并集成 LanguageManager 集中多语言系统，支持根据 CommandSender 动态适配客户端语言。
  */
 public class ConfigManager {
 
-    public static final String DEFAULT_LANGUAGE = "zh_CN";
-    private static final String[] BUILTIN_LANGUAGES = {"zh_CN", "zh_TW", "en_US"};
-
     private final BalancedTeamPlugin plugin;
     private FileConfiguration config;
-    private FileConfiguration messages;
-    private File langFile;
-    private String currentLanguage = DEFAULT_LANGUAGE;
 
     public ConfigManager(BalancedTeamPlugin plugin) {
         this.plugin = plugin;
@@ -41,117 +31,78 @@ public class ConfigManager {
         plugin.reloadConfig();
         this.config = plugin.getConfig();
 
-        // 2. 确保 lang 文件夹存在并释放所有内置语言文件
-        saveDefaultLanguageFiles();
-
-        // 3. 读取 config.yml 中的 language 配置
-        String langSetting = config.getString("language", DEFAULT_LANGUAGE);
-        if (langSetting == null || langSetting.trim().isEmpty()) {
-            langSetting = DEFAULT_LANGUAGE;
-        }
-        // 容错：若用户填写了 .yml 后缀则自动截除
-        if (langSetting.toLowerCase().endsWith(".yml")) {
-            langSetting = langSetting.substring(0, langSetting.length() - 4);
-        }
-        this.currentLanguage = langSetting;
-
-        // 4. 加载目标语言文件 (lang/{language}.yml)
-        File langDir = new File(plugin.getDataFolder(), "lang");
-        this.langFile = new File(langDir, currentLanguage + ".yml");
-
-        if (!langFile.exists()) {
-            plugin.getLogger().warning("[Lang] 未找到语言文件: lang/" + currentLanguage + ".yml，正在回退至默认语言 " + DEFAULT_LANGUAGE + "...");
-            this.langFile = new File(langDir, DEFAULT_LANGUAGE + ".yml");
-            this.currentLanguage = DEFAULT_LANGUAGE;
-            if (!langFile.exists()) {
-                plugin.saveResource("lang/" + DEFAULT_LANGUAGE + ".yml", false);
-            }
+        // 2. 加载多语言管理器
+        if (plugin.getLanguageManager() != null) {
+            plugin.getLanguageManager().load();
         }
 
-        this.messages = YamlConfiguration.loadConfiguration(langFile);
-
-        // 5. 合并默认消息配置（防漏项与自动同步新键）
-        InputStream defMessageStream = plugin.getResource("lang/" + currentLanguage + ".yml");
-        if (defMessageStream == null) {
-            // 若为用户自定义语言，尝试以默认语言作为缺省补全流
-            defMessageStream = plugin.getResource("lang/" + DEFAULT_LANGUAGE + ".yml");
-        }
-
-        if (defMessageStream != null) {
-            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defMessageStream, StandardCharsets.UTF_8));
-            this.messages.setDefaults(defConfig);
-            this.messages.options().copyDefaults(true);
-            try {
-                this.messages.save(langFile);
-            } catch (Exception e) {
-                plugin.getLogger().log(Level.WARNING, "[Lang] 保存补全语言文件失败: " + langFile.getName(), e);
-            }
-        }
-
-        plugin.getLogger().info("[Lang] 已成功加载语言包: " + currentLanguage + " (" + langFile.getName() + ")");
-
-        // 6. 同步时间格式到 TimeUtil
+        // 3. 同步时间格式到 TimeUtil
         com.balancedteam.util.TimeUtil.setDateFormat(getDateFormat());
     }
 
     /**
-     * 释放所有内置支持的多语言文件到 plugins/BalancedTeam/lang/
-     */
-    private void saveDefaultLanguageFiles() {
-        File langDir = new File(plugin.getDataFolder(), "lang");
-        if (!langDir.exists()) {
-            langDir.mkdirs();
-        }
-        for (String lang : BUILTIN_LANGUAGES) {
-            String resourcePath = "lang/" + lang + ".yml";
-            File targetFile = new File(plugin.getDataFolder(), resourcePath);
-            if (!targetFile.exists()) {
-                try {
-                    plugin.saveResource(resourcePath, false);
-                } catch (Exception e) {
-                    plugin.getLogger().warning("[Lang] 释放内置语言文件失败: " + resourcePath);
-                }
-            }
-        }
-    }
-
-    /**
-     * 获取当前加载的语言代号 (例如 zh_CN, en_US)
+     * 获取服务端当前配置的默认语言代号 (例如 zh_CN, en_US)
      */
     public String getLanguage() {
-        return currentLanguage;
+        if (plugin.getLanguageManager() != null) {
+            return plugin.getLanguageManager().getServerDefaultCanonical();
+        }
+        return "zh_CN";
     }
 
     public FileConfiguration getConfig() {
         return config;
     }
 
+    /**
+     * 获取服务端默认语言的配置对象
+     */
     public FileConfiguration getMessages() {
-        return messages;
+        if (plugin.getLanguageManager() != null) {
+            return plugin.getLanguageManager().getDefaultConfiguration();
+        }
+        return new YamlConfiguration();
     }
 
     /**
-     * 获取带有前缀的消息
+     * 获取指定发送者对应语言的配置对象
      */
-    public String getMessage(String key) {
-        return getMessage(key, Collections.emptyMap());
+    public FileConfiguration getMessages(CommandSender sender) {
+        if (plugin.getLanguageManager() != null) {
+            return plugin.getLanguageManager().getConfiguration(sender);
+        }
+        return getMessages();
     }
 
-    /**
-     * 获取带有前缀并替换占位符的消息
-     */
-    public String getMessage(String key, Map<String, String> placeholders) {
-        String prefix = messages.getString("prefix");
-        if (prefix == null && messages.getDefaults() != null) {
-            prefix = messages.getDefaults().getString("prefix", "&8[&bBalancedTeam&8] &r");
+    // =========================================================================
+    // 带前缀消息获取 (支持多语言适配)
+    // =========================================================================
+
+    public String getMessage(CommandSender sender, String key) {
+        return getMessage(sender, key, Collections.emptyMap());
+    }
+
+    public String getMessage(CommandSender sender, String key, Map<String, String> placeholders) {
+        FileConfiguration langConfig = getMessages(sender);
+
+        String prefix = langConfig.getString("prefix");
+        if (prefix == null && langConfig.getDefaults() != null) {
+            prefix = langConfig.getDefaults().getString("prefix", "&8[&bBalancedTeam&8] &r");
         }
         if (prefix == null) {
             prefix = "&8[&bBalancedTeam&8] &r";
         }
 
-        String msg = messages.getString(key);
-        if (msg == null && messages.getDefaults() != null) {
-            msg = messages.getDefaults().getString(key);
+        String msg = langConfig.getString(key);
+        if (msg == null && langConfig.getDefaults() != null) {
+            msg = langConfig.getDefaults().getString(key);
+        }
+        // 如果当前语言文件无此键，从默认语言尝试读取
+        if (msg == null && plugin.getLanguageManager() != null) {
+            FileConfiguration defConfig = plugin.getLanguageManager().getDefaultConfiguration();
+            if (defConfig != null && defConfig != langConfig) {
+                msg = defConfig.getString(key);
+            }
         }
         if (msg == null) {
             msg = "&c[Missing message: " + key + "]";
@@ -166,19 +117,39 @@ public class ConfigManager {
     }
 
     /**
-     * 获取不带前缀的单行消息
+     * 全局默认语言带有前缀的消息 (兼容旧代码)
      */
-    public String getRawMessage(String key) {
-        return getRawMessage(key, Collections.emptyMap());
+    public String getMessage(String key) {
+        return getMessage((CommandSender) null, key, Collections.emptyMap());
     }
 
     /**
-     * 获取不带前缀并替换占位符的单行消息
+     * 全局默认语言带有前缀并替换占位符的消息 (兼容旧代码)
      */
-    public String getRawMessage(String key, Map<String, String> placeholders) {
-        String msg = messages.getString(key);
-        if (msg == null && messages.getDefaults() != null) {
-            msg = messages.getDefaults().getString(key);
+    public String getMessage(String key, Map<String, String> placeholders) {
+        return getMessage((CommandSender) null, key, placeholders);
+    }
+
+    // =========================================================================
+    // 不带前缀单行消息获取 (支持多语言适配)
+    // =========================================================================
+
+    public String getRawMessage(CommandSender sender, String key) {
+        return getRawMessage(sender, key, Collections.emptyMap());
+    }
+
+    public String getRawMessage(CommandSender sender, String key, Map<String, String> placeholders) {
+        FileConfiguration langConfig = getMessages(sender);
+
+        String msg = langConfig.getString(key);
+        if (msg == null && langConfig.getDefaults() != null) {
+            msg = langConfig.getDefaults().getString(key);
+        }
+        if (msg == null && plugin.getLanguageManager() != null) {
+            FileConfiguration defConfig = plugin.getLanguageManager().getDefaultConfiguration();
+            if (defConfig != null && defConfig != langConfig) {
+                msg = defConfig.getString(key);
+            }
         }
         if (msg == null) {
             msg = "&c[Missing message: " + key + "]";
@@ -192,13 +163,30 @@ public class ConfigManager {
         return MessageUtil.color(msg);
     }
 
-    /**
-     * 获取字符串列表并逐行替换占位符与颜色代码（常用于多行帮助、GUI Lore）
-     */
-    public List<String> getMessageList(String key, Map<String, String> placeholders) {
-        List<String> list = messages.getStringList(key);
-        if ((list == null || list.isEmpty()) && messages.getDefaults() != null) {
-            list = messages.getDefaults().getStringList(key);
+    public String getRawMessage(String key) {
+        return getRawMessage((CommandSender) null, key, Collections.emptyMap());
+    }
+
+    public String getRawMessage(String key, Map<String, String> placeholders) {
+        return getRawMessage((CommandSender) null, key, placeholders);
+    }
+
+    // =========================================================================
+    // 多行消息与 GUI Lore 列表获取 (支持多语言适配)
+    // =========================================================================
+
+    public List<String> getMessageList(CommandSender sender, String key, Map<String, String> placeholders) {
+        FileConfiguration langConfig = getMessages(sender);
+
+        List<String> list = langConfig.getStringList(key);
+        if ((list == null || list.isEmpty()) && langConfig.getDefaults() != null) {
+            list = langConfig.getDefaults().getStringList(key);
+        }
+        if ((list == null || list.isEmpty()) && plugin.getLanguageManager() != null) {
+            FileConfiguration defConfig = plugin.getLanguageManager().getDefaultConfiguration();
+            if (defConfig != null && defConfig != langConfig) {
+                list = defConfig.getStringList(key);
+            }
         }
         if (list == null || list.isEmpty()) {
             return Collections.emptyList();
@@ -215,24 +203,36 @@ public class ConfigManager {
         return result;
     }
 
-    /**
-     * 获取职位多语言展示名称
-     */
-    public String getRoleDisplayName(TeamRole role) {
-        if (role == null) return getRawMessage("role.unknown");
+    public List<String> getMessageList(String key, Map<String, String> placeholders) {
+        return getMessageList((CommandSender) null, key, placeholders);
+    }
+
+    // =========================================================================
+    // 职位名称多语言展示
+    // =========================================================================
+
+    public String getRoleDisplayName(CommandSender sender, TeamRole role) {
+        if (role == null) return getRawMessage(sender, "role.unknown");
         switch (role) {
             case LEADER:
-                return getRawMessage("role.leader");
+                return getRawMessage(sender, "role.leader");
             case OFFICER:
-                return getRawMessage("role.officer");
+                return getRawMessage(sender, "role.officer");
             case MEMBER:
-                return getRawMessage("role.member");
+                return getRawMessage(sender, "role.member");
             default:
-                return getRawMessage("role.unknown");
+                return getRawMessage(sender, "role.unknown");
         }
     }
 
+    public String getRoleDisplayName(TeamRole role) {
+        return getRoleDisplayName((CommandSender) null, role);
+    }
+
+    // =========================================================================
     // 快捷配置项获取
+    // =========================================================================
+
     public int getMaxMembers() {
         return config.getInt("balance.max_members", 10);
     }
@@ -278,7 +278,7 @@ public class ConfigManager {
     }
 
     public int getAllyRequestTimeout() {
-        return config.getInt("balance.ally_request_timeout_seconds", 60);
+        return config.getInt("balance.ally_request_timeout_seconds", 3600);
     }
 
     public String getDateFormat() {

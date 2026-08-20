@@ -1,4 +1,4 @@
-﻿# BalancedTeam
+# BalancedTeam
 
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-1.20.4%2B-brightgreen?style=flat-square&logo=minecraft" alt="Minecraft Version">
@@ -24,7 +24,7 @@
 - **团队聊天** — `/tc` 专属频道，支持锁定模式；OP 可监听所有频道
 - **图形化 GUI** — 团队菜单、成员管理、全服列表、操作确认界面
 - **双存储引擎** — MySQL（生产推荐）/ SQLite（开箱即用），HikariCP 连接池
-- **多语言** — 内置 `zh_CN` / `zh_TW` / `en_US`，支持自定义语言文件
+- **自动多语言系统** — 读取 Minecraft 客户端 Locale 自动检测语言，支持前缀模糊匹配（如 `zh_HK` 自动匹配 `zh_CN`/`zh_TW`）、服务端回退与全量内存缓存；内置 `zh_CN` / `zh_TW` / `en_US`，支持玩家使用 `/teamlang` 自主切换或恢复自动。
 
 ---
 
@@ -59,8 +59,19 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
 | `/team apply/accept/deny` | 申请与邀请 |
 | `/team ff` | 切换友伤 |
 | `/team info/list` | 查看信息 |
+| `/team lang` | 语言设置与切换 |
 
-**`/teamadmin`**（别名：`/ta`）— 强制解散、踢人、监听聊天
+**`/teamlang`**（别名：`/tlang` `/btlang` `/clanlang`）
+
+| 指令 | 说明 |
+|------|------|
+| `/teamlang` | 查看当前语言状态与帮助 |
+| `/teamlang list` | 查看服务器支持的所有语言包列表 |
+| `/teamlang <代码>` | 手动切换指定语言（如 `/teamlang en_US`） |
+| `/teamlang auto` | 恢复为跟随客户端自动检测语言 |
+| `/teamlang reload` | 重载所有语言包（限管理员） |
+
+**`/teamadmin`**（别名：`/ta`）— 强制解散、踢人、监听聊天、重载配置
 
 **`/teammsg`**（别名：`/tc` `/tm`）— 发送或锁定团队聊天
 
@@ -71,7 +82,7 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
 | 权限 | 默认 | 说明 |
 |------|------|------|
 | `balancedteam.use` | 所有人 | 基础指令 |
-| `balancedteam.admin` | OP | 管理员指令 |
+| `balancedteam.admin` | OP | 管理员指令与语言重载 |
 | `balancedteam.admin.spy` | OP | 监听团队聊天 |
 
 ---
@@ -102,7 +113,7 @@ A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive**
 - **Team Chat** — `/tc` channel with lock mode; OP spy mode to monitor all channels
 - **Graphical GUI** — Team menu, member management, server-wide list, confirmation dialogs
 - **Dual Storage** — MySQL (production) / SQLite (zero-config), backed by HikariCP
-- **Multi-Language** — Built-in `zh_CN` / `zh_TW` / `en_US`; custom language files supported
+- **Auto Multi-Language System** — Auto-detects Minecraft client locale via `Player.getLocale()`, with smart fuzzy matching (e.g. `zh_HK` falls back to `zh_CN`/`zh_TW`), server fallbacks, and in-memory caching. Built-in `zh_CN` / `zh_TW` / `en_US`; players can override or reset via `/teamlang`.
 
 ---
 
@@ -137,8 +148,19 @@ mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
 | `/team apply/accept/deny` | Applications & invitations |
 | `/team ff` | Toggle friendly fire |
 | `/team info/list` | View info |
+| `/team lang` | Language settings |
 
-**`/teamadmin`** (alias: `/ta`) — Force disband, kick, spy on chat
+**`/teamlang`** (aliases: `/tlang` `/btlang` `/clanlang`)
+
+| Command | Description |
+|---------|-------------|
+| `/teamlang` | View current language status and help |
+| `/teamlang list` | View all supported language packs |
+| `/teamlang <code>` | Manually switch language (e.g. `/teamlang en_US`) |
+| `/teamlang auto` | Reset to client auto-detection mode |
+| `/teamlang reload` | Reload all language files (Admin only) |
+
+**`/teamadmin`** (alias: `/ta`) — Force disband, kick, spy on chat, reload configs
 
 **`/teammsg`** (aliases: `/tc` `/tm`) — Send or lock team chat
 
@@ -149,7 +171,7 @@ mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
 | Permission | Default | Description |
 |------------|---------|-------------|
 | `balancedteam.use` | Everyone | Basic commands |
-| `balancedteam.admin` | OP | Admin commands |
+| `balancedteam.admin` | OP | Admin commands and language reload |
 | `balancedteam.admin.spy` | OP | Monitor team chats |
 
 ---

@@ -34,7 +34,7 @@ public class TeamListGui {
         Map<String, String> titlePlaceholders = new HashMap<>();
         titlePlaceholders.put("PAGE", String.valueOf(currentPage));
         titlePlaceholders.put("TOTAL_PAGE", String.valueOf(totalPages));
-        String title = plugin.getConfigManager().getRawMessage(GuiConfigKeys.LIST_TITLE, titlePlaceholders);
+        String title = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_TITLE, titlePlaceholders);
 
         GuiHolder holder = new GuiHolder();
         Inventory inv = Bukkit.createInventory(holder, 54, MessageUtil.color(title));
@@ -63,8 +63,8 @@ public class TeamListGui {
             int allyCount = plugin.getRelationManager().getAllies(team.getId()).size();
             int enemyCount = plugin.getRelationManager().getEnemies(team.getId()).size();
             String ffStatus = plugin.getConfigManager().isFriendlyFireActive(team)
-                    ? plugin.getConfigManager().getRawMessage("status.on")
-                    : plugin.getConfigManager().getRawMessage("status.off");
+                    ? plugin.getConfigManager().getRawMessage(player, "status.on")
+                    : plugin.getConfigManager().getRawMessage(player, "status.off");
 
             Map<String, String> itemMap = new HashMap<>();
             itemMap.put("TEAM", team.getName());
@@ -76,8 +76,8 @@ public class TeamListGui {
             itemMap.put("ENEMIES", String.valueOf(enemyCount));
             itemMap.put("DATE", TimeUtil.formatDate(team.getCreatedAt()));
 
-            String itemName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.LIST_TEAM_ITEM_NAME, itemMap);
-            List<String> itemLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.LIST_TEAM_ITEM_LORE, itemMap);
+            String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_TEAM_ITEM_NAME, itemMap);
+            List<String> itemLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.LIST_TEAM_ITEM_LORE, itemMap);
 
             ItemStack item = new ItemBuilder(Material.PLAYER_HEAD)
                     .skullOwner(team.getLeaderUuid())
@@ -106,7 +106,7 @@ public class TeamListGui {
         if (currentPage > 1) {
             Map<String, String> prevMap = new HashMap<>();
             prevMap.put("PAGE", String.valueOf(currentPage - 1));
-            String prevName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.LIST_PREV_PAGE, prevMap);
+            String prevName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_PREV_PAGE, prevMap);
             PagedGuiHelper.setupPrevButton(holder, inv, 45, player, currentPage, prevName, () -> open(plugin, player, currentPage - 1));
         }
 
@@ -115,8 +115,8 @@ public class TeamListGui {
         sumMap.put("TOTAL_TEAMS", String.valueOf(allTeams.size()));
         sumMap.put("PAGE", String.valueOf(currentPage));
         sumMap.put("TOTAL_PAGES", String.valueOf(totalPages));
-        String sumName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.LIST_SUMMARY_ITEM_NAME, sumMap);
-        List<String> sumLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.LIST_SUMMARY_ITEM_LORE, sumMap);
+        String sumName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_SUMMARY_ITEM_NAME, sumMap);
+        List<String> sumLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.LIST_SUMMARY_ITEM_LORE, sumMap);
 
         ItemStack infoItem = new ItemBuilder(Material.BOOK)
                 .name(sumName)
@@ -128,7 +128,7 @@ public class TeamListGui {
         if (currentPage < totalPages) {
             Map<String, String> nextMap = new HashMap<>();
             nextMap.put("PAGE", String.valueOf(currentPage + 1));
-            String nextName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.LIST_NEXT_PAGE, nextMap);
+            String nextName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_NEXT_PAGE, nextMap);
             PagedGuiHelper.setupNextButton(holder, inv, 53, player, currentPage, totalPages, nextName, () -> open(plugin, player, currentPage + 1));
         }
 

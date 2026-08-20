@@ -63,7 +63,7 @@ public class MemberManageGui {
         titleMap.put("PAGE", String.valueOf(currentPage));
         titleMap.put("TOTAL_PAGE", String.valueOf(totalPages));
         titleMap.put("TEAM", team.getName());
-        String title = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_TITLE, titleMap);
+        String title = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_TITLE, titleMap);
 
         GuiHolder holder = new GuiHolder();
         Inventory inv = Bukkit.createInventory(holder, 54, MessageUtil.color(title));
@@ -74,8 +74,8 @@ public class MemberManageGui {
         int startIndex = (currentPage - 1) * PAGE_SIZE;
         int endIndex = Math.min(startIndex + PAGE_SIZE, sortedMembers.size());
 
-        String onlineStatus = plugin.getConfigManager().getRawMessage("status.online");
-        String offlineStatus = plugin.getConfigManager().getRawMessage("status.offline");
+        String onlineStatus = plugin.getConfigManager().getRawMessage(player, "status.online");
+        String offlineStatus = plugin.getConfigManager().getRawMessage(player, "status.offline");
 
         for (int i = startIndex; i < endIndex; i++) {
             TeamMember targetMember = sortedMembers.get(i);
@@ -84,7 +84,7 @@ public class MemberManageGui {
             OfflinePlayer op = Bukkit.getOfflinePlayer(targetMember.getUuid());
             String targetName = op.getName() != null ? op.getName() : "未知";
             String status = op.isOnline() ? onlineStatus : offlineStatus;
-            String roleDisplayName = plugin.getConfigManager().getRoleDisplayName(targetMember.getRole());
+            String roleDisplayName = plugin.getConfigManager().getRoleDisplayName(player, targetMember.getRole());
             String joinDate = TimeUtil.formatDate(targetMember.getJoinedAt());
 
             String roleIcon;
@@ -104,32 +104,32 @@ public class MemberManageGui {
             itemMap.put("DATE", joinDate);
             itemMap.put("TEAM", team.getName());
 
-            String itemName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_ITEM_NAME, itemMap);
-            List<String> itemLore = new ArrayList<>(plugin.getConfigManager().getMessageList(GuiConfigKeys.MEMBER_MANAGE_ITEM_LORE, itemMap));
+            String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_ITEM_NAME, itemMap);
+            List<String> itemLore = new ArrayList<>(plugin.getConfigManager().getMessageList(player, GuiConfigKeys.MEMBER_MANAGE_ITEM_LORE, itemMap));
 
             boolean isSelf = targetMember.getUuid().equals(player.getUniqueId());
 
             itemLore.add("");
             if (isSelf) {
-                itemLore.add(plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_TIP_SELF));
+                itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_TIP_SELF));
             } else if (actorIsLeader) {
                 if (targetMember.isOfficer()) {
-                    itemLore.add(plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_TIP_DEMOTE));
-                    itemLore.add(plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_TIP_KICK));
-                    itemLore.add(plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_TIP_TRANSFER));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_TIP_DEMOTE));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_TIP_KICK));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_TIP_TRANSFER));
                 } else {
-                    itemLore.add(plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_TIP_PROMOTE));
-                    itemLore.add(plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_TIP_KICK));
-                    itemLore.add(plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_TIP_TRANSFER));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_TIP_PROMOTE));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_TIP_KICK));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_TIP_TRANSFER));
                 }
             } else if (actorIsOfficer) {
                 if (targetMember.getRole() == TeamRole.MEMBER) {
-                    itemLore.add(plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_TIP_KICK));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_TIP_KICK));
                 } else {
-                    itemLore.add(plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_TIP_NO_PERM));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_TIP_NO_PERM));
                 }
             } else {
-                itemLore.add(plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_TIP_VIEW_ONLY));
+                itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_TIP_VIEW_ONLY));
             }
 
             ItemStack memberItem = new ItemBuilder(Material.PLAYER_HEAD)
@@ -142,7 +142,7 @@ public class MemberManageGui {
                 ClickType clickType = e.getClick();
 
                 if (isSelf) {
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_member_cant_manage_self"));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_cant_manage_self"));
                     SoundUtil.playError(player);
                     return;
                 }
@@ -150,7 +150,7 @@ public class MemberManageGui {
                 // 1. Shift+左键：队长转让团队
                 if (clickType == ClickType.SHIFT_LEFT || clickType == ClickType.SHIFT_RIGHT) {
                     if (!actorIsLeader) {
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_leader"));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_leader"));
                         SoundUtil.playError(player);
                         return;
                     }
@@ -158,19 +158,19 @@ public class MemberManageGui {
                     plugin.getTeamManager().transferLeader(team, targetMember.getUuid()).thenAccept(success -> {
                         if (success) {
                             Map<String, String> map = new HashMap<>(itemMap);
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_transfer_success", map));
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_transfer_success", map));
                             SoundUtil.playSuccess(player);
 
                             Player targetOnline = op.getPlayer();
                             if (targetOnline != null && targetOnline.isOnline()) {
-                                MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage("team_transfer_target_msg", map));
+                                MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage(targetOnline, "team_transfer_target_msg", map));
                                 SoundUtil.playDing(targetOnline);
                             }
 
                             for (UUID u : team.getMembers().keySet()) {
                                 Player p = Bukkit.getPlayer(u);
                                 if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId()) && (targetOnline == null || !p.getUniqueId().equals(targetOnline.getUniqueId()))) {
-                                    MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_transfer_broadcast", map));
+                                    MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_transfer_broadcast", map));
                                 }
                             }
 
@@ -183,7 +183,7 @@ public class MemberManageGui {
                 // 2. 右键点击：踢出团队
                 if (clickType.isRightClick()) {
                     if (actorMember == null || !actorMember.canManage(targetMember)) {
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("no_permission"));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "no_permission"));
                         SoundUtil.playError(player);
                         return;
                     }
@@ -191,18 +191,18 @@ public class MemberManageGui {
                     plugin.getTeamManager().removeMember(team, targetMember.getUuid()).thenAccept(success -> {
                         if (success) {
                             Map<String, String> map = new HashMap<>(itemMap);
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_kick_success", map));
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_kick_success", map));
                             SoundUtil.playSuccess(player);
 
                             Player targetOnline = op.getPlayer();
                             if (targetOnline != null && targetOnline.isOnline()) {
-                                MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage("team_kick_target_msg", map));
+                                MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage(targetOnline, "team_kick_target_msg", map));
                             }
 
                             for (UUID u : team.getMembers().keySet()) {
                                 Player p = Bukkit.getPlayer(u);
                                 if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId())) {
-                                    MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_kick_broadcast", map));
+                                    MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_kick_broadcast", map));
                                 }
                             }
 
@@ -215,7 +215,7 @@ public class MemberManageGui {
                 // 3. 左键点击：升降职
                 if (clickType.isLeftClick()) {
                     if (!actorIsLeader) {
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_leader"));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_leader"));
                         SoundUtil.playError(player);
                         return;
                     }
@@ -225,19 +225,19 @@ public class MemberManageGui {
                         plugin.getTeamManager().setMemberRole(team, targetMember.getUuid(), TeamRole.OFFICER).thenAccept(success -> {
                             if (success) {
                                 Map<String, String> map = new HashMap<>(itemMap);
-                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_member_promote_success", map));
+                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_promote_success", map));
                                 SoundUtil.playSuccess(player);
 
                                 Player targetOnline = op.getPlayer();
                                 if (targetOnline != null && targetOnline.isOnline()) {
-                                    MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage("team_member_promoted_msg", map));
+                                    MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage(targetOnline, "team_member_promoted_msg", map));
                                     SoundUtil.playDing(targetOnline);
                                 }
 
                                 for (UUID u : team.getMembers().keySet()) {
                                     Player p = Bukkit.getPlayer(u);
                                     if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId()) && (targetOnline == null || !p.getUniqueId().equals(targetOnline.getUniqueId()))) {
-                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_member_promote_broadcast", map));
+                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_member_promote_broadcast", map));
                                     }
                                 }
 
@@ -249,18 +249,18 @@ public class MemberManageGui {
                         plugin.getTeamManager().setMemberRole(team, targetMember.getUuid(), TeamRole.MEMBER).thenAccept(success -> {
                             if (success) {
                                 Map<String, String> map = new HashMap<>(itemMap);
-                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_member_demote_success", map));
+                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_demote_success", map));
                                 SoundUtil.playSuccess(player);
 
                                 Player targetOnline = op.getPlayer();
                                 if (targetOnline != null && targetOnline.isOnline()) {
-                                    MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage("team_member_demoted_msg", map));
+                                    MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage(targetOnline, "team_member_demoted_msg", map));
                                 }
 
                                 for (UUID u : team.getMembers().keySet()) {
                                     Player p = Bukkit.getPlayer(u);
                                     if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId()) && (targetOnline == null || !p.getUniqueId().equals(targetOnline.getUniqueId()))) {
-                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_member_demote_broadcast", map));
+                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_member_demote_broadcast", map));
                                     }
                                 }
 
@@ -281,14 +281,14 @@ public class MemberManageGui {
         if (currentPage > 1) {
             Map<String, String> prevMap = new HashMap<>();
             prevMap.put("PAGE", String.valueOf(currentPage - 1));
-            String prevName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_PREV_PAGE, prevMap);
+            String prevName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_PREV_PAGE, prevMap);
             PagedGuiHelper.setupPrevButton(holder, inv, 45, player, currentPage, prevName, () -> open(plugin, player, currentPage - 1));
         }
 
         // 快速跳转邀请成员 (槽位 47)
         if (actorIsLeader || actorIsOfficer) {
-            String inviteBtnName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_INVITE_BUTTON_NAME);
-            List<String> inviteBtnLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.MEMBER_MANAGE_INVITE_BUTTON_LORE, Collections.emptyMap());
+            String inviteBtnName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_INVITE_BUTTON_NAME);
+            List<String> inviteBtnLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.MEMBER_MANAGE_INVITE_BUTTON_LORE, Collections.emptyMap());
             ItemStack inviteBtnItem = new ItemBuilder(Material.WRITABLE_BOOK)
                     .name(inviteBtnName)
                     .lore(inviteBtnLore)
@@ -301,14 +301,14 @@ public class MemberManageGui {
         }
 
         // 返回按钮 (槽位 49)
-        String backName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_BACK_BUTTON);
+        String backName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_BACK_BUTTON);
         PagedGuiHelper.setupBackButton(holder, inv, 49, player, backName, () -> TeamMenuGui.open(plugin, player));
 
         // 下一页 (槽位 53)
         if (currentPage < totalPages) {
             Map<String, String> nextMap = new HashMap<>();
             nextMap.put("PAGE", String.valueOf(currentPage + 1));
-            String nextName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.MEMBER_MANAGE_NEXT_PAGE, nextMap);
+            String nextName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MEMBER_MANAGE_NEXT_PAGE, nextMap);
             PagedGuiHelper.setupNextButton(holder, inv, 53, player, currentPage, totalPages, nextName, () -> open(plugin, player, currentPage + 1));
         }
 

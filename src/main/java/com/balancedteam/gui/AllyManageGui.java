@@ -30,7 +30,7 @@ public class AllyManageGui {
     public static void open(BalancedTeamPlugin plugin, Player player, int page) {
         Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (team == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             SoundUtil.playError(player);
             return;
         }
@@ -45,7 +45,7 @@ public class AllyManageGui {
         Map<String, String> titleMap = new HashMap<>();
         titleMap.put("PAGE", String.valueOf(currentPage));
         titleMap.put("TOTAL_PAGE", String.valueOf(totalPages));
-        String title = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ALLY_MANAGE_TITLE, titleMap);
+        String title = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ALLY_MANAGE_TITLE, titleMap);
 
         GuiHolder holder = new GuiHolder();
         Inventory inv = Bukkit.createInventory(holder, 54, MessageUtil.color(title));
@@ -70,10 +70,10 @@ public class AllyManageGui {
             itemMap.put("TEAM", allyTeam.getName());
             itemMap.put("COUNT", String.valueOf(allyTeam.getMemberCount()));
 
-            String itemName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ALLY_MANAGE_ITEM_NAME, itemMap);
+            String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ALLY_MANAGE_ITEM_NAME, itemMap);
             List<String> itemLore = isLeader
-                    ? plugin.getConfigManager().getMessageList(GuiConfigKeys.ALLY_MANAGE_ITEM_LORE_LEADER, itemMap)
-                    : plugin.getConfigManager().getMessageList(GuiConfigKeys.ALLY_MANAGE_ITEM_LORE, itemMap);
+                    ? plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ALLY_MANAGE_ITEM_LORE_LEADER, itemMap)
+                    : plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ALLY_MANAGE_ITEM_LORE, itemMap);
 
             ItemStack item = new ItemBuilder(Material.PLAYER_HEAD)
                     .skullOwner(allyTeam.getLeaderUuid())
@@ -91,7 +91,7 @@ public class AllyManageGui {
                             SoundUtil.playSuccess(player);
                             Map<String, String> msgMap = new HashMap<>();
                             msgMap.put("TEAM", finalAllyTeam.getName());
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_remove_success", msgMap));
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_remove_success", msgMap));
                             // 广播给对方团队在线成员
                             for (UUID uuid : finalAllyTeam.getMembers().keySet()) {
                                 Player p = Bukkit.getPlayer(uuid);
@@ -99,7 +99,7 @@ public class AllyManageGui {
                                     Map<String, String> bMap = new HashMap<>();
                                     bMap.put("TEAM1", team.getName());
                                     bMap.put("TEAM2", finalAllyTeam.getName());
-                                    MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("ally_remove_broadcast", bMap));
+                                    MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "ally_remove_broadcast", bMap));
                                 }
                             }
                             holder.refresh(player);
@@ -111,8 +111,8 @@ public class AllyManageGui {
 
         // 若无盟友，显示占位提示 (槽位 13)
         if (allyIds.isEmpty()) {
-            String emptyName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ALLY_MANAGE_NO_ALLY_NAME);
-            List<String> emptyLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.ALLY_MANAGE_NO_ALLY_LORE, Collections.emptyMap());
+            String emptyName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ALLY_MANAGE_NO_ALLY_NAME);
+            List<String> emptyLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ALLY_MANAGE_NO_ALLY_LORE, Collections.emptyMap());
             PagedGuiHelper.setupEmptyPlaceholder(inv, 13, Material.BARRIER, emptyName, emptyLore);
         }
 
@@ -122,15 +122,15 @@ public class AllyManageGui {
         if (currentPage > 1) {
             Map<String, String> prevMap = new HashMap<>();
             prevMap.put("PAGE", String.valueOf(currentPage - 1));
-            String prevName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ALLY_MANAGE_PREV_PAGE, prevMap);
+            String prevName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ALLY_MANAGE_PREV_PAGE, prevMap);
             PagedGuiHelper.setupPrevButton(holder, inv, 27, player, currentPage, prevName, () -> open(plugin, player, currentPage - 1));
         }
 
         // 发送同盟申请按钮（槽位 31），非队长灰色不可点
-        String addName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ALLY_MANAGE_ADD_BUTTON_NAME);
+        String addName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ALLY_MANAGE_ADD_BUTTON_NAME);
         List<String> addLore = isLeader
-                ? plugin.getConfigManager().getMessageList(GuiConfigKeys.ALLY_MANAGE_ADD_BUTTON_LORE_LEADER, Collections.emptyMap())
-                : plugin.getConfigManager().getMessageList(GuiConfigKeys.ALLY_MANAGE_ADD_BUTTON_LORE, Collections.emptyMap());
+                ? plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ALLY_MANAGE_ADD_BUTTON_LORE_LEADER, Collections.emptyMap())
+                : plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ALLY_MANAGE_ADD_BUTTON_LORE, Collections.emptyMap());
         Material addMaterial = isLeader ? Material.LIME_DYE : Material.GRAY_DYE;
         ItemStack addItem = new ItemBuilder(addMaterial).name(addName).lore(addLore).build();
         inv.setItem(31, addItem);
@@ -142,14 +142,14 @@ public class AllyManageGui {
         }
 
         // 返回按钮（槽位 49）
-        String backName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ALLY_MANAGE_BACK_BUTTON);
+        String backName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ALLY_MANAGE_BACK_BUTTON);
         PagedGuiHelper.setupBackButton(holder, inv, 49, player, backName, () -> TeamMenuGui.open(plugin, player));
 
         // 下一页（槽位 35）
         if (currentPage < totalPages) {
             Map<String, String> nextMap = new HashMap<>();
             nextMap.put("PAGE", String.valueOf(currentPage + 1));
-            String nextName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ALLY_MANAGE_NEXT_PAGE, nextMap);
+            String nextName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ALLY_MANAGE_NEXT_PAGE, nextMap);
             PagedGuiHelper.setupNextButton(holder, inv, 35, player, currentPage, totalPages, nextName, () -> open(plugin, player, currentPage + 1));
         }
 

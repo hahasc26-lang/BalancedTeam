@@ -4,6 +4,8 @@
 # All texts (command messages, help menus, GUI titles & lores) are centralized here.
 # ===================================================================
 
+language_name: "English"
+
 # Message prefix (If a single message begins with [NO_PREFIX] or is a list, prefix is omitted)
 prefix: "&8[&bBalancedTeam&8] &r"
 
@@ -17,6 +19,27 @@ database_error: "&cDatabase operation failed. Please contact server administrato
 cooldown: "&cThis action is on cooldown. Please wait &e{TIME} &cseconds!"
 unknown_command: "&cUnknown sub-command. Type &e/team help &cfor assistance."
 target_player_not_found: "&cOnline player not found: &e{PLAYER}"
+
+# -------------------------------------------------------------------
+# Language Settings & Auto Detection
+# -------------------------------------------------------------------
+lang_current_status: "&7Language Mode: &b{MODE} &8| &7Active Language: &e{LANG} &7({LANG_NAME}) &8| &7Client Locale: &f{LOCALE}"
+lang_mode_auto: "Auto-Detect (Follows Client)"
+lang_mode_manual: "Manual Override"
+lang_list_header: "&8====== &bBalancedTeam Supported Languages &8======"
+lang_list_item: "&7- &e{CODE} &7(&f{NAME}&7) {ACTIVE}"
+lang_list_active_tag: "&a[Active]"
+lang_set_success: "&aSuccessfully changed your language to: &e{NAME} &7({CODE})!"
+lang_set_auto_success: "&aSwitched to auto-detect mode! Matched language for client locale (&f{LOCALE}&a): &e{NAME} &7({CODE})."
+lang_not_found: "&cLanguage pack &e{CODE} &cnot found! Type &e/teamlang list &cto view available languages."
+lang_reload_success: "&aSuccessfully reloaded all language files (&e{COUNT} &alanguage packs)!"
+lang_help:
+  - "&8====== &bBalancedTeam Language Command Help &8======"
+  - "&e/teamlang &7- View current language and detection status"
+  - "&e/teamlang list &7- View all supported languages on the server"
+  - "&e/teamlang <code/name> &7- Manually switch language (e.g. &f/teamlang zh_CN&7)"
+  - "&e/teamlang auto &7- Revert to client auto-detection mode"
+  - "&e/teamlang reload &7- Reload all language packs (Admin only)"
 
 # -------------------------------------------------------------------
 # Team Creation & Disbanding

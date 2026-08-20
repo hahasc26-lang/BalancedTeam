@@ -8,6 +8,33 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.0.3] - 2026-08-20
+
+### 新增 / Added
+
+- **客户端语言自动检测机制**：玩家加入服务器时（`PlayerJoinEvent`）通过 `Player.getLocale()` 自动获取客户端语言代码（如 `zh_CN`、`en_US` 等），并自动匹配加载对应的语言包文件。
+- **Client Locale Auto-Detection**: Automatically detects players' client language settings on login (`PlayerJoinEvent`) using `Player.getLocale()` and loads the corresponding language file.
+- **多级智能模糊匹配与回退算法**：支持语言前缀模糊匹配（例如玩家为 `zh_HK` 或 `zh_TW` 客户端，若无完全匹配文件则优先智能匹配 `zh_*`，再回退到 `config.yml` 服务端默认语言及最终兜底语言）。
+- **Smart Fuzzy Matching & Fallback Algorithm**: Supports prefix-based fuzzy matching (e.g. `zh_HK` or `zh_TW` clients match `zh_*` packs if exact matches do not exist) before falling back to server default language in `config.yml` and hardcoded fallback.
+- **全量多语言内存高速缓存**：启动与重载时全量预加载 `plugins/BalancedTeam/lang/*.yml` 文件到内存缓存中，运行期发送消息与渲染 GUI 零额外磁盘 I/O。
+- **In-Memory Language Caching**: Scans and caches all `plugins/BalancedTeam/lang/*.yml` files in memory on startup and reload, eliminating redundant disk I/O during gameplay and GUI rendering.
+- **独立语言指令与切换机制**：
+  - 新增 `/teamlang`（别名 `/tlang` `/btlang` `/clanlang`）及 `/team lang` 指令；
+  - 支持 `/teamlang list` 查看服务器所有支持的语言包及当前生效状态；
+  - 支持 `/teamlang <代码>`（如 `/teamlang en_US`）手动固定语言，或 `/teamlang auto` 恢复自动检测；
+  - 支持 `/teamlang reload` 管理员热重载所有语言文件；
+  - 玩家语言偏好持久化保存在 `data/user_languages.yml`，离线重连不丢失。
+- **Dedicated Language Commands & Switching**:
+  - Added `/teamlang` (aliases `/tlang` `/btlang` `/clanlang`) and `/team lang` commands;
+  - Added `/teamlang list` to view all available language packs and current active status;
+  - Added `/teamlang <locale>` (e.g. `/teamlang en_US`) for manual language override, and `/teamlang auto` to restore auto-detection;
+  - Added `/teamlang reload` for admins to hot-reload all language packs;
+  - Player language preferences are persisted in `data/user_languages.yml` across disconnects.
+- **GUI 与消息系统多语言全面适配**：所有图形化 GUI 界面（团队菜单、未加队面板、成员管理、通知中心、全服列表、团队详情、目标选择、确认弹窗）均全面根据操作玩家客户端生效语言动态渲染标题与 Lore。
+- **Full Multi-Language Localization for GUI & Messages**: All graphical GUI interfaces (Team Menu, Not-Joined Panel, Member Management, Notification Center, Team List, Detail View, Selection, and Confirmation dialogs) dynamically render titles and lores according to each player's effective language.
+
+---
+
 ## [1.0.2] - 2026-08-20
 
 ### 新增 / Added

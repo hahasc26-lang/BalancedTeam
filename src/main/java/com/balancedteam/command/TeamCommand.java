@@ -38,7 +38,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage("player_only"));
+            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "player_only"));
             return true;
         }
 
@@ -140,8 +140,14 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
             case "info":
                 handleInfo(player, args);
                 break;
+            case "lang":
+            case "language": {
+                String[] langArgs = args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
+                TeamLangCommand.handleLangCommand(plugin, player, langArgs);
+                break;
+            }
             default:
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("unknown_command"));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "unknown_command"));
                 break;
         }
 
@@ -149,7 +155,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendHelp(Player player) {
-        List<String> lines = plugin.getConfigManager().getMessageList("help.player", Collections.emptyMap());
+        List<String> lines = plugin.getConfigManager().getMessageList(player, "help.player", Collections.emptyMap());
         for (String line : lines) {
             MessageUtil.sendMessage(player, line);
         }
@@ -897,8 +903,15 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> list = new ArrayList<>();
         if (args.length == 1) {
-            list.addAll(Arrays.asList("help", "list", "menu", "gui", "members", "create", "disband", "invite", "accept", "reject", "leave", "kick", "promote", "demote", "transfer", "chat", "msg", "ff", "ally", "enemy", "info"));
+            list.addAll(Arrays.asList("help", "list", "menu", "gui", "members", "create", "disband", "invite", "accept", "reject", "leave", "kick", "promote", "demote", "transfer", "chat", "msg", "ff", "ally", "enemy", "info", "lang"));
             return filter(list, args[0]);
+        }
+
+        if (args.length >= 2) {
+            String sub = args[0].toLowerCase();
+            if ("lang".equals(sub) || "language".equals(sub)) {
+                return TeamLangCommand.getTabCompletions(plugin, sender, Arrays.copyOfRange(args, 1, args.length));
+            }
         }
 
         if (args.length == 2) {

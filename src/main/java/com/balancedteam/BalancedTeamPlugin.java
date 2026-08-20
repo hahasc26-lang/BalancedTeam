@@ -2,6 +2,7 @@ package com.balancedteam;
 
 import com.balancedteam.command.TeamAdminCommand;
 import com.balancedteam.command.TeamCommand;
+import com.balancedteam.command.TeamLangCommand;
 import com.balancedteam.config.ConfigManager;
 import com.balancedteam.database.DatabaseManager;
 import com.balancedteam.database.dao.AllyRequestDao;
@@ -15,6 +16,7 @@ import com.balancedteam.listener.PlayerListener;
 import com.balancedteam.manager.ChatInputManager;
 import com.balancedteam.manager.ChatManager;
 import com.balancedteam.manager.InviteManager;
+import com.balancedteam.manager.LanguageManager;
 import com.balancedteam.manager.RelationManager;
 import com.balancedteam.manager.TeamManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,6 +31,7 @@ public class BalancedTeamPlugin extends JavaPlugin {
 
     private static BalancedTeamPlugin instance;
 
+    private LanguageManager languageManager;
     private ConfigManager configManager;
     private DatabaseManager databaseManager;
 
@@ -54,7 +57,8 @@ public class BalancedTeamPlugin extends JavaPlugin {
         getLogger().info("   BalancedTeam 团队插件 正在启动...");
         getLogger().info("==========================================");
 
-        // 1. 初始化配置
+        // 1. 初始化多语言与配置管理器
+        this.languageManager = new LanguageManager(this);
         this.configManager = new ConfigManager(this);
         this.configManager.load();
 
@@ -136,12 +140,21 @@ public class BalancedTeamPlugin extends JavaPlugin {
             getCommand("teammsg").setTabCompleter(teamMsgCommand);
         }
 
+        TeamLangCommand teamLangCommand = new TeamLangCommand(this);
+        if (getCommand("teamlang") != null) {
+            getCommand("teamlang").setExecutor(teamLangCommand);
+            getCommand("teamlang").setTabCompleter(teamLangCommand);
+        }
+
         getLogger().info("[BalancedTeam] 插件启动成功！");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("[BalancedTeam] 正在安全保存并关闭数据连接池...");
+        getLogger().info("[BalancedTeam] 正在安全保存并关闭数据连接池与偏好数据...");
+        if (languageManager != null) {
+            languageManager.saveUserPreferences();
+        }
         if (databaseManager != null) {
             databaseManager.close();
         }
@@ -150,6 +163,10 @@ public class BalancedTeamPlugin extends JavaPlugin {
 
     public static BalancedTeamPlugin getInstance() {
         return instance;
+    }
+
+    public LanguageManager getLanguageManager() {
+        return languageManager;
     }
 
     public ConfigManager getConfigManager() {

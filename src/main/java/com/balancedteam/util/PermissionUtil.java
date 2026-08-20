@@ -40,12 +40,12 @@ public final class PermissionUtil {
         if (player == null)
             return false;
         if (team == null) {
-            MessageUtil.sendMessage(player, config.getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, config.getMessage(player, "team_not_in_team"));
             SoundUtil.playError(player);
             return false;
         }
         if (!team.isLeader(player.getUniqueId())) {
-            MessageUtil.sendMessage(player, config.getMessage("team_not_leader"));
+            MessageUtil.sendMessage(player, config.getMessage(player, "team_not_leader"));
             SoundUtil.playError(player);
             return false;
         }
@@ -61,12 +61,12 @@ public final class PermissionUtil {
         if (player == null)
             return false;
         if (team == null) {
-            MessageUtil.sendMessage(player, config.getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, config.getMessage(player, "team_not_in_team"));
             SoundUtil.playError(player);
             return false;
         }
         if (!team.isOfficerOrLeader(player.getUniqueId())) {
-            MessageUtil.sendMessage(player, config.getMessage("team_not_officer_or_leader"));
+            MessageUtil.sendMessage(player, config.getMessage(player, "team_not_officer_or_leader"));
             SoundUtil.playError(player);
             return false;
         }

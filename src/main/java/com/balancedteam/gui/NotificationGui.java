@@ -83,7 +83,7 @@ public class NotificationGui {
 
         Map<String, String> titleMap = new HashMap<>();
         titleMap.put("COUNT", String.valueOf(totalItems));
-        String title = plugin.getConfigManager().getRawMessage(GuiConfigKeys.NOTIFICATION_TITLE, titleMap);
+        String title = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_TITLE, titleMap);
 
         GuiHolder holder = new GuiHolder();
         Inventory inv = Bukkit.createInventory(holder, 45, MessageUtil.color(title));
@@ -116,8 +116,8 @@ public class NotificationGui {
                 itemMap.put("MAX", String.valueOf(plugin.getConfigManager().getMaxMembers()));
                 itemMap.put("REMAINING", String.valueOf(invite.getRemainingSeconds()));
 
-                String itemName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.NOTIFICATION_INVITE_ITEM_NAME, itemMap);
-                List<String> itemLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.NOTIFICATION_INVITE_ITEM_LORE, itemMap);
+                String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_INVITE_ITEM_NAME, itemMap);
+                List<String> itemLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.NOTIFICATION_INVITE_ITEM_LORE, itemMap);
 
                 ItemStack item = new ItemBuilder(Material.PLAYER_HEAD)
                         .skullOwner(invite.getInviterUuid())
@@ -134,13 +134,13 @@ public class NotificationGui {
                         SoundUtil.playDing(player);
                         Map<String, String> rejectMap = new HashMap<>();
                         rejectMap.put("TEAM", targetTeam.getName());
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_invite_rejected", rejectMap));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_invite_rejected", rejectMap));
                         holder.refresh(player);
                     } else {
                         // 左键接受
                         if (plugin.getTeamManager().isPlayerInTeam(player.getUniqueId())) {
                             SoundUtil.playError(player);
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_already_in_team"));
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_already_in_team"));
                             holder.refresh(player);
                             return;
                         }
@@ -149,7 +149,7 @@ public class NotificationGui {
                             SoundUtil.playError(player);
                             Map<String, String> noMap = new HashMap<>();
                             noMap.put("TEAM", targetTeam.getName());
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_invite_no_pending", noMap));
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_invite_no_pending", noMap));
                             holder.refresh(player);
                             return;
                         }
@@ -158,7 +158,7 @@ public class NotificationGui {
                             SoundUtil.playError(player);
                             Map<String, String> maxMap = new HashMap<>();
                             maxMap.put("MAX", String.valueOf(plugin.getConfigManager().getMaxMembers()));
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_invite_max_members", maxMap));
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_invite_max_members", maxMap));
                             return;
                         }
 
@@ -169,19 +169,19 @@ public class NotificationGui {
                                 successMap.put("TEAM", targetTeam.getName());
                                 successMap.put("PLAYER", player.getName());
 
-                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_join_success", successMap));
+                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_join_success", successMap));
 
                                 for (UUID u : targetTeam.getMembers().keySet()) {
                                     Player p = Bukkit.getPlayer(u);
                                     if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId())) {
-                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_join_broadcast", successMap));
+                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_join_broadcast", successMap));
                                     }
                                 }
 
                                 Bukkit.getScheduler().runTask(plugin, () -> TeamMenuGui.open(plugin, player));
                             } else {
                                 SoundUtil.playError(player);
-                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("database_error"));
+                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "database_error"));
                             }
                         });
                     }
@@ -196,10 +196,10 @@ public class NotificationGui {
                 itemMap.put("TEAM", requesterTeam.getName());
                 itemMap.put("COUNT", String.valueOf(requesterTeam.getMemberCount()));
 
-                String itemName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.NOTIFICATION_REQUEST_ITEM_NAME, itemMap);
+                String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_REQUEST_ITEM_NAME, itemMap);
                 List<String> itemLore = isLeader
-                        ? plugin.getConfigManager().getMessageList(GuiConfigKeys.NOTIFICATION_REQUEST_ITEM_LORE_LEADER, itemMap)
-                        : plugin.getConfigManager().getMessageList(GuiConfigKeys.NOTIFICATION_REQUEST_ITEM_LORE, itemMap);
+                        ? plugin.getConfigManager().getMessageList(player, GuiConfigKeys.NOTIFICATION_REQUEST_ITEM_LORE_LEADER, itemMap)
+                        : plugin.getConfigManager().getMessageList(player, GuiConfigKeys.NOTIFICATION_REQUEST_ITEM_LORE, itemMap);
 
                 ItemStack item = new ItemBuilder(Material.PLAYER_HEAD)
                         .skullOwner(requesterTeam.getLeaderUuid())
@@ -219,13 +219,13 @@ public class NotificationGui {
                             SoundUtil.playDing(player);
                             Map<String, String> rejectMap = new HashMap<>();
                             rejectMap.put("TEAM", finalRequesterTeam.getName());
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_request_denied", rejectMap));
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_request_denied", rejectMap));
                             // 通知申请方队长（如在线）
                             Player requesterLeader = Bukkit.getPlayer(finalRequesterTeam.getLeaderUuid());
                             if (requesterLeader != null && requesterLeader.isOnline()) {
                                 Map<String, String> notifyMap = new HashMap<>();
                                 notifyMap.put("TEAM", currentMyTeam.getName());
-                                MessageUtil.sendMessage(requesterLeader, plugin.getConfigManager().getMessage("ally_request_denied_notify", notifyMap));
+                                MessageUtil.sendMessage(requesterLeader, plugin.getConfigManager().getMessage(requesterLeader, "ally_request_denied_notify", notifyMap));
                             }
                             holder.refresh(player);
                         } else {
@@ -236,13 +236,13 @@ public class NotificationGui {
                                 SoundUtil.playError(player);
                                 Map<String, String> msgMap = new HashMap<>();
                                 msgMap.put("MAX", String.valueOf(maxAllies));
-                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_max_reached", msgMap));
+                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_max_reached", msgMap));
                                 return;
                             }
                             int requesterAllyCount = plugin.getRelationManager().getAllies(finalRequesterTeam.getId()).size();
                             if (requesterAllyCount >= maxAllies) {
                                 SoundUtil.playError(player);
-                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_target_max_reached"));
+                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_target_max_reached"));
                                 return;
                             }
 
@@ -255,7 +255,7 @@ public class NotificationGui {
                                     for (UUID uuid : currentMyTeam.getMembers().keySet()) {
                                         Player p = Bukkit.getPlayer(uuid);
                                         if (p != null && p.isOnline()) {
-                                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("ally_established", msgMap));
+                                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "ally_established", msgMap));
                                         }
                                     }
                                     // 通知申请方在线成员
@@ -264,7 +264,7 @@ public class NotificationGui {
                                         if (p != null && p.isOnline()) {
                                             Map<String, String> bMap = new HashMap<>();
                                             bMap.put("TEAM", currentMyTeam.getName());
-                                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("ally_established", bMap));
+                                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "ally_established", bMap));
                                         }
                                     }
                                     // 全服广播
@@ -272,7 +272,7 @@ public class NotificationGui {
                                     broadcastMap.put("TEAM1", finalRequesterTeam.getName());
                                     broadcastMap.put("TEAM2", currentMyTeam.getName());
                                     for (Player online : Bukkit.getOnlinePlayers()) {
-                                        MessageUtil.sendMessage(online, plugin.getConfigManager().getMessage("ally_established_broadcast", broadcastMap));
+                                        MessageUtil.sendMessage(online, plugin.getConfigManager().getMessage(online, "ally_established_broadcast", broadcastMap));
                                     }
                                     holder.refresh(player);
                                 }
@@ -290,8 +290,8 @@ public class NotificationGui {
                 itemMap.put("MAX", String.valueOf(plugin.getConfigManager().getMaxMembers()));
                 itemMap.put("REMAINING", String.valueOf(app.getRemainingSeconds()));
 
-                String itemName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.NOTIFICATION_APPLICATION_ITEM_NAME, itemMap);
-                List<String> itemLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.NOTIFICATION_APPLICATION_ITEM_LORE, itemMap);
+                String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_APPLICATION_ITEM_NAME, itemMap);
+                List<String> itemLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.NOTIFICATION_APPLICATION_ITEM_LORE, itemMap);
 
                 ItemStack item = new ItemBuilder(Material.PLAYER_HEAD)
                         .skullOwner(app.getPlayerUuid())
@@ -311,11 +311,11 @@ public class NotificationGui {
                         Map<String, String> rejectMap = new HashMap<>();
                         rejectMap.put("PLAYER", app.getPlayerName());
                         rejectMap.put("TEAM", currentTeam.getName());
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_apply_rejected", rejectMap));
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_apply_rejected", rejectMap));
 
                         Player applicant = Bukkit.getPlayer(app.getPlayerUuid());
                         if (applicant != null && applicant.isOnline()) {
-                            MessageUtil.sendMessage(applicant, plugin.getConfigManager().getMessage("team_apply_rejected_notify", rejectMap));
+                            MessageUtil.sendMessage(applicant, plugin.getConfigManager().getMessage(applicant, "team_apply_rejected_notify", rejectMap));
                         }
                         holder.refresh(player);
                     } else {
@@ -325,7 +325,7 @@ public class NotificationGui {
                             plugin.getApplicationManager().removeApplication(currentTeam.getId(), app.getPlayerUuid());
                             Map<String, String> inTeamMap = new HashMap<>();
                             inTeamMap.put("PLAYER", app.getPlayerName());
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_apply_target_in_team", inTeamMap));
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_apply_target_in_team", inTeamMap));
                             holder.refresh(player);
                             return;
                         }
@@ -334,7 +334,7 @@ public class NotificationGui {
                             SoundUtil.playError(player);
                             Map<String, String> maxMap = new HashMap<>();
                             maxMap.put("MAX", String.valueOf(plugin.getConfigManager().getMaxMembers()));
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_invite_max_members", maxMap));
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_invite_max_members", maxMap));
                             return;
                         }
 
@@ -355,7 +355,7 @@ public class NotificationGui {
                                 for (UUID u : currentTeam.getMembers().keySet()) {
                                     Player p = Bukkit.getPlayer(u);
                                     if (p != null && p.isOnline()) {
-                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_join_broadcast", successMap));
+                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_join_broadcast", successMap));
                                     }
                                 }
 
@@ -363,13 +363,13 @@ public class NotificationGui {
                                 Player applicant = Bukkit.getPlayer(app.getPlayerUuid());
                                 if (applicant != null && applicant.isOnline()) {
                                     SoundUtil.playSuccess(applicant);
-                                    MessageUtil.sendMessage(applicant, plugin.getConfigManager().getMessage("team_apply_accepted_notify", successMap));
+                                    MessageUtil.sendMessage(applicant, plugin.getConfigManager().getMessage(applicant, "team_apply_accepted_notify", successMap));
                                 }
 
                                 holder.refresh(player);
                             } else {
                                 SoundUtil.playError(player);
-                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("database_error"));
+                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "database_error"));
                             }
                         });
                     }
@@ -379,8 +379,8 @@ public class NotificationGui {
 
         // 若无通知，显示占位提示（槽位 16）
         if (entries.isEmpty()) {
-            String emptyName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.NOTIFICATION_NO_REQUEST_NAME);
-            List<String> emptyLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.NOTIFICATION_NO_REQUEST_LORE, Collections.emptyMap());
+            String emptyName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_NO_REQUEST_NAME);
+            List<String> emptyLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.NOTIFICATION_NO_REQUEST_LORE, Collections.emptyMap());
             PagedGuiHelper.setupEmptyPlaceholder(inv, 16, Material.PAPER, emptyName, emptyLore);
         }
 
@@ -390,12 +390,12 @@ public class NotificationGui {
         if (currentPage > 1) {
             Map<String, String> prevMap = new HashMap<>();
             prevMap.put("PAGE", String.valueOf(currentPage - 1));
-            String prevName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.NOTIFICATION_PREV_PAGE, prevMap);
+            String prevName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_PREV_PAGE, prevMap);
             PagedGuiHelper.setupPrevButton(holder, inv, 36, player, currentPage, prevName, () -> open(plugin, player, currentPage - 1));
         }
 
         // 返回按钮（槽位 40）
-        String backName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.NOTIFICATION_BACK_BUTTON);
+        String backName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_BACK_BUTTON);
         final Team returnCheckTeam = myTeam;
         PagedGuiHelper.setupBackButton(holder, inv, 40, player, backName, () -> {
             if (returnCheckTeam != null) {
@@ -409,7 +409,7 @@ public class NotificationGui {
         if (currentPage < totalPages) {
             Map<String, String> nextMap = new HashMap<>();
             nextMap.put("PAGE", String.valueOf(currentPage + 1));
-            String nextName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.NOTIFICATION_NEXT_PAGE, nextMap);
+            String nextName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_NEXT_PAGE, nextMap);
             PagedGuiHelper.setupNextButton(holder, inv, 44, player, currentPage, totalPages, nextName, () -> open(plugin, player, currentPage + 1));
         }
 

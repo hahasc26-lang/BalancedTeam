@@ -4,6 +4,8 @@
 # 所有文本（包括指令提示、幫助選單、GUI介面名稱與說明）均在此處集中管理
 # ===================================================================
 
+language_name: "繁體中文"
+
 # 消息前綴 (若單條消息以 [NO_PREFIX] 開頭或為列表，則不顯示前綴)
 prefix: "&8[&bBalancedTeam&8] &r"
 
@@ -17,6 +19,27 @@ database_error: "&c資料庫操作失敗，請聯繫管理員查看後台日誌�
 cooldown: "&c該操作冷卻中，請在 &e{TIME} &c秒後再試！"
 unknown_command: "&c未知子指令，請輸入 &e/team help &c查看幫助。"
 target_player_not_found: "&c未找到在線玩家: &e{PLAYER}"
+
+# -------------------------------------------------------------------
+# 語言設定與自動檢測
+# -------------------------------------------------------------------
+lang_current_status: "&7當前語言模式: &b{MODE} &8| &7生效語言: &e{LANG} &7({LANG_NAME}) &8| &7客戶端 Locale: &f{LOCALE}"
+lang_mode_auto: "自動檢測 (跟隨客戶端)"
+lang_mode_manual: "手動指定"
+lang_list_header: "&8====== &bBalancedTeam 支援的語言列表 &8======"
+lang_list_item: "&7- &e{CODE} &7(&f{NAME}&7) {ACTIVE}"
+lang_list_active_tag: "&a[當前使用]"
+lang_set_success: "&a已成功將你的語言切換為: &e{NAME} &7({CODE})！"
+lang_set_auto_success: "&a已恢復為自動檢測模式！當前根據客戶端 Locale (&f{LOCALE}&a) 匹配為: &e{NAME} &7({CODE})。"
+lang_not_found: "&c未找到代碼為 &e{CODE} &c的語言包！請輸入 &e/teamlang list &c查看所有可用語言。"
+lang_reload_success: "&a已成功重載所有語言檔案（共 &e{COUNT} &a個語言包）！"
+lang_help:
+  - "&8====== &bBalancedTeam 語言指令幫助 &8======"
+  - "&e/teamlang &7- 查看當前語言與檢測狀態"
+  - "&e/teamlang list &7- 查看伺服器支援的所有語言列表"
+  - "&e/teamlang <語言代碼> &7- 手動切換指定語言 (如 &f/teamlang en_US&7)"
+  - "&e/teamlang auto &7- 恢復為根據客戶端自動檢測語言"
+  - "&e/teamlang reload &7- 重載所有語言包 (管理員)"
 
 # -------------------------------------------------------------------
 # 團隊創建與解散

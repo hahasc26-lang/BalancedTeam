@@ -110,7 +110,7 @@ public class DamageListener implements Listener {
             warnCooldowns.put(attacker.getUniqueId(), now);
             Map<String, String> map = new HashMap<>();
             map.put("PLAYER", victimName);
-            MessageUtil.sendMessage(attacker, plugin.getConfigManager().getMessage(messageKey, map));
+            MessageUtil.sendMessage(attacker, plugin.getConfigManager().getMessage(attacker, messageKey, map));
         }
     }
 }

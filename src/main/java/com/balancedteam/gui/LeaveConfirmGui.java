@@ -37,13 +37,13 @@ public class LeaveConfirmGui {
     public static void open(BalancedTeamPlugin plugin, Player player) {
         Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (team == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             return;
         }
 
         TeamMember member = team.getMember(player.getUniqueId());
         if (member != null && member.getRole() == TeamRole.LEADER) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_leave_leader_cant_leave"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_leave_leader_cant_leave"));
             SoundUtil.playError(player);
             return;
         }
@@ -52,13 +52,13 @@ public class LeaveConfirmGui {
         if (cd > 0) {
             Map<String, String> map = new HashMap<>();
             map.put("TIME", String.valueOf(cd));
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("cooldown", map));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "cooldown", map));
             SoundUtil.playError(player);
             return;
         }
 
         // 构建 GUI
-        String title = plugin.getConfigManager().getRawMessage(GuiConfigKeys.LEAVE_CONFIRM_TITLE);
+        String title = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LEAVE_CONFIRM_TITLE);
         GuiHolder holder = new GuiHolder();
         Inventory inv = Bukkit.createInventory(holder, 27, MessageUtil.color(title));
         holder.setInventory(inv);
@@ -67,8 +67,9 @@ public class LeaveConfirmGui {
         PagedGuiHelper.fillAll(inv, ItemBuilder.grayGlass());
 
         // ── 确认退出按钮（槽 11，一次性点击处理器，防止连击）──
-        String confirmName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.LEAVE_CONFIRM_NAME);
+        String confirmName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LEAVE_CONFIRM_NAME);
         List<String> confirmLore = plugin.getConfigManager().getMessageList(
+                player,
                 GuiConfigKeys.LEAVE_CONFIRM_LORE, Collections.emptyMap());
 
         ItemStack confirmItem = new ItemBuilder(Material.OAK_DOOR)
@@ -83,13 +84,13 @@ public class LeaveConfirmGui {
             // 再次校验（防止 GUI 开着期间发生变化）
             Team currentTeam = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
             if (currentTeam == null) {
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
                 return;
             }
 
             TeamMember currentMember = currentTeam.getMember(player.getUniqueId());
             if (currentMember != null && currentMember.getRole() == TeamRole.LEADER) {
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_leave_leader_cant_leave"));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_leave_leader_cant_leave"));
                 SoundUtil.playError(player);
                 return;
             }
@@ -98,7 +99,7 @@ public class LeaveConfirmGui {
             if (currentCd > 0) {
                 Map<String, String> map = new HashMap<>();
                 map.put("TIME", String.valueOf(currentCd));
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("cooldown", map));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "cooldown", map));
                 SoundUtil.playError(player);
                 return;
             }
@@ -111,24 +112,25 @@ public class LeaveConfirmGui {
                     map.put("TEAM", currentTeam.getName());
                     map.put("PLAYER", player.getName());
 
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_leave_success", map));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_leave_success", map));
 
                     for (UUID u : currentTeam.getMembers().keySet()) {
                         Player p = Bukkit.getPlayer(u);
                         if (p != null && p.isOnline()) {
-                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_leave_broadcast", map));
+                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_leave_broadcast", map));
                         }
                     }
                 } else {
                     SoundUtil.playError(player);
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("database_error"));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "database_error"));
                 }
             });
         });
 
         // ── 取消按钮（槽 15）──
-        String cancelName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.LEAVE_CANCEL_NAME);
+        String cancelName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LEAVE_CANCEL_NAME);
         List<String> cancelLore = plugin.getConfigManager().getMessageList(
+                player,
                 GuiConfigKeys.LEAVE_CANCEL_LORE, Collections.emptyMap());
 
         ItemStack cancelItem = new ItemBuilder(Material.LIME_CONCRETE)

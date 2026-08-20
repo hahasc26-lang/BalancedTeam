@@ -30,7 +30,7 @@ public class EnemyManageGui {
     public static void open(BalancedTeamPlugin plugin, Player player, int page) {
         Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (team == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             SoundUtil.playError(player);
             return;
         }
@@ -45,7 +45,7 @@ public class EnemyManageGui {
         Map<String, String> titleMap = new HashMap<>();
         titleMap.put("PAGE", String.valueOf(currentPage));
         titleMap.put("TOTAL_PAGE", String.valueOf(totalPages));
-        String title = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ENEMY_MANAGE_TITLE, titleMap);
+        String title = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_TITLE, titleMap);
 
         GuiHolder holder = new GuiHolder();
         Inventory inv = Bukkit.createInventory(holder, 54, MessageUtil.color(title));
@@ -70,10 +70,10 @@ public class EnemyManageGui {
             itemMap.put("TEAM", enemyTeam.getName());
             itemMap.put("COUNT", String.valueOf(enemyTeam.getMemberCount()));
 
-            String itemName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ENEMY_MANAGE_ITEM_NAME, itemMap);
+            String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_ITEM_NAME, itemMap);
             List<String> itemLore = isLeader
-                    ? plugin.getConfigManager().getMessageList(GuiConfigKeys.ENEMY_MANAGE_ITEM_LORE_LEADER, itemMap)
-                    : plugin.getConfigManager().getMessageList(GuiConfigKeys.ENEMY_MANAGE_ITEM_LORE, itemMap);
+                    ? plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ENEMY_MANAGE_ITEM_LORE_LEADER, itemMap)
+                    : plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ENEMY_MANAGE_ITEM_LORE, itemMap);
 
             ItemStack item = new ItemBuilder(Material.PLAYER_HEAD)
                     .skullOwner(enemyTeam.getLeaderUuid())
@@ -91,7 +91,7 @@ public class EnemyManageGui {
                             SoundUtil.playSuccess(player);
                             Map<String, String> msgMap = new HashMap<>();
                             msgMap.put("TEAM", finalEnemyTeam.getName());
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_remove_success", msgMap));
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_remove_success", msgMap));
                             holder.refresh(player);
                         }
                     });
@@ -101,8 +101,8 @@ public class EnemyManageGui {
 
         // 若无敌对队伍，显示占位提示 (槽位 13)
         if (enemyIds.isEmpty()) {
-            String emptyName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ENEMY_MANAGE_NO_ENEMY_NAME);
-            List<String> emptyLore = plugin.getConfigManager().getMessageList(GuiConfigKeys.ENEMY_MANAGE_NO_ENEMY_LORE, Collections.emptyMap());
+            String emptyName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_NO_ENEMY_NAME);
+            List<String> emptyLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ENEMY_MANAGE_NO_ENEMY_LORE, Collections.emptyMap());
             PagedGuiHelper.setupEmptyPlaceholder(inv, 13, Material.BARRIER, emptyName, emptyLore);
         }
 
@@ -112,16 +112,16 @@ public class EnemyManageGui {
         if (currentPage > 1) {
             Map<String, String> prevMap = new HashMap<>();
             prevMap.put("PAGE", String.valueOf(currentPage - 1));
-            String prevName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ENEMY_MANAGE_PREV_PAGE, prevMap);
+            String prevName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_PREV_PAGE, prevMap);
             PagedGuiHelper.setupPrevButton(holder, inv, 27, player, currentPage, prevName, () -> open(plugin, player, currentPage - 1));
         }
 
         // 宣战按钮（槽位 31），非管理员/队长灰色不可点
         boolean canDeclare = PermissionUtil.isOfficerOrLeader(player, team);
-        String addName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ENEMY_MANAGE_ADD_BUTTON_NAME);
+        String addName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_ADD_BUTTON_NAME);
         List<String> addLore = canDeclare
-                ? plugin.getConfigManager().getMessageList(GuiConfigKeys.ENEMY_MANAGE_ADD_BUTTON_LORE_LEADER, Collections.emptyMap())
-                : plugin.getConfigManager().getMessageList(GuiConfigKeys.ENEMY_MANAGE_ADD_BUTTON_LORE, Collections.emptyMap());
+                ? plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ENEMY_MANAGE_ADD_BUTTON_LORE_LEADER, Collections.emptyMap())
+                : plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ENEMY_MANAGE_ADD_BUTTON_LORE, Collections.emptyMap());
         Material addMaterial = canDeclare ? Material.REDSTONE : Material.GRAY_DYE;
         ItemStack addItem = new ItemBuilder(addMaterial).name(addName).lore(addLore).build();
         inv.setItem(31, addItem);
@@ -133,14 +133,14 @@ public class EnemyManageGui {
         }
 
         // 返回按钮（槽位 49）
-        String backName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ENEMY_MANAGE_BACK_BUTTON);
+        String backName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_BACK_BUTTON);
         PagedGuiHelper.setupBackButton(holder, inv, 49, player, backName, () -> TeamMenuGui.open(plugin, player));
 
         // 下一页（槽位 35）
         if (currentPage < totalPages) {
             Map<String, String> nextMap = new HashMap<>();
             nextMap.put("PAGE", String.valueOf(currentPage + 1));
-            String nextName = plugin.getConfigManager().getRawMessage(GuiConfigKeys.ENEMY_MANAGE_NEXT_PAGE, nextMap);
+            String nextName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_NEXT_PAGE, nextMap);
             PagedGuiHelper.setupNextButton(holder, inv, 35, player, currentPage, totalPages, nextName, () -> open(plugin, player, currentPage + 1));
         }
 
