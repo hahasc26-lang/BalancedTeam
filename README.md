@@ -83,7 +83,7 @@
 ### 自行构建
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/BalancedTeam.git
+git clone https://github.com/hahasc26-lang/BalancedTeam.git
 cd BalancedTeam
 
 # 标准构建（依赖由服务端的 libraries 系统自动加载）
@@ -101,7 +101,7 @@ mvn clean package -Pfatjar
 
 主配置文件位于 `plugins/BalancedTeam/config.yml`，关键配置项如下：
 
-```yaml
+---
 # 语言设置
 language: "zh_CN"  # zh_CN | zh_TW | en_US
 
@@ -279,7 +279,7 @@ Its core philosophy is **balance**: by restricting team sizes, alliance counts, 
 ### Build from Source
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/BalancedTeam.git
+git clone https://github.com/hahasc26-lang/BalancedTeam.git
 cd BalancedTeam
 
 # Standard build (dependencies loaded by server's libraries system)
@@ -296,28 +296,6 @@ Output: `target/BalancedTeam-x.x.x.jar`
 ## ⚙️ Configuration
 
 Main config: `plugins/BalancedTeam/config.yml`
-
-```yaml
-# Language
-language: "en_US"  # zh_CN | zh_TW | en_US
-
-# Database
-database:
-  type: "mysql"  # mysql or sqlite
-  mysql:
-    host: "localhost"
-    port: 3306
-    database: "minecraft"
-    username: "root"
-    password: "password"
-
-# Balance settings
-balance:
-  max_members: 10               # Max members per team
-  max_allies: 3                 # Max alliances per team
-  friendly_fire_default: false  # Default FF state
-  leave_team_cooldown_seconds: 60  # Leave cooldown (seconds)
-```
 
 ---
 
