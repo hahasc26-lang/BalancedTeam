@@ -256,6 +256,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         Map<String, String> map = new HashMap<>();
         map.put("PLAYER", target.getName());
         map.put("TEAM", team.getName());
+        map.put("TIMEOUT", String.valueOf(timeout));
 
         MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_invite_sent", map));
         MessageUtil.sendMessage(target, plugin.getConfigManager().getMessage("team_invite_received", map));

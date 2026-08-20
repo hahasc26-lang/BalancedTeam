@@ -163,6 +163,7 @@ public class PlayerSelectGui {
                     Map<String, String> sendMap = new HashMap<>();
                     sendMap.put("PLAYER", target.getName());
                     sendMap.put("TEAM", team.getName());
+                    sendMap.put("TIMEOUT", String.valueOf(timeout));
 
                     MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_invite_sent", sendMap));
                     MessageUtil.sendMessage(target, plugin.getConfigManager().getMessage("team_invite_received", sendMap));
@@ -274,6 +275,7 @@ public class PlayerSelectGui {
         Map<String, String> map = new HashMap<>();
         map.put("PLAYER", target.getName());
         map.put("TEAM", team.getName());
+        map.put("TIMEOUT", String.valueOf(timeout));
 
         MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_invite_sent", map));
         MessageUtil.sendMessage(target, plugin.getConfigManager().getMessage("team_invite_received", map));
