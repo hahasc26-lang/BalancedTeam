@@ -22,7 +22,7 @@ import java.util.*;
  */
 public class TeamListGui {
 
-    private static final int PAGE_SIZE = 45;
+    private static final int PAGE_SIZE = 45; // 定义每页显示的队伍数量（对应背包的 0-44 号槽位）
 
     public static void open(BalancedTeamPlugin plugin, Player player, int page) {
         List<Team> allTeams = new ArrayList<>(plugin.getTeamManager().getAllTeams());
@@ -76,8 +76,10 @@ public class TeamListGui {
             itemMap.put("ENEMIES", String.valueOf(enemyCount));
             itemMap.put("DATE", TimeUtil.formatDate(team.getCreatedAt()));
 
-            String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_TEAM_ITEM_NAME, itemMap);
-            List<String> itemLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.LIST_TEAM_ITEM_LORE, itemMap);
+            String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_TEAM_ITEM_NAME,
+                    itemMap);
+            List<String> itemLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.LIST_TEAM_ITEM_LORE,
+                    itemMap);
 
             ItemStack item = new ItemBuilder(Material.PLAYER_HEAD)
                     .skullOwner(team.getLeaderUuid())
@@ -107,7 +109,8 @@ public class TeamListGui {
             Map<String, String> prevMap = new HashMap<>();
             prevMap.put("PAGE", String.valueOf(currentPage - 1));
             String prevName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_PREV_PAGE, prevMap);
-            PagedGuiHelper.setupPrevButton(holder, inv, 45, player, currentPage, prevName, () -> open(plugin, player, currentPage - 1));
+            PagedGuiHelper.setupPrevButton(holder, inv, 45, player, currentPage, prevName,
+                    () -> open(plugin, player, currentPage - 1));
         }
 
         // 当前页统计信息 (槽位 49)
@@ -116,7 +119,8 @@ public class TeamListGui {
         sumMap.put("PAGE", String.valueOf(currentPage));
         sumMap.put("TOTAL_PAGES", String.valueOf(totalPages));
         String sumName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_SUMMARY_ITEM_NAME, sumMap);
-        List<String> sumLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.LIST_SUMMARY_ITEM_LORE, sumMap);
+        List<String> sumLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.LIST_SUMMARY_ITEM_LORE,
+                sumMap);
 
         ItemStack infoItem = new ItemBuilder(Material.BOOK)
                 .name(sumName)
@@ -129,7 +133,8 @@ public class TeamListGui {
             Map<String, String> nextMap = new HashMap<>();
             nextMap.put("PAGE", String.valueOf(currentPage + 1));
             String nextName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_NEXT_PAGE, nextMap);
-            PagedGuiHelper.setupNextButton(holder, inv, 53, player, currentPage, totalPages, nextName, () -> open(plugin, player, currentPage + 1));
+            PagedGuiHelper.setupNextButton(holder, inv, 53, player, currentPage, totalPages, nextName,
+                    () -> open(plugin, player, currentPage + 1));
         }
 
         player.openInventory(inv);
