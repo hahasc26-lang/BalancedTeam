@@ -275,7 +275,8 @@ gui:
     relation_enemies_header: "&c[Enemy Teams] ({COUNT}):"
     relation_ally_prefix: "&6✦ "
     relation_enemy_prefix: "&c⚔ "
-    back_button: "&c« Back to List"
+    back_button_in_team: "&c« Back to Team Dashboard"
+    back_button_not_in_team: "&c« Back to Team List"
     apply_button_name: "&a✉ Apply to Join Team"
     apply_button_lore:
       - "&7Click to submit a join application to team management"

@@ -35,6 +35,17 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.1.1] - 2026-08-21
+
+### 变化 / Changed
+
+- **新增 GUI 返回按钮配置**：在 `GuiConfigKeys` 中加入 `DETAIL_BACK_BUTTON_IN_TEAM` 与 `DETAIL_BACK_BUTTON_NOT_IN_TEAM`，对应语言文件 `back_button_in_team`、`back_button_not_in_team`，实现团队详情页面根据玩家是否在队伍中显示不同的返回按钮文字。
+- **更新语言文件**：在 `zh_TW.yml`、`zh_CN.yml`、`en_US.yml` 中新增 `back_button_in_team` 与 `back_button_not_in_team` 键，分别对应 “返回团队控制面板” / “返回团队列表”等文案。
+- **修改 TeamDetailGui**：根据玩家所属团队动态读取对应返回按钮键，并在槽位 31 设置返回动作；在团队内返回至团队控制面板，在未加入团队时返回至团队列表。
+- **版本升级**：项目版本号更新至 1.1.1（pom.xml）。
+
+---
+
 ## [1.0.2] - 2026-08-20
 
 ### 新增 / Added

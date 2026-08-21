@@ -6,7 +6,8 @@ package com.balancedteam.config;
  */
 public final class GuiConfigKeys {
 
-    private GuiConfigKeys() {}
+    private GuiConfigKeys() {
+    }
 
     // ==========================================
     // 1. /team list 队伍列表界面
@@ -31,7 +32,8 @@ public final class GuiConfigKeys {
     public static final String DETAIL_RELATION_ENEMIES_HEADER = "gui.detail.relation_enemies_header";
     public static final String DETAIL_RELATION_ALLY_PREFIX = "gui.detail.relation_ally_prefix";
     public static final String DETAIL_RELATION_ENEMY_PREFIX = "gui.detail.relation_enemy_prefix";
-    public static final String DETAIL_BACK_BUTTON = "gui.detail.back_button";
+    public static final String DETAIL_BACK_BUTTON_IN_TEAM = "gui.detail.back_button_in_team";
+    public static final String DETAIL_BACK_BUTTON_NOT_IN_TEAM = "gui.detail.back_button_not_in_team";
     public static final String DETAIL_APPLY_BUTTON_NAME = "gui.detail.apply_button_name";
     public static final String DETAIL_APPLY_BUTTON_LORE = "gui.detail.apply_button_lore";
     public static final String DETAIL_APPLIED_ITEM_NAME = "gui.detail.applied_item_name";

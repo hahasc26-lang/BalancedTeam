@@ -275,7 +275,8 @@ gui:
     relation_enemies_header: "&c【敵對隊伍】 ({COUNT}):"
     relation_ally_prefix: "&6✦ "
     relation_enemy_prefix: "&c⚔ "
-    back_button: "&c« 返回列表"
+    back_button_in_team: "&c« 返回團隊控制面板"
+    back_button_not_in_team: "&c« 返回團隊列表"
     apply_button_name: "&a✉ 申請加入該團隊"
     apply_button_lore:
       - "&7點擊向該團隊隊長與管理員發送入隊申請"
