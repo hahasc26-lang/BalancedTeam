@@ -6,6 +6,15 @@ All notable changes to this project are documented here.
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+
+## [1.1.1] - 2026-08-21
+
+### 变化 / Changed
+
+- **新增 GUI 返回按钮配置**：在 `GuiConfigKeys` 中加入 `DETAIL_BACK_BUTTON_IN_TEAM` 与 `DETAIL_BACK_BUTTON_NOT_IN_TEAM`，对应语言文件 `back_button_in_team`、`back_button_not_in_team`，实现团队详情页面根据玩家是否在队伍中显示不同的返回按钮文字。
+- **更新语言文件**：在 `zh_TW.yml`、`zh_CN.yml`、`en_US.yml` 中新增 `back_button_in_team` 与 `back_button_not_in_team` 键，分别对应 “返回团队控制面板” / “返回团队列表”等文案。
+- **修改 TeamDetailGui**：根据玩家所属团队动态读取对应返回按钮键，并在槽位 31 设置返回动作；在团队内返回至团队控制面板，在未加入团队时返回至团队列表。
+- **版本升级**：项目版本号更新至 1.1.1（pom.xml）。
 ---
 
 ## [1.1.0] - 2026-08-20
@@ -32,17 +41,6 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Player language preferences are persisted in `data/user_languages.yml` across disconnects.
 - **GUI 与消息系统多语言全面适配**：所有图形化 GUI 界面（团队菜单、未加队面板、成员管理、通知中心、全服列表、团队详情、目标选择、确认弹窗）均全面根据操作玩家客户端生效语言动态渲染标题与 Lore。
 - **Full Multi-Language Localization for GUI & Messages**: All graphical GUI interfaces (Team Menu, Not-Joined Panel, Member Management, Notification Center, Team List, Detail View, Selection, and Confirmation dialogs) dynamically render titles and lores according to each player's effective language.
-
----
-
-## [1.1.1] - 2026-08-21
-
-### 变化 / Changed
-
-- **新增 GUI 返回按钮配置**：在 `GuiConfigKeys` 中加入 `DETAIL_BACK_BUTTON_IN_TEAM` 与 `DETAIL_BACK_BUTTON_NOT_IN_TEAM`，对应语言文件 `back_button_in_team`、`back_button_not_in_team`，实现团队详情页面根据玩家是否在队伍中显示不同的返回按钮文字。
-- **更新语言文件**：在 `zh_TW.yml`、`zh_CN.yml`、`en_US.yml` 中新增 `back_button_in_team` 与 `back_button_not_in_team` 键，分别对应 “返回团队控制面板” / “返回团队列表”等文案。
-- **修改 TeamDetailGui**：根据玩家所属团队动态读取对应返回按钮键，并在槽位 31 设置返回动作；在团队内返回至团队控制面板，在未加入团队时返回至团队列表。
-- **版本升级**：项目版本号更新至 1.1.1（pom.xml）。
 
 ---
 
