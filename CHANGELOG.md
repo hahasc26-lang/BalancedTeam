@@ -8,6 +8,58 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.1.2] - 2026-08-21
+
+### 新增
+
+- **统一二次确认系统 (ConfirmGui)**：重构并统一了团队所有核心与危险操作的二次确认机制，全面支持 6 大模式：
+  - `DISBAND`（解散团队）：仅队长可操作，TNT 确认图标；
+  - `LEAVE`（退出团队）：非队长成员可操作，带退队冷却检测；
+  - `KICK`（踢出成员）：队长及管理员可操作，带严格职位层级（`canManage`）比对；
+  - `TRANSFER`（转让队长）：仅队长可操作，金冠确认图标，转让后原队长降为管理员；
+  - `PROMOTE`（提升管理员）：仅队长可操作，金甲确认图标，展示具体管理权限清单；
+  - `DEMOTE`（降职为队员）：仅队长可操作，铁甲确认图标，带权限回收提示。
+- **全流程防误触与双重前置校验**：所有确认操作在界面唤起前和点击确认后均执行严格权限与状态双重检查，并采用单次点击处理器防止并发连击。
+
+### 变更
+
+- **优化成员管理界面 (MemberManageGui)**：
+  - 右键踢出成员、Shift+点击转让队长、左键升职/降职均改为弹出对应的 `ConfirmGui` 二次确认弹窗，彻底杜绝误触。
+- **优化管理指令交互 (TeamCommand)**：
+  - `/team kick <玩家>`、`/team transfer <玩家>`、`/team promote <玩家>`、`/team demote <玩家>` 指令在校验基础参数与权限后，统一唤起 `ConfirmGui` 确认界面，保持 GUI 与指令交互一致性。
+- **动态配置占位符支持**：
+  - 团队菜单中邀请提示将硬编码的 60 秒替换为 `{TIMEOUT}` 动态占位符，与 `config.yml` 的 `invite_timeout_seconds` 实时绑定；
+  - 团队菜单中友伤切换提示将硬编码的 30 秒替换为 `{COOLDOWN}` 动态占位符，与 `friendly_fire_cooldown_seconds` 实时绑定。
+- **配置文件与多语言包同步**：
+  - `config.yml`：全文注释标准化为规范英文注释；
+  - `zh_CN.yml` / `zh_TW.yml` / `en_US.yml`：同步新增 `kick_confirm`、`transfer_confirm`、`promote_confirm`、`demote_confirm` 等多语言节点。
+
+### Added
+
+- **Unified Confirmation GUI (ConfirmGui)**：Refactored and unified confirmation dialogs for all critical and destructive operations, supporting 6 distinct modes:
+  - `DISBAND` (Disband Team): Leader-only, TNT confirmation icon;
+  - `LEAVE` (Leave Team): Non-leader members, with leave cooldown validation;
+  - `KICK` (Kick Member): Leaders and Officers, with strict role hierarchy (`canManage`) checks;
+  - `TRANSFER` (Transfer Leadership): Leader-only, Golden Helmet icon, demoting former leader to Officer;
+  - `PROMOTE` (Promote to Officer): Leader-only, Golden Chestplate icon, displaying officer permission details;
+  - `DEMOTE` (Demote to Member): Leader-only, Iron Chestplate icon, with permission revocation warning.
+- **Double Pre-Validation & Anti-Duplication Protection**: Strict permission and team status checks are performed both before opening the GUI and upon clicking confirm, protected by one-time click handlers against rapid concurrent clicks.
+
+### Changed
+
+- **Member Management GUI (MemberManageGui) Optimized**:
+  - Right-click kick, Shift-click leadership transfer, and Left-click promote/demote now all prompt their respective `ConfirmGui` dialogs, preventing accidental clicks.
+- **Management Commands (TeamCommand) Integration**:
+  - `/team kick <player>`, `/team transfer <player>`, `/team promote <player>`, and `/team demote <player>` commands now seamlessly open the corresponding `ConfirmGui` after parameter validation, harmonizing CLI and GUI user experiences.
+- **Dynamic Config Placeholder Integration**:
+  - Replaced hardcoded 60s in the invite lore with dynamic `{TIMEOUT}` placeholder bound to `invite_timeout_seconds` in `config.yml`;
+  - Replaced hardcoded 30s in friendly fire toggle tooltip with `{COOLDOWN}` placeholder bound to `friendly_fire_cooldown_seconds`.
+- **Configuration & Localization Updates**:
+  - `config.yml`: Translated all comments into professional and idiomatic English;
+  - `zh_CN.yml` / `zh_TW.yml` / `en_US.yml`: Synchronized with `kick_confirm`, `transfer_confirm`, `promote_confirm`, and `demote_confirm` language entries.
+
+---
+
 ## [1.1.1] - 2026-08-21
 
 ### 变更

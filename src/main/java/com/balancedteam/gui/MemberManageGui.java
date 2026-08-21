@@ -147,7 +147,7 @@ public class MemberManageGui {
                     return;
                 }
 
-                // 1. Shift+左键：队长转让团队
+                // 1. Shift+点击：打开转让队长二次确认界面
                 if (clickType == ClickType.SHIFT_LEFT || clickType == ClickType.SHIFT_RIGHT) {
                     if (!actorIsLeader) {
                         MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_leader"));
@@ -155,32 +155,11 @@ public class MemberManageGui {
                         return;
                     }
 
-                    plugin.getTeamManager().transferLeader(team, targetMember.getUuid()).thenAccept(success -> {
-                        if (success) {
-                            Map<String, String> map = new HashMap<>(itemMap);
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_transfer_success", map));
-                            SoundUtil.playSuccess(player);
-
-                            Player targetOnline = op.getPlayer();
-                            if (targetOnline != null && targetOnline.isOnline()) {
-                                MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage(targetOnline, "team_transfer_target_msg", map));
-                                SoundUtil.playDing(targetOnline);
-                            }
-
-                            for (UUID u : team.getMembers().keySet()) {
-                                Player p = Bukkit.getPlayer(u);
-                                if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId()) && (targetOnline == null || !p.getUniqueId().equals(targetOnline.getUniqueId()))) {
-                                    MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_transfer_broadcast", map));
-                                }
-                            }
-
-                            holder.refresh(player);
-                        }
-                    });
+                    ConfirmGui.open(plugin, player, ConfirmGui.Mode.TRANSFER, targetMember.getUuid());
                     return;
                 }
 
-                // 2. 右键点击：踢出团队
+                // 2. 右键点击：打开踢出二次确认界面
                 if (clickType.isRightClick()) {
                     if (actorMember == null || !actorMember.canManage(targetMember)) {
                         MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "no_permission"));
@@ -188,31 +167,11 @@ public class MemberManageGui {
                         return;
                     }
 
-                    plugin.getTeamManager().removeMember(team, targetMember.getUuid()).thenAccept(success -> {
-                        if (success) {
-                            Map<String, String> map = new HashMap<>(itemMap);
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_kick_success", map));
-                            SoundUtil.playSuccess(player);
-
-                            Player targetOnline = op.getPlayer();
-                            if (targetOnline != null && targetOnline.isOnline()) {
-                                MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage(targetOnline, "team_kick_target_msg", map));
-                            }
-
-                            for (UUID u : team.getMembers().keySet()) {
-                                Player p = Bukkit.getPlayer(u);
-                                if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId())) {
-                                    MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_kick_broadcast", map));
-                                }
-                            }
-
-                            holder.refresh(player);
-                        }
-                    });
+                    ConfirmGui.open(plugin, player, ConfirmGui.Mode.KICK, targetMember.getUuid());
                     return;
                 }
 
-                // 3. 左键点击：升降职
+                // 3. 左键点击：打开升职/降职二次确认界面
                 if (clickType.isLeftClick()) {
                     if (!actorIsLeader) {
                         MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_leader"));
@@ -221,53 +180,11 @@ public class MemberManageGui {
                     }
 
                     if (targetMember.getRole() == TeamRole.MEMBER) {
-                        // 提升为管理员
-                        plugin.getTeamManager().setMemberRole(team, targetMember.getUuid(), TeamRole.OFFICER).thenAccept(success -> {
-                            if (success) {
-                                Map<String, String> map = new HashMap<>(itemMap);
-                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_promote_success", map));
-                                SoundUtil.playSuccess(player);
-
-                                Player targetOnline = op.getPlayer();
-                                if (targetOnline != null && targetOnline.isOnline()) {
-                                    MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage(targetOnline, "team_member_promoted_msg", map));
-                                    SoundUtil.playDing(targetOnline);
-                                }
-
-                                for (UUID u : team.getMembers().keySet()) {
-                                    Player p = Bukkit.getPlayer(u);
-                                    if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId()) && (targetOnline == null || !p.getUniqueId().equals(targetOnline.getUniqueId()))) {
-                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_member_promote_broadcast", map));
-                                    }
-                                }
-
-                                holder.refresh(player);
-                            }
-                        });
+                        ConfirmGui.open(plugin, player, ConfirmGui.Mode.PROMOTE, targetMember.getUuid());
                     } else if (targetMember.isOfficer()) {
-                        // 降级为普通队员
-                        plugin.getTeamManager().setMemberRole(team, targetMember.getUuid(), TeamRole.MEMBER).thenAccept(success -> {
-                            if (success) {
-                                Map<String, String> map = new HashMap<>(itemMap);
-                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_demote_success", map));
-                                SoundUtil.playSuccess(player);
-
-                                Player targetOnline = op.getPlayer();
-                                if (targetOnline != null && targetOnline.isOnline()) {
-                                    MessageUtil.sendMessage(targetOnline, plugin.getConfigManager().getMessage(targetOnline, "team_member_demoted_msg", map));
-                                }
-
-                                for (UUID u : team.getMembers().keySet()) {
-                                    Player p = Bukkit.getPlayer(u);
-                                    if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId()) && (targetOnline == null || !p.getUniqueId().equals(targetOnline.getUniqueId()))) {
-                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_member_demote_broadcast", map));
-                                    }
-                                }
-
-                                holder.refresh(player);
-                            }
-                        });
+                        ConfirmGui.open(plugin, player, ConfirmGui.Mode.DEMOTE, targetMember.getUuid());
                     }
+                    return;
                 }
             });
 

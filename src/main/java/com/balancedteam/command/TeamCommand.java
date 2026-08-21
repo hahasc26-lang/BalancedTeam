@@ -1,8 +1,7 @@
 package com.balancedteam.command;
 
 import com.balancedteam.BalancedTeamPlugin;
-import com.balancedteam.gui.DisbandConfirmGui;
-import com.balancedteam.gui.LeaveConfirmGui;
+import com.balancedteam.gui.ConfirmGui;
 import com.balancedteam.gui.MemberManageGui;
 import com.balancedteam.gui.TeamListGui;
 import com.balancedteam.gui.TeamMenuGui;
@@ -64,7 +63,8 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 if (args.length > 1) {
                     try {
                         page = Integer.parseInt(args[1]);
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
                 TeamListGui.open(plugin, player, page);
                 break;
@@ -210,7 +210,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
             return;
         }
         // 打开二次确认 GUI
-        DisbandConfirmGui.open(plugin, player);
+        ConfirmGui.open(plugin, player, ConfirmGui.Mode.DISBAND);
     }
 
     private void handleInvite(Player player, String[] args) {
@@ -338,240 +338,158 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleLeave(Player player) {
-        LeaveConfirmGui.open(plugin, player);
+        ConfirmGui.open(plugin, player, ConfirmGui.Mode.LEAVE);
     }
 
     private void handleKick(Player player, String[] args) {
         if (args.length < 2) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("usage_kick"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "usage_kick"));
             return;
         }
 
         Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (team == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             return;
         }
 
         TeamMember actor = team.getMember(player.getUniqueId());
         if (actor == null || !actor.getRole().isAtLeast(TeamRole.OFFICER)) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_officer_or_leader"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_officer_or_leader"));
             return;
         }
 
         TeamMember targetMember = team.getMemberByName(args[1]);
         if (targetMember == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_player_not_in_your_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_player_not_in_your_team"));
             return;
         }
 
         UUID targetUuid = targetMember.getUuid();
         if (targetUuid.equals(player.getUniqueId())) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_kick_self"));
-            return;
-        }
-
-        if (targetMember.isLeader()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_kick_leader"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_kick_self"));
             return;
         }
 
         if (!actor.canManage(targetMember)) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("no_permission"));
+            if (targetMember.isLeader()) {
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_kick_leader"));
+            } else {
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "no_permission"));
+            }
             return;
         }
 
-        OfflinePlayer target = Bukkit.getOfflinePlayer(targetUuid);
-        plugin.getTeamManager().removeMember(team, targetUuid).thenAccept(success -> {
-            if (success) {
-                Map<String, String> map = new HashMap<>();
-                map.put("PLAYER", args[1]);
-                map.put("TEAM", team.getName());
-
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_kick_success", map));
-
-                Player onlineTarget = target.getPlayer();
-                if (onlineTarget != null && onlineTarget.isOnline()) {
-                    MessageUtil.sendMessage(onlineTarget, plugin.getConfigManager().getMessage("team_kick_target_msg", map));
-                }
-
-                for (UUID u : team.getMembers().keySet()) {
-                    Player p = Bukkit.getPlayer(u);
-                    if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId())) {
-                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_kick_broadcast", map));
-                    }
-                }
-            }
-        });
+        ConfirmGui.open(plugin, player, ConfirmGui.Mode.KICK, targetUuid);
     }
 
     private void handlePromote(Player player, String[] args) {
         if (args.length < 2) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("usage_promote"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "usage_promote"));
             return;
         }
 
         Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (team == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             return;
         }
 
         TeamMember actor = team.getMember(player.getUniqueId());
         if (actor == null || !actor.isLeader()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_leader"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_leader"));
             return;
         }
 
         TeamMember targetMember = team.getMemberByName(args[1]);
         if (targetMember == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_player_not_in_your_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_player_not_in_your_team"));
             return;
         }
 
         UUID targetUuid = targetMember.getUuid();
         if (targetUuid.equals(player.getUniqueId())) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_member_cant_manage_self"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_cant_manage_self"));
             return;
         }
 
         if (targetMember.isOfficer()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_member_already_officer"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_already_officer"));
             return;
         }
 
-        OfflinePlayer target = Bukkit.getOfflinePlayer(targetUuid);
-        plugin.getTeamManager().setMemberRole(team, targetUuid, TeamRole.OFFICER).thenAccept(success -> {
-            if (success) {
-                Map<String, String> map = new HashMap<>();
-                map.put("PLAYER", args[1]);
-                map.put("TEAM", team.getName());
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_member_promote_success", map));
-
-                Player onlineTarget = target.getPlayer();
-                if (onlineTarget != null && onlineTarget.isOnline()) {
-                    MessageUtil.sendMessage(onlineTarget, plugin.getConfigManager().getMessage("team_member_promoted_msg", map));
-                }
-
-                for (UUID u : team.getMembers().keySet()) {
-                    Player p = Bukkit.getPlayer(u);
-                    if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId()) && (onlineTarget == null || !p.getUniqueId().equals(onlineTarget.getUniqueId()))) {
-                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_member_promote_broadcast", map));
-                    }
-                }
-            }
-        });
+        ConfirmGui.open(plugin, player, ConfirmGui.Mode.PROMOTE, targetUuid);
     }
 
     private void handleDemote(Player player, String[] args) {
         if (args.length < 2) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("usage_demote"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "usage_demote"));
             return;
         }
 
         Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (team == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             return;
         }
 
         TeamMember actor = team.getMember(player.getUniqueId());
         if (actor == null || !actor.isLeader()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_leader"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_leader"));
             return;
         }
 
         TeamMember targetMember = team.getMemberByName(args[1]);
         if (targetMember == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_player_not_in_your_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_player_not_in_your_team"));
             return;
         }
 
         UUID targetUuid = targetMember.getUuid();
         if (targetUuid.equals(player.getUniqueId())) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_member_cant_manage_self"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_cant_manage_self"));
             return;
         }
 
         if (targetMember.getRole() == TeamRole.MEMBER) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_member_already_member"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_already_member"));
             return;
         }
 
-        OfflinePlayer target = Bukkit.getOfflinePlayer(targetUuid);
-        plugin.getTeamManager().setMemberRole(team, targetUuid, TeamRole.MEMBER).thenAccept(success -> {
-            if (success) {
-                Map<String, String> map = new HashMap<>();
-                map.put("PLAYER", args[1]);
-                map.put("TEAM", team.getName());
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_member_demote_success", map));
-
-                Player onlineTarget = target.getPlayer();
-                if (onlineTarget != null && onlineTarget.isOnline()) {
-                    MessageUtil.sendMessage(onlineTarget, plugin.getConfigManager().getMessage("team_member_demoted_msg", map));
-                }
-
-                for (UUID u : team.getMembers().keySet()) {
-                    Player p = Bukkit.getPlayer(u);
-                    if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId()) && (onlineTarget == null || !p.getUniqueId().equals(onlineTarget.getUniqueId()))) {
-                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_member_demote_broadcast", map));
-                    }
-                }
-            }
-        });
+        ConfirmGui.open(plugin, player, ConfirmGui.Mode.DEMOTE, targetUuid);
     }
 
     private void handleTransfer(Player player, String[] args) {
         if (args.length < 2) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("usage_transfer"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "usage_transfer"));
             return;
         }
 
         Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (team == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             return;
         }
 
         TeamMember actor = team.getMember(player.getUniqueId());
         if (actor == null || !actor.isLeader()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_leader"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_leader"));
             return;
         }
 
         TeamMember targetMember = team.getMemberByName(args[1]);
         if (targetMember == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_player_not_in_your_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_player_not_in_your_team"));
             return;
         }
 
         UUID targetUuid = targetMember.getUuid();
         if (targetUuid.equals(player.getUniqueId())) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_member_cant_manage_self"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_cant_manage_self"));
             return;
         }
 
-        OfflinePlayer target = Bukkit.getOfflinePlayer(targetUuid);
-        plugin.getTeamManager().transferLeader(team, targetUuid).thenAccept(success -> {
-            if (success) {
-                Map<String, String> map = new HashMap<>();
-                map.put("PLAYER", args[1]);
-                map.put("TEAM", team.getName());
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_transfer_success", map));
-
-                Player onlineTarget = target.getPlayer();
-                if (onlineTarget != null && onlineTarget.isOnline()) {
-                    MessageUtil.sendMessage(onlineTarget, plugin.getConfigManager().getMessage("team_transfer_target_msg", map));
-                }
-
-                for (UUID u : team.getMembers().keySet()) {
-                    Player p = Bukkit.getPlayer(u);
-                    if (p != null && p.isOnline() && !p.getUniqueId().equals(player.getUniqueId()) && (onlineTarget == null || !p.getUniqueId().equals(onlineTarget.getUniqueId()))) {
-                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_transfer_broadcast", map));
-                    }
-                }
-            }
-        });
+        ConfirmGui.open(plugin, player, ConfirmGui.Mode.TRANSFER, targetUuid);
     }
 
     private void handleChat(Player player, String[] args) {
@@ -692,14 +610,16 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                     return;
                 }
 
-                if (plugin.getRelationManager().getAllies(myTeam.getId()).size() >= plugin.getConfigManager().getMaxAllies()) {
+                if (plugin.getRelationManager().getAllies(myTeam.getId()).size() >= plugin.getConfigManager()
+                        .getMaxAllies()) {
                     Map<String, String> map = new HashMap<>();
                     map.put("MAX", String.valueOf(plugin.getConfigManager().getMaxAllies()));
                     MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_max_reached", map));
                     return;
                 }
 
-                if (plugin.getRelationManager().getAllies(targetTeam.getId()).size() >= plugin.getConfigManager().getMaxAllies()) {
+                if (plugin.getRelationManager().getAllies(targetTeam.getId()).size() >= plugin.getConfigManager()
+                        .getMaxAllies()) {
                     MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_target_max_reached"));
                     return;
                 }
@@ -720,7 +640,8 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 if (targetLeader != null && targetLeader.isOnline()) {
                     Map<String, String> reqMap = new HashMap<>();
                     reqMap.put("TEAM", myTeam.getName());
-                    MessageUtil.sendMessage(targetLeader, plugin.getConfigManager().getMessage("ally_request_received", reqMap));
+                    MessageUtil.sendMessage(targetLeader,
+                            plugin.getConfigManager().getMessage("ally_request_received", reqMap));
                 }
                 break;
             }
@@ -728,27 +649,31 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 if (!plugin.getRelationManager().hasPendingAllyRequest(targetTeam.getId(), myTeam.getId())) {
                     Map<String, String> map = new HashMap<>();
                     map.put("TEAM", targetTeam.getName());
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_no_pending_request", map));
+                    MessageUtil.sendMessage(player,
+                            plugin.getConfigManager().getMessage("ally_no_pending_request", map));
                     return;
                 }
 
-                plugin.getRelationManager().acceptAllyRequest(targetTeam.getId(), myTeam.getId()).thenAccept(success -> {
-                    if (success) {
-                        Map<String, String> map = new HashMap<>();
-                        map.put("TEAM", targetTeam.getName());
-                        map.put("TEAM1", myTeam.getName());
-                        map.put("TEAM2", targetTeam.getName());
+                plugin.getRelationManager().acceptAllyRequest(targetTeam.getId(), myTeam.getId())
+                        .thenAccept(success -> {
+                            if (success) {
+                                Map<String, String> map = new HashMap<>();
+                                map.put("TEAM", targetTeam.getName());
+                                map.put("TEAM1", myTeam.getName());
+                                map.put("TEAM2", targetTeam.getName());
 
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_established", map));
+                                MessageUtil.sendMessage(player,
+                                        plugin.getConfigManager().getMessage("ally_established", map));
 
-                        Player targetLeader = Bukkit.getPlayer(targetTeam.getLeaderUuid());
-                        if (targetLeader != null && targetLeader.isOnline()) {
-                            Map<String, String> m2 = new HashMap<>();
-                            m2.put("TEAM", myTeam.getName());
-                            MessageUtil.sendMessage(targetLeader, plugin.getConfigManager().getMessage("ally_established", m2));
-                        }
-                    }
-                });
+                                Player targetLeader = Bukkit.getPlayer(targetTeam.getLeaderUuid());
+                                if (targetLeader != null && targetLeader.isOnline()) {
+                                    Map<String, String> m2 = new HashMap<>();
+                                    m2.put("TEAM", myTeam.getName());
+                                    MessageUtil.sendMessage(targetLeader,
+                                            plugin.getConfigManager().getMessage("ally_established", m2));
+                                }
+                            }
+                        });
                 break;
             }
             case "remove": {
@@ -763,7 +688,8 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                     if (success) {
                         Map<String, String> map = new HashMap<>();
                         map.put("TEAM", targetTeam.getName());
-                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_remove_success", map));
+                        MessageUtil.sendMessage(player,
+                                plugin.getConfigManager().getMessage("ally_remove_success", map));
                     }
                 });
                 break;
@@ -829,7 +755,8 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 return;
             }
 
-            if (plugin.getRelationManager().getEnemies(myTeam.getId()).size() >= plugin.getConfigManager().getMaxEnemies()) {
+            if (plugin.getRelationManager().getEnemies(myTeam.getId()).size() >= plugin.getConfigManager()
+                    .getMaxEnemies()) {
                 Map<String, String> map = new HashMap<>();
                 map.put("MAX", String.valueOf(plugin.getConfigManager().getMaxEnemies()));
                 MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_max_reached", map));
@@ -870,7 +797,8 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         }
 
         if (team == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(args.length > 1 ? "team_not_found" : "team_not_in_team"));
+            MessageUtil.sendMessage(player,
+                    plugin.getConfigManager().getMessage(args.length > 1 ? "team_not_found" : "team_not_in_team"));
             return;
         }
 
@@ -903,7 +831,9 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> list = new ArrayList<>();
         if (args.length == 1) {
-            list.addAll(Arrays.asList("help", "list", "menu", "gui", "members", "create", "disband", "invite", "accept", "reject", "leave", "kick", "promote", "demote", "transfer", "chat", "msg", "ff", "ally", "enemy", "info", "lang"));
+            list.addAll(Arrays.asList("help", "list", "menu", "gui", "members", "create", "disband", "invite", "accept",
+                    "reject", "leave", "kick", "promote", "demote", "transfer", "chat", "msg", "ff", "ally", "enemy",
+                    "info", "lang"));
             return filter(list, args[0]);
         }
 
@@ -918,7 +848,8 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
             String sub = args[0].toLowerCase();
             switch (sub) {
                 case "invite":
-                    return filter(Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).collect(Collectors.toList()), args[1]);
+                    return filter(Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).collect(Collectors.toList()),
+                            args[1]);
                 case "kick":
                 case "promote":
                 case "demote":
@@ -943,14 +874,16 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 case "accept":
                 case "reject":
                 case "info":
-                    return filter(plugin.getTeamManager().getAllTeams().stream().map(t -> t.getName()).collect(Collectors.toList()), args[1]);
+                    return filter(plugin.getTeamManager().getAllTeams().stream().map(t -> t.getName())
+                            .collect(Collectors.toList()), args[1]);
             }
         }
 
         if (args.length == 3) {
             String sub = args[0].toLowerCase();
             if ("ally".equals(sub) || "enemy".equals(sub)) {
-                return filter(plugin.getTeamManager().getAllTeams().stream().map(t -> t.getName()).collect(Collectors.toList()), args[2]);
+                return filter(plugin.getTeamManager().getAllTeams().stream().map(t -> t.getName())
+                        .collect(Collectors.toList()), args[2]);
             }
         }
 
@@ -958,7 +891,8 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
     }
 
     private List<String> filter(List<String> raw, String prefix) {
-        if (prefix == null || prefix.isEmpty()) return raw;
+        if (prefix == null || prefix.isEmpty())
+            return raw;
         return raw.stream().filter(s -> s.toLowerCase().startsWith(prefix.toLowerCase())).collect(Collectors.toList());
     }
 }

@@ -70,19 +70,39 @@ public final class GuiConfigKeys {
     public static final String MENU_ENEMY_BUTTON_LORE = "gui.menu.enemy_button_lore";
 
     // ==========================================
-    // 4. 解散团队确认界面 与 退出团队确认界面
+    // 4. 通用确认界面 (解散团队 / 退出团队 / 踢出成员)
     // ==========================================
+    // 解散团队专属
     public static final String DISBAND_CONFIRM_TITLE = "gui.disband_confirm.title";
     public static final String DISBAND_CONFIRM_NAME = "gui.disband_confirm.confirm_name";
     public static final String DISBAND_CONFIRM_LORE = "gui.disband_confirm.confirm_lore";
-    public static final String DISBAND_CANCEL_NAME = "gui.disband_confirm.cancel_name";
-    public static final String DISBAND_CANCEL_LORE = "gui.disband_confirm.cancel_lore";
-
+    // 退出团队专属
     public static final String LEAVE_CONFIRM_TITLE = "gui.leave_confirm.title";
     public static final String LEAVE_CONFIRM_NAME = "gui.leave_confirm.confirm_name";
     public static final String LEAVE_CONFIRM_LORE = "gui.leave_confirm.confirm_lore";
-    public static final String LEAVE_CANCEL_NAME = "gui.leave_confirm.cancel_name";
-    public static final String LEAVE_CANCEL_LORE = "gui.leave_confirm.cancel_lore";
+    // 踢出成员专属
+    public static final String KICK_CONFIRM_TITLE = "gui.kick_confirm.title";
+    public static final String KICK_CONFIRM_NAME = "gui.kick_confirm.confirm_name";
+    public static final String KICK_CONFIRM_LORE = "gui.kick_confirm.confirm_lore";
+    // 转让团队专属
+    public static final String TRANSFER_CONFIRM_TITLE = "gui.transfer_confirm.title";
+    public static final String TRANSFER_CONFIRM_NAME = "gui.transfer_confirm.confirm_name";
+    public static final String TRANSFER_CONFIRM_LORE = "gui.transfer_confirm.confirm_lore";
+    // 提升管理员专属
+    public static final String PROMOTE_CONFIRM_TITLE = "gui.promote_confirm.title";
+    public static final String PROMOTE_CONFIRM_NAME = "gui.promote_confirm.confirm_name";
+    public static final String PROMOTE_CONFIRM_LORE = "gui.promote_confirm.confirm_lore";
+    // 降职队员专属
+    public static final String DEMOTE_CONFIRM_TITLE = "gui.demote_confirm.title";
+    public static final String DEMOTE_CONFIRM_NAME = "gui.demote_confirm.confirm_name";
+    public static final String DEMOTE_CONFIRM_LORE = "gui.demote_confirm.confirm_lore";
+    // 取消按钮
+    public static final String CONFIRM_CANCEL_NAME = "gui.confirm.cancel_name";
+    public static final String CONFIRM_CANCEL_LORE = "gui.confirm.cancel_lore";
+    public static final String CONFIRM_CANCEL_TO_MENU_NAME = "gui.confirm.cancel_to_menu_name";
+    public static final String CONFIRM_CANCEL_TO_MENU_LORE = "gui.confirm.cancel_to_menu_lore";
+    public static final String CONFIRM_CANCEL_TO_MEMBERS_NAME = "gui.confirm.cancel_to_members_name";
+    public static final String CONFIRM_CANCEL_TO_MEMBERS_LORE = "gui.confirm.cancel_to_members_lore";
 
     // ==========================================
     // 5. 盟友管理界面

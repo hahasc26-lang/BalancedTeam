@@ -306,7 +306,7 @@ gui:
     ff_item_name: "&6⚔ 团队友伤开关"
     ff_status_on: "&c开启 (互相可造成伤害)"
     ff_status_off: "&a关闭 (互相免疫伤害)"
-    ff_leader_tip: "&e▶ 点击切换友伤状态 (冷却: 30秒)"
+    ff_leader_tip: "&e▶ 点击切换友伤状态 (冷却: {COOLDOWN}秒)"
     ff_non_leader_tip: "&c✖ 仅队长有权修改此设置"
     ff_disabled_tip: "&c✖ 服务器已锁定友伤开启，禁止修改"
     invite_item_name: "&a✉ 邀请成员"
@@ -314,7 +314,7 @@ gui:
       - "&7点击打开在线玩家列表直接发送邀请"
       - "&7支持一键邀请在线玩家或输入名称"
       - ""
-      - "&7提示: 被邀请玩家有 60 秒时间确认。"
+      - "&7提示: 被邀请玩家有 &e{TIMEOUT} &7秒时间确认。"
       - ""
       - "&e▶ 点击打开玩家选择界面"
     disband_item_name: "&c✖ 解散团队"
@@ -366,9 +366,6 @@ gui:
       - "&7团队及全部同盟关系将被永久删除。"
       - ""
       - "&c▶ 点击确认解散团队"
-    cancel_name: "&a✖ 取消"
-    cancel_lore:
-      - "&7点击返回团队控制面板"
 
   # 退出团队确认界面
   leave_confirm:
@@ -379,9 +376,60 @@ gui:
       - "&7退出后将进入退队冷却时间。"
       - ""
       - "&c▶ 点击确认离开当前团队"
+
+  # 踢出成员确认界面
+  kick_confirm:
+    title: "&4⚠ 确认踢出成员: &c{PLAYER}？"
+    confirm_name: "&c✔ 确认踢出"
+    confirm_lore:
+      - "&c警告: 确定要将成员 &e{PLAYER} &c移出团队吗？"
+      - "&7被移出的成员将失去所有团队权限与加成。"
+      - ""
+      - "&c▶ 点击确认踢出该成员"
+
+  # 转让团队确认界面
+  transfer_confirm:
+    title: "&6👑 确认转让队长职位: &e{PLAYER}？"
+    confirm_name: "&6✔ 确认转让"
+    confirm_lore:
+      - "&c警告: 转让后你将降级为管理员，失去最高控制权！"
+      - "&7新队长将拥有解散团队、任命管理等全部权限。"
+      - ""
+      - "&e▶ 点击确认将队长职位转让给 &f{PLAYER}"
+
+  # 提升管理员确认界面
+  promote_confirm:
+    title: "&a🛡 确认提升为管理员: &e{PLAYER}？"
+    confirm_name: "&a✔ 确认提升"
+    confirm_lore:
+      - "&7提升后该成员将获得以下管理员权限:"
+      - "&f• &7邀请新成员入队"
+      - "&f• &7审理入队申请"
+      - "&f• &7踢出普通队员"
+      - ""
+      - "&a▶ 点击确认将 &e{PLAYER} &a提升为团队管理员"
+
+  # 降职队员确认界面
+  demote_confirm:
+    title: "&e👤 确认降职为队员: &e{PLAYER}？"
+    confirm_name: "&e✔ 确认降职"
+    confirm_lore:
+      - "&c警告: 降职后该成员将失去所有管理权限！"
+      - ""
+      - "&e▶ 点击确认将 &e{PLAYER} &e降职为普通队员"
+
+  # 通用确认界面 - 取消按钮
+  confirm:
     cancel_name: "&a✖ 取消"
     cancel_lore:
-      - "&7点击返回团队控制面板"
+      - "&7点击取消此操作并返回"
+    cancel_to_menu_name: "&a« 返回团队面板"
+    cancel_to_menu_lore:
+      - "&7点击取消并返回团队控制面板"
+    cancel_to_members_name: "&a« 返回成员管理"
+    cancel_to_members_lore:
+      - "&7点击取消并返回成员管理界面"
+
 
   # 5. 盟友管理界面
   ally_manage:

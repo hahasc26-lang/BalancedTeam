@@ -306,7 +306,7 @@ gui:
     ff_item_name: "&6⚔ Friendly Fire Toggle"
     ff_status_on: "&cEnabled (Can damage teammates)"
     ff_status_off: "&aDisabled (Immune to team damage)"
-    ff_leader_tip: "&e▶ Click to toggle friendly fire (Cooldown: 30s)"
+    ff_leader_tip: "&e▶ Click to toggle friendly fire (Cooldown: {COOLDOWN}s)"
     ff_non_leader_tip: "&c✖ Only the leader can toggle this setting"
     ff_disabled_tip: "&c✖ Server has locked friendly fire ON, toggling disabled"
     invite_item_name: "&a✉ Invite Member"
@@ -314,7 +314,7 @@ gui:
       - "&7Click to open online players list and send invite"
       - "&7Supports one-click invite or manual name input"
       - ""
-      - "&7Note: Invited player has 60 seconds to confirm."
+      - "&7Note: Invited player has &e{TIMEOUT} &7seconds to confirm."
       - ""
       - "&e▶ Click to open player selection"
     disband_item_name: "&c✖ Disband Team"
@@ -366,9 +366,6 @@ gui:
       - "&7The team and all alliance relations will be permanently deleted."
       - ""
       - "&c▶ Click to confirm disbanding team"
-    cancel_name: "&a✖ Cancel"
-    cancel_lore:
-      - "&7Click to return to dashboard"
 
   # Leave Team Confirmation Menu
   leave_confirm:
@@ -379,9 +376,60 @@ gui:
       - "&7A leave cooldown will be applied after exiting."
       - ""
       - "&c▶ Click to confirm leaving team"
+
+  # Kick Member Confirmation Menu
+  kick_confirm:
+    title: "&4⚠ Confirm Kick: &c{PLAYER}?"
+    confirm_name: "&c✔ Confirm Kick"
+    confirm_lore:
+      - "&cWarning: Are you sure you want to kick &e{PLAYER}&c?"
+      - "&7The kicked member will lose all team permissions."
+      - ""
+      - "&c▶ Click to confirm kick"
+
+  # Transfer Leadership Confirmation Menu
+  transfer_confirm:
+    title: "&6👑 Confirm Transfer Leadership: &e{PLAYER}?"
+    confirm_name: "&6✔ Confirm Transfer"
+    confirm_lore:
+      - "&cWarning: You will be demoted to Officer and lose supreme control!"
+      - "&7The new leader will obtain full permissions including disbanding the team."
+      - ""
+      - "&e▶ Click to confirm transferring leadership to &f{PLAYER}"
+
+  # Promote Officer Confirmation Menu
+  promote_confirm:
+    title: "&a🛡 Confirm Promote to Officer: &e{PLAYER}?"
+    confirm_name: "&a✔ Confirm Promote"
+    confirm_lore:
+      - "&7Promoting gives this member officer privileges:"
+      - "&f• &7Invite new members"
+      - "&f• &7Review join applications"
+      - "&f• &7Kick regular members"
+      - ""
+      - "&a▶ Click to promote &e{PLAYER} &ato Officer"
+
+  # Demote Member Confirmation Menu
+  demote_confirm:
+    title: "&e👤 Confirm Demote to Member: &e{PLAYER}?"
+    confirm_name: "&e✔ Confirm Demote"
+    confirm_lore:
+      - "&cWarning: Demoting will revoke all officer privileges!"
+      - ""
+      - "&e▶ Click to demote &e{PLAYER} &eto Member"
+
+  # Shared Confirm GUI - Cancel Button
+  confirm:
     cancel_name: "&a✖ Cancel"
     cancel_lore:
-      - "&7Click to return to dashboard"
+      - "&7Click to cancel and return"
+    cancel_to_menu_name: "&a« Back to Dashboard"
+    cancel_to_menu_lore:
+      - "&7Click to return to team dashboard"
+    cancel_to_members_name: "&a« Back to Members"
+    cancel_to_members_lore:
+      - "&7Click to return to member management"
+
 
   # 5. Alliance Manager GUI
   ally_manage:
