@@ -4,6 +4,7 @@
   <img src="https://img.shields.io/badge/Minecraft-1.20.4%2B-brightgreen?style=flat-square&logo=minecraft" alt="Minecraft Version">
   <img src="https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk" alt="Java 21">
   <img src="https://img.shields.io/badge/Build-Maven-blue?style=flat-square&logo=apache-maven" alt="Maven">
+  <img src="https://img.shields.io/badge/PlaceholderAPI-Supported-blueviolet?style=flat-square" alt="PlaceholderAPI">
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License">
   <img src="https://img.shields.io/badge/Platform-Bukkit%20%7C%20Spigot%20%7C%20Paper-purple?style=flat-square" alt="Platform">
 </p>
@@ -12,7 +13,7 @@
   <b>中文</b> | <a href="#english">English</a>
 </p>
 
-专为**无规则 (Anarchy)** 及**生存竞技**服务器设计的高性能团队插件，兼容 Bukkit / Spigot / Paper。
+专为**无规则 (Anarchy)** 及**生存竞技**服务器设计的高性能团队插件，兼容 Bukkit / Spigot / Paper，原生支持 **PlaceholderAPI**。
 
 ---
 
@@ -135,6 +136,20 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
 | `%balancedteam_team_ff_<队名>%` | 指定队伍的友伤状态 |
 | `%balancedteam_team_exists_<队名>%` | 指定队伍是否存在（`true` / `false`） |
 
+**配置示例 (例如 TAB / 计分板 / 聊天插件)：**
+```yaml
+# 聊天格式调用示例
+format: '{balancedteam_tag} &7[{balancedteam_role}&7] &f{DISPLAYNAME}&7: &f{MESSAGE}'
+
+# 计分板调用示例
+lines:
+  - '&b&l我的战队'
+  - '&7战队: &f%balancedteam_name%'
+  - '&7职位: &e%balancedteam_role%'
+  - '&7人数: &a%balancedteam_online%&7/&f%balancedteam_members%'
+  - '&7同盟: &b%balancedteam_allies%&7/&f%balancedteam_max_allies%'
+```
+
 ---
 
 ## 许可证
@@ -151,7 +166,7 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
   <a href="#balancedteam">中文</a> | <b>English</b>
 </p>
 
-A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive** Minecraft servers. Compatible with Bukkit / Spigot / Paper.
+A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive** Minecraft servers. Compatible with Bukkit / Spigot / Paper with native **PlaceholderAPI** integration.
 
 ---
 
@@ -273,6 +288,20 @@ Native [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/)
 | `%balancedteam_team_created_<teamName>%` | Creation time of specific team |
 | `%balancedteam_team_ff_<teamName>%` | Friendly fire of specific team |
 | `%balancedteam_team_exists_<teamName>%` | Whether specific team exists (`true` / `false`) |
+
+**Configuration Examples (e.g. TAB / Scoreboards / Chat Format):**
+```yaml
+# Chat format example
+format: '{balancedteam_tag} &7[{balancedteam_role}&7] &f{DISPLAYNAME}&7: &f{MESSAGE}'
+
+# Scoreboard example
+lines:
+  - '&b&lMY TEAM'
+  - '&7Team: &f%balancedteam_name%'
+  - '&7Role: &e%balancedteam_role%'
+  - '&7Members: &a%balancedteam_online%&7/&f%balancedteam_members%'
+  - '&7Allies: &b%balancedteam_allies%&7/&f%balancedteam_max_allies%'
+```
 
 ---
 
