@@ -87,6 +87,54 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
 
 ---
 
+## PlaceholderAPI 占位符变量
+
+插件原生集成 [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/)，前缀为 `%balancedteam_<变量名>%`：
+
+| 占位符变量 | 说明 |
+|------------|------|
+| `%balancedteam_in_team%` / `%balancedteam_has_team%` | 是否在队伍中（`true` / `false`） |
+| `%balancedteam_name%` / `%balancedteam_team_name%` | 所在团队名称 |
+| `%balancedteam_id%` / `%balancedteam_team_id%` | 团队数据库 ID |
+| `%balancedteam_tag%` | 团队标签格式（如 `[战队名]`） |
+| `%balancedteam_leader%` / `%balancedteam_leader_name%` | 队长名称 |
+| `%balancedteam_leader_uuid%` | 队长 UUID |
+| `%balancedteam_is_leader%` | 是否为队长（`true` / `false`） |
+| `%balancedteam_is_officer%` | 是否为管理员及以上（`true` / `false`） |
+| `%balancedteam_role%` | 职位展示名（如 `队长`、`管理员`、`队员`） |
+| `%balancedteam_role_raw%` | 职位枚举名（`LEADER` / `OFFICER` / `MEMBER` / `NONE`） |
+| `%balancedteam_role_level%` | 职位等级数字（`3` / `2` / `1` / `0`） |
+| `%balancedteam_description%` | 团队简介公告 |
+| `%balancedteam_friendly_fire%` / `%balancedteam_ff%` | 友伤开关状态（`true` / `false`） |
+| `%balancedteam_friendly_fire_formatted%` | 友伤展示状态（`开启` / `关闭`） |
+| `%balancedteam_created_at%` | 团队创建时间 |
+| `%balancedteam_joined_at%` | 玩家入队时间 |
+| `%balancedteam_members%` / `%balancedteam_member_count%` | 团队当前人数 |
+| `%balancedteam_max_members%` | 团队人数上限 |
+| `%balancedteam_online%` / `%balancedteam_online_count%` | 团队在线人数 |
+| `%balancedteam_allies%` / `%balancedteam_ally_count%` | 盟友队伍数量 |
+| `%balancedteam_max_allies%` | 盟友队伍上限 |
+| `%balancedteam_enemies%` / `%balancedteam_enemy_count%` | 敌对队伍数量 |
+| `%balancedteam_max_enemies%` | 敌对队伍上限 |
+| `%balancedteam_allies_list%` | 盟友队伍名称列表（逗号分隔） |
+| `%balancedteam_enemies_list%` | 敌对队伍名称列表（逗号分隔） |
+| `%balancedteam_total_teams%` | 全服团队总数 |
+| `%balancedteam_total_members%` | 全服已加入团队的总玩家数 |
+| `%balancedteam_relation_<玩家名>%` | 与目标玩家的关系（`SAME_TEAM` / `ALLY` / `ENEMY` / `NONE`） |
+| `%balancedteam_relation_team_<队名>%` | 与目标团队的关系（`SAME_TEAM` / `ALLY` / `ENEMY` / `NONE`） |
+| `%balancedteam_is_ally_<玩家名>%` | 目标玩家是否为同盟（`true` / `false`） |
+| `%balancedteam_is_enemy_<玩家名>%` | 目标玩家是否为敌对（`true` / `false`） |
+| `%balancedteam_is_same_team_<玩家名>%` | 目标玩家是否为同队（`true` / `false`） |
+| `%balancedteam_team_leader_<队名>%` | 指定队伍的队长名 |
+| `%balancedteam_team_members_<队名>%` | 指定队伍的人数 |
+| `%balancedteam_team_online_<队名>%` | 指定队伍的在线人数 |
+| `%balancedteam_team_desc_<队名>%` | 指定队伍的简介 |
+| `%balancedteam_team_created_<队名>%` | 指定队伍的创建时间 |
+| `%balancedteam_team_ff_<队名>%` | 指定队伍的友伤状态 |
+| `%balancedteam_team_exists_<队名>%` | 指定队伍是否存在（`true` / `false`） |
+
+---
+
 ## 许可证
 
 [MIT License](LICENSE)
@@ -113,6 +161,7 @@ A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive**
 - **Team Chat** — `/tc` channel with lock mode; OP spy mode to monitor all channels
 - **Graphical GUI** — Team menu, member management, server-wide list, confirmation dialogs
 - **Dual Storage** — MySQL (production) / SQLite (zero-config), backed by HikariCP
+- **PlaceholderAPI Support** — Full PlaceholderAPI integration with dozens of team and player placeholders
 - **Auto Multi-Language System** — Auto-detects Minecraft client locale via `Player.getLocale()`, with smart fuzzy matching (e.g. `zh_HK` falls back to `zh_CN`/`zh_TW`), server fallbacks, and in-memory caching. Built-in `zh_CN` / `zh_TW` / `en_US`; players can override or reset via `/teamlang`.
 
 ---
@@ -173,6 +222,54 @@ mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
 | `balancedteam.use` | Everyone | Basic commands |
 | `balancedteam.admin` | OP | Admin commands and language reload |
 | `balancedteam.admin.spy` | OP | Monitor team chats |
+
+---
+
+## PlaceholderAPI Placeholders
+
+Native [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) expansion with `%balancedteam_<placeholder>%`:
+
+| Placeholder | Description |
+|-------------|-------------|
+| `%balancedteam_in_team%` / `%balancedteam_has_team%` | Whether player is in a team (`true` / `false`) |
+| `%balancedteam_name%` / `%balancedteam_team_name%` | Player's team name |
+| `%balancedteam_id%` / `%balancedteam_team_id%` | Player's team ID |
+| `%balancedteam_tag%` | Formatted team tag (e.g. `[TeamName]`) |
+| `%balancedteam_leader%` / `%balancedteam_leader_name%` | Leader username |
+| `%balancedteam_leader_uuid%` | Leader UUID |
+| `%balancedteam_is_leader%` | Whether player is team leader (`true` / `false`) |
+| `%balancedteam_is_officer%` | Whether player is officer or leader (`true` / `false`) |
+| `%balancedteam_role%` | Role display name (e.g. `Leader`, `Officer`, `Member`) |
+| `%balancedteam_role_raw%` | Role enum name (`LEADER` / `OFFICER` / `MEMBER` / `NONE`) |
+| `%balancedteam_role_level%` | Role level number (`3` / `2` / `1` / `0`) |
+| `%balancedteam_description%` | Team description |
+| `%balancedteam_friendly_fire%` / `%balancedteam_ff%` | Friendly fire status (`true` / `false`) |
+| `%balancedteam_friendly_fire_formatted%` | Formatted friendly fire status |
+| `%balancedteam_created_at%` | Team creation time |
+| `%balancedteam_joined_at%` | Player team join time |
+| `%balancedteam_members%` / `%balancedteam_member_count%` | Current member count |
+| `%balancedteam_max_members%` | Max allowed members |
+| `%balancedteam_online%` / `%balancedteam_online_count%` | Online member count |
+| `%balancedteam_allies%` / `%balancedteam_ally_count%` | Allied teams count |
+| `%balancedteam_max_allies%` | Max allowed allies |
+| `%balancedteam_enemies%` / `%balancedteam_enemy_count%` | Enemy teams count |
+| `%balancedteam_max_enemies%` | Max allowed enemies |
+| `%balancedteam_allies_list%` | List of ally team names |
+| `%balancedteam_enemies_list%` | List of enemy team names |
+| `%balancedteam_total_teams%` | Total teams on server |
+| `%balancedteam_total_members%` | Total players in teams across server |
+| `%balancedteam_relation_<player>%` | Relation with target player (`SAME_TEAM` / `ALLY` / `ENEMY` / `NONE`) |
+| `%balancedteam_relation_team_<teamName>%` | Relation with target team (`SAME_TEAM` / `ALLY` / `ENEMY` / `NONE`) |
+| `%balancedteam_is_ally_<player>%` | Whether target player is ally (`true` / `false`) |
+| `%balancedteam_is_enemy_<player>%` | Whether target player is enemy (`true` / `false`) |
+| `%balancedteam_is_same_team_<player>%` | Whether target player is teammate (`true` / `false`) |
+| `%balancedteam_team_leader_<teamName>%` | Leader of specific team |
+| `%balancedteam_team_members_<teamName>%` | Member count of specific team |
+| `%balancedteam_team_online_<teamName>%` | Online member count of specific team |
+| `%balancedteam_team_desc_<teamName>%` | Description of specific team |
+| `%balancedteam_team_created_<teamName>%` | Creation time of specific team |
+| `%balancedteam_team_ff_<teamName>%` | Friendly fire of specific team |
+| `%balancedteam_team_exists_<teamName>%` | Whether specific team exists (`true` / `false`) |
 
 ---
 

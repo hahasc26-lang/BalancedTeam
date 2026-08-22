@@ -2,8 +2,10 @@ name: BalancedTeam
 version: '${project.version}'
 main: com.balancedteam.BalancedTeamPlugin
 api-version: '1.20'
-author: Antigravity
+author: haha
 description: High-performance Clan/Team plugin for Anarchy servers with MySQL, GUI and balanced combat.
+
+softdepend: ["PlaceholderAPI"] #This sets PlaceholderAPI as an optional dependency for plugin.
 
 libraries:
   - com.zaxxer:HikariCP:5.1.0

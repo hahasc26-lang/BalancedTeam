@@ -19,6 +19,8 @@ import com.balancedteam.manager.InviteManager;
 import com.balancedteam.manager.LanguageManager;
 import com.balancedteam.manager.RelationManager;
 import com.balancedteam.manager.TeamManager;
+import com.balancedteam.util.PAPIUtil;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
@@ -146,12 +148,24 @@ public class BalancedTeamPlugin extends JavaPlugin {
             getCommand("teamlang").setTabCompleter(teamLangCommand);
         }
 
+        // 7. 注册 PlaceholderAPI 扩展
+        if (PAPIUtil.hasPAPI()) {
+            if (PAPIUtil.registerExpansion(this)) {
+                getLogger().info("[BalancedTeam] 检测到 PlaceholderAPI 插件，已成功注册占位符扩展！");
+            } else {
+                getLogger().warning("[BalancedTeam] 检测到 PlaceholderAPI 插件，但占位符扩展注册失败！");
+            }
+        } else {
+            getLogger().info("[BalancedTeam] 未检测到 PlaceholderAPI 插件，占位符功能不可用！");
+        }
+
         getLogger().info("[BalancedTeam] 插件启动成功！");
     }
 
     @Override
     public void onDisable() {
         getLogger().info("[BalancedTeam] 正在安全保存并关闭数据连接池与偏好数据...");
+        PAPIUtil.unregisterExpansion();
         if (languageManager != null) {
             languageManager.saveUserPreferences();
         }

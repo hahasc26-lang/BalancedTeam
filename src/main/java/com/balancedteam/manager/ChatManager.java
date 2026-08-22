@@ -75,11 +75,12 @@ public class ChatManager {
 
         // 格式化团队消息
         String format = plugin.getConfigManager().getChatFormat();
-        String formattedMsg = MessageUtil.color(format
+        String rawFormattedMsg = format
                 .replace("{TEAM}", team.getName())
                 .replace("{ROLE}", roleName)
                 .replace("{PLAYER}", sender.getName())
-                .replace("{MESSAGE}", message));
+                .replace("{MESSAGE}", message);
+        String formattedMsg = MessageUtil.color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawFormattedMsg));
 
         // 发送给队内所有在线成员
         for (UUID memberUuid : team.getMembers().keySet()) {
@@ -91,11 +92,12 @@ public class ChatManager {
 
         // 格式化管理员监听消息
         String spyFormat = plugin.getConfigManager().getSpyFormat();
-        String spyFormattedMsg = MessageUtil.color(spyFormat
+        String rawSpyFormattedMsg = spyFormat
                 .replace("{TEAM}", team.getName())
                 .replace("{ROLE}", roleName)
                 .replace("{PLAYER}", sender.getName())
-                .replace("{MESSAGE}", message));
+                .replace("{MESSAGE}", message);
+        String spyFormattedMsg = MessageUtil.color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawSpyFormattedMsg));
 
         // 分发给所有在线且开启监听的非同队管理员
         for (UUID adminUuid : spyPlayers) {
