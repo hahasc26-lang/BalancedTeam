@@ -66,3 +66,10 @@ BalancedTeam intercepts and evaluates damage in real-time across all possible Bu
 | **Potion / Lingering Splash** | `ThrownPotion` / Area Effect Cloud Source | Negative potion effects blocked |
 | **Sweeping Edge Attack** | Secondary nearby entity damage | Teammates/Allies excluded from sweep damage |
 | **Fireworks / Crossbow Rockets** | Firework shooter attribution | Teammates/Allies protected from blast |
+
+---
+
+## Navigation
+
+| [← GUI Navigation Guide](https://github.com/hahasc26-lang/BalancedTeam/wiki/GUI-System) | [Next: Localization & Languages →](https://github.com/hahasc26-lang/BalancedTeam/wiki/Localization-System) |
+| :--- | :--- |

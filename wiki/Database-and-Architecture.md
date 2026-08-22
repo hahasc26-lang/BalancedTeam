@@ -109,3 +109,10 @@ Stores pending player join applications.
    - The Bukkit main thread is never blocked waiting for SQL operations.
 3. **Thread-Safe Data Structures**:
    - Uses `ConcurrentHashMap` and thread-safe collections to prevent concurrent modification exceptions across asynchronous database workers and Bukkit event loops.
+
+---
+
+## Navigation
+
+| [← PlaceholderAPI Reference](https://github.com/hahasc26-lang/BalancedTeam/wiki/PlaceholderAPI-Integration) | [Back to Home ↑](https://github.com/hahasc26-lang/BalancedTeam/wiki) |
+| :--- | :--- |

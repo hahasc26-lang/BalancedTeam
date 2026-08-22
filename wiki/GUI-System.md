@@ -82,3 +82,10 @@ To completely prevent accidental clicks and catastrophic mistakes, all destructi
 - **Double Pre-Validation**: Verifies player permissions, team membership, and target validity both *before* opening the GUI and *at the exact moment* the confirm button is pressed.
 - **Single-Execution Click Guard**: Disables the confirm button immediately upon first click to prevent double-firing caused by rapid clicks or packet spam.
 - **Audio Feedback**: Plays distinct anvil/experience sounds on success and villager denial sounds on rejection.
+
+---
+
+## Navigation
+
+| [← Commands & Permissions](https://github.com/hahasc26-lang/BalancedTeam/wiki/Commands-and-Permissions) | [Next: Diplomacy & Combat Balance →](https://github.com/hahasc26-lang/BalancedTeam/wiki/Diplomacy-and-Combat-Balance) |
+| :--- | :--- |

@@ -15,13 +15,13 @@
 
 | Page | Description |
 | :--- | :--- |
-| **[Installation & Configuration](Installation-and-Configuration.md)** | Requirements, installation steps, database setup (MySQL & SQLite), and full `config.yml` guide. |
-| **[Commands & Permissions](Commands-and-Permissions.md)** | Complete reference for all player and administrative commands, arguments, aliases, and permission nodes. |
-| **[GUI Navigation Guide](GUI-System.md)** | Visual overview of all in-game menus, member management, diplomacy consoles, and the 6-mode confirmation system. |
-| **[Diplomacy & Combat Balance](Diplomacy-and-Combat-Balance.md)** | Alliance & war systems, anti-zerg limits, friendly fire toggles, damage protection, and combat backstab prevention. |
-| **[Localization & Languages](Localization-System.md)** | Client locale auto-detection (`Player.getLocale()`), fuzzy matching, `/teamlang` overrides, and custom language packs. |
-| **[PlaceholderAPI Reference](PlaceholderAPI-Integration.md)** | Full documentation of all 35+ `%balancedteam_*%` placeholders, default fallbacks, and chat formatting examples. |
-| **[Database & Technical Architecture](Database-and-Architecture.md)** | Asynchronous DAO patterns, HikariCP connection pooling, database schemas, and performance benchmarks. |
+| **[Installation & Configuration](https://github.com/hahasc26-lang/BalancedTeam/wiki/Installation-and-Configuration)** | Requirements, installation steps, database setup (MySQL & SQLite), and full `config.yml` guide. |
+| **[Commands & Permissions](https://github.com/hahasc26-lang/BalancedTeam/wiki/Commands-and-Permissions)** | Complete reference for all player and administrative commands, arguments, aliases, and permission nodes. |
+| **[GUI Navigation Guide](https://github.com/hahasc26-lang/BalancedTeam/wiki/GUI-System)** | Visual overview of all in-game menus, member management, diplomacy consoles, and the 6-mode confirmation system. |
+| **[Diplomacy & Combat Balance](https://github.com/hahasc26-lang/BalancedTeam/wiki/Diplomacy-and-Combat-Balance)** | Alliance & war systems, anti-zerg limits, friendly fire toggles, damage protection, and combat backstab prevention. |
+| **[Localization & Languages](https://github.com/hahasc26-lang/BalancedTeam/wiki/Localization-System)** | Client locale auto-detection (`Player.getLocale()`), fuzzy matching, `/teamlang` overrides, and custom language packs. |
+| **[PlaceholderAPI Reference](https://github.com/hahasc26-lang/BalancedTeam/wiki/PlaceholderAPI-Integration)** | Full documentation of all 35+ `%balancedteam_*%` placeholders, default fallbacks, and chat formatting examples. |
+| **[Database & Technical Architecture](https://github.com/hahasc26-lang/BalancedTeam/wiki/Database-and-Architecture)** | Asynchronous DAO patterns, HikariCP connection pooling, database schemas, and performance benchmarks. |
 
 ---
 

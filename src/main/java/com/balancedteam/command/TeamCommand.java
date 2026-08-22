@@ -36,19 +36,17 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "player_only"));
-            return true;
-        }
-
-        Player player = (Player) sender;
-
         if (args.length == 0) {
-            Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
-            if (team != null) {
-                TeamMenuGui.open(plugin, player);
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
+                if (team != null) {
+                    TeamMenuGui.open(plugin, player);
+                } else {
+                    TeamNotJoinedGui.open(plugin, player);
+                }
             } else {
-                TeamNotJoinedGui.open(plugin, player);
+                sendHelp(sender);
             }
             return true;
         }
@@ -56,7 +54,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         String sub = args[0].toLowerCase();
         switch (sub) {
             case "help":
-                sendHelp(player);
+                sendHelp(sender);
                 break;
             case "list":
                 int page = 1;
@@ -66,10 +64,29 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                     } catch (NumberFormatException ignored) {
                     }
                 }
-                TeamListGui.open(plugin, player, page);
+                if (sender instanceof Player) {
+                    TeamListGui.open(plugin, (Player) sender, page);
+                } else {
+                    sendConsoleTeamList(sender, page);
+                }
                 break;
+            case "info":
+                handleInfo(sender, args);
+                break;
+            case "lang":
+            case "language": {
+                String[] langArgs = args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
+                TeamLangCommand.handleLangCommand(plugin, sender, langArgs);
+                break;
+            }
+            // 以下为必须由玩家在游戏内执行的指令
             case "menu":
             case "gui": {
+                if (!(sender instanceof Player)) {
+                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "player_only"));
+                    return true;
+                }
+                Player player = (Player) sender;
                 Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
                 if (team != null) {
                     TeamMenuGui.open(plugin, player);
@@ -80,6 +97,11 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
             }
             case "members":
             case "member": {
+                if (!(sender instanceof Player)) {
+                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "player_only"));
+                    return true;
+                }
+                Player player = (Player) sender;
                 Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
                 if (team != null) {
                     MemberManageGui.open(plugin, player, 1);
@@ -89,34 +111,34 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 break;
             }
             case "create":
-                handleCreate(player, args);
+                if (checkPlayerOnly(sender)) handleCreate((Player) sender, args);
                 break;
             case "disband":
-                handleDisband(player);
+                if (checkPlayerOnly(sender)) handleDisband((Player) sender);
                 break;
             case "invite":
-                handleInvite(player, args);
+                if (checkPlayerOnly(sender)) handleInvite((Player) sender, args);
                 break;
             case "accept":
-                handleAccept(player, args);
+                if (checkPlayerOnly(sender)) handleAccept((Player) sender, args);
                 break;
             case "reject":
-                handleReject(player, args);
+                if (checkPlayerOnly(sender)) handleReject((Player) sender, args);
                 break;
             case "leave":
-                handleLeave(player);
+                if (checkPlayerOnly(sender)) handleLeave((Player) sender);
                 break;
             case "kick":
-                handleKick(player, args);
+                if (checkPlayerOnly(sender)) handleKick((Player) sender, args);
                 break;
             case "promote":
-                handlePromote(player, args);
+                if (checkPlayerOnly(sender)) handlePromote((Player) sender, args);
                 break;
             case "demote":
-                handleDemote(player, args);
+                if (checkPlayerOnly(sender)) handleDemote((Player) sender, args);
                 break;
             case "transfer":
-                handleTransfer(player, args);
+                if (checkPlayerOnly(sender)) handleTransfer((Player) sender, args);
                 break;
             case "chat":
             case "c":
@@ -125,39 +147,76 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
             case "teammsg":
             case "tc":
             case "tm":
-                handleChat(player, args);
+                if (checkPlayerOnly(sender)) handleChat((Player) sender, args);
                 break;
             case "ff":
             case "friendlyfire":
-                handleFriendlyFire(player, args);
+                if (checkPlayerOnly(sender)) handleFriendlyFire((Player) sender, args);
                 break;
             case "ally":
-                handleAlly(player, args);
+                if (checkPlayerOnly(sender)) handleAlly((Player) sender, args);
                 break;
             case "enemy":
-                handleEnemy(player, args);
+                if (checkPlayerOnly(sender)) handleEnemy((Player) sender, args);
                 break;
-            case "info":
-                handleInfo(player, args);
-                break;
-            case "lang":
-            case "language": {
-                String[] langArgs = args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
-                TeamLangCommand.handleLangCommand(plugin, player, langArgs);
-                break;
-            }
             default:
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "unknown_command"));
+                MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "unknown_command"));
                 break;
         }
 
         return true;
     }
 
-    private void sendHelp(Player player) {
-        List<String> lines = plugin.getConfigManager().getMessageList(player, "help.player", Collections.emptyMap());
+    private boolean checkPlayerOnly(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "player_only"));
+            return false;
+        }
+        return true;
+    }
+
+    private void sendHelp(CommandSender sender) {
+        List<String> lines = plugin.getConfigManager().getMessageList(sender, "help.player", Collections.emptyMap());
         for (String line : lines) {
-            MessageUtil.sendMessage(player, line);
+            MessageUtil.sendMessage(sender, line);
+        }
+    }
+
+    /**
+     * 控制台分页查看全服团队列表
+     */
+    private void sendConsoleTeamList(CommandSender sender, int page) {
+        List<Team> allTeams = new ArrayList<>(plugin.getTeamManager().getAllTeams());
+        if (allTeams.isEmpty()) {
+            MessageUtil.sendMessage(sender, "&7[BalancedTeam] 当前服务器暂无任何团队。");
+            return;
+        }
+
+        int pageSize = 8;
+        int totalPages = (int) Math.ceil((double) allTeams.size() / (double) pageSize);
+        if (page < 1) page = 1;
+        if (page > totalPages) page = totalPages;
+
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, allTeams.size());
+
+        MessageUtil.sendMessage(sender, "&8====== &bBalancedTeam 全服团队列表 &7(" + page + "/" + totalPages + ") &8======");
+        for (int i = startIndex; i < endIndex; i++) {
+            Team t = allTeams.get(i);
+            OfflinePlayer leader = Bukkit.getOfflinePlayer(t.getLeaderUuid());
+            String leaderName = leader.getName() != null ? leader.getName() : "未知";
+            String ffStatus = plugin.getConfigManager().isFriendlyFireActive(t) ? "&c开启" : "&a关闭";
+            int allyCount = plugin.getRelationManager().getAllies(t.getId()).size();
+            int enemyCount = plugin.getRelationManager().getEnemies(t.getId()).size();
+
+            MessageUtil.sendMessage(sender, String.format(
+                    "&7- &e%s &8| &7队长: &f%s &8| &7成员: &a%d&7/&c%d &8| &7友伤: %s &8| &7同盟: &e%d &8| &7宿敌: &c%d",
+                    t.getName(), leaderName, t.getMemberCount(), plugin.getConfigManager().getMaxMembers(),
+                    ffStatus, allyCount, enemyCount
+            ));
+        }
+        if (page < totalPages) {
+            MessageUtil.sendMessage(sender, "&7使用 &e/team list " + (page + 1) + " &7查看下一页。");
         }
     }
 
@@ -788,17 +847,26 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private void handleInfo(Player player, String[] args) {
+    private void handleInfo(CommandSender sender, String[] args) {
         Team team;
         if (args.length > 1) {
             team = plugin.getTeamManager().getTeamByName(args[1]);
         } else {
-            team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
+            if (!(sender instanceof Player)) {
+                MessageUtil.sendMessage(sender, "&c使用方法: /team info <团队名称>");
+                return;
+            }
+            team = plugin.getTeamManager().getTeamByPlayer(((Player) sender).getUniqueId());
         }
 
         if (team == null) {
-            MessageUtil.sendMessage(player,
-                    plugin.getConfigManager().getMessage(args.length > 1 ? "team_not_found" : "team_not_in_team"));
+            if (args.length > 1) {
+                Map<String, String> notFoundMap = new HashMap<>();
+                notFoundMap.put("TEAM", args[1]);
+                MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "team_not_found", notFoundMap));
+            } else {
+                MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "team_not_in_team"));
+            }
             return;
         }
 
@@ -809,8 +877,8 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         List<Integer> enemyIds = plugin.getRelationManager().getEnemies(team.getId());
 
         String ffStatus = plugin.getConfigManager().isFriendlyFireActive(team)
-                ? plugin.getConfigManager().getRawMessage("status.on")
-                : plugin.getConfigManager().getRawMessage("status.off");
+                ? plugin.getConfigManager().getRawMessage(sender, "status.on")
+                : plugin.getConfigManager().getRawMessage(sender, "status.off");
 
         Map<String, String> map = new HashMap<>();
         map.put("TEAM", team.getName());
@@ -819,11 +887,11 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         map.put("FF", ffStatus);
         map.put("ALLIES", String.valueOf(allyIds.size()));
         map.put("ENEMIES", String.valueOf(enemyIds.size()));
-        map.put("DATE", TimeUtil.formatDate(team.getCreatedAt()));
+        map.put("DATE", TimeUtil.formatDate(sender, team.getCreatedAt()));
 
-        List<String> lines = plugin.getConfigManager().getMessageList("team_info", map);
+        List<String> lines = plugin.getConfigManager().getMessageList(sender, "team_info", map);
         for (String line : lines) {
-            MessageUtil.sendMessage(player, line);
+            MessageUtil.sendMessage(sender, line);
         }
     }
 

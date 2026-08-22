@@ -50,7 +50,7 @@ public class TeamDetailGui {
         Map<String, String> leaderMap = new HashMap<>();
         leaderMap.put("LEADER", leaderName);
         leaderMap.put("STATUS", leaderStatus);
-        leaderMap.put("DATE", TimeUtil.formatDate(team.getCreatedAt()));
+        leaderMap.put("DATE", TimeUtil.formatDate(player, team.getCreatedAt()));
         leaderMap.put("FF", ffStatus);
 
         String leaderItemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.DETAIL_LEADER_ITEM_NAME,

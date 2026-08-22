@@ -88,3 +88,10 @@ This page provides an exhaustive reference for all player and administrator comm
 | `balancedteam.use` | `true` | Allows players to use standard team commands, open GUIs, and participate in team chat. |
 | `balancedteam.admin` | `op` | Grants access to `/teamadmin` commands, configuration reload, and administrative overrides. |
 | `balancedteam.admin.spy` | `op` | Allows administrators to toggle `/teamadmin spy` and monitor all team chats. |
+
+---
+
+## Navigation
+
+| [← Installation & Configuration](https://github.com/hahasc26-lang/BalancedTeam/wiki/Installation-and-Configuration) | [Next: GUI Navigation Guide →](https://github.com/hahasc26-lang/BalancedTeam/wiki/GUI-System) |
+| :--- | :--- |

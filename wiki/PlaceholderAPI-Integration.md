@@ -105,3 +105,10 @@ lines:
   - '&7Members: &a%balancedteam_online%&7/&f%balancedteam_members%'
   - '&7Allies: &b%balancedteam_allies%&7/&f%balancedteam_max_allies%'
 ```
+
+---
+
+## Navigation
+
+| [← Localization & Languages](https://github.com/hahasc26-lang/BalancedTeam/wiki/Localization-System) | [Next: Database & Technical Architecture →](https://github.com/hahasc26-lang/BalancedTeam/wiki/Database-and-Architecture) |
+| :--- | :--- |

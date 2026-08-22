@@ -74,3 +74,10 @@ Adding support for a new language (e.g., Japanese `ja_JP`, Russian `ru_RU`, Fren
 - **`/teamlang list`**: Displays all supported language packs loaded on the server.
 - **`/teamlang <code|auto>`**: Manually switch to a specific pack (e.g. `/teamlang en_US`) or reset to client auto-detection (`/teamlang auto`).
 - **`/teamlang reload`**: Hot-reload all language files from disk (Requires `balancedteam.admin`).
+
+---
+
+## Navigation
+
+| [← Diplomacy & Combat Balance](https://github.com/hahasc26-lang/BalancedTeam/wiki/Diplomacy-and-Combat-Balance) | [Next: PlaceholderAPI Reference →](https://github.com/hahasc26-lang/BalancedTeam/wiki/PlaceholderAPI-Integration) |
+| :--- | :--- |

@@ -85,7 +85,7 @@ public class MemberManageGui {
             String targetName = op.getName() != null ? op.getName() : "未知";
             String status = op.isOnline() ? onlineStatus : offlineStatus;
             String roleDisplayName = plugin.getConfigManager().getRoleDisplayName(player, targetMember.getRole());
-            String joinDate = TimeUtil.formatDate(targetMember.getJoinedAt());
+            String joinDate = TimeUtil.formatDate(player, targetMember.getJoinedAt());
 
             String roleIcon;
             if (targetMember.isLeader()) {

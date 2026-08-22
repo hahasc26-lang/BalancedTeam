@@ -36,8 +36,32 @@ public class ConfigManager {
             plugin.getLanguageManager().load();
         }
 
-        // 3. 同步时间格式到 TimeUtil
+        // 3. 同步时间格式与单位到 TimeUtil
         com.balancedteam.util.TimeUtil.setDateFormat(getDateFormat());
+        syncTimeUnits();
+    }
+
+    /**
+     * 同步语言包中的时间单位到 TimeUtil
+     */
+    public void syncTimeUnits() {
+        String uDay = getRawMessage("time_unit.day");
+        String uHour = getRawMessage("time_unit.hour");
+        String uMin = getRawMessage("time_unit.minute");
+        String uSec = getRawMessage("time_unit.second");
+        String uUnknown = getRawMessage("time_unit.unknown");
+
+        com.balancedteam.util.TimeUtil.setTimeUnits(
+                isValidMessage(uDay) ? uDay : null,
+                isValidMessage(uHour) ? uHour : null,
+                isValidMessage(uMin) ? uMin : null,
+                isValidMessage(uSec) ? uSec : null,
+                isValidMessage(uUnknown) ? uUnknown : null
+        );
+    }
+
+    private boolean isValidMessage(String msg) {
+        return msg != null && !msg.trim().isEmpty() && !msg.contains("Missing message");
     }
 
     /**

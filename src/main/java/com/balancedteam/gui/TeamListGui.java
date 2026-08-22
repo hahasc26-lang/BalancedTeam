@@ -74,7 +74,7 @@ public class TeamListGui {
             itemMap.put("FF", ffStatus);
             itemMap.put("ALLIES", String.valueOf(allyCount));
             itemMap.put("ENEMIES", String.valueOf(enemyCount));
-            itemMap.put("DATE", TimeUtil.formatDate(team.getCreatedAt()));
+            itemMap.put("DATE", TimeUtil.formatDate(player, team.getCreatedAt()));
 
             String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_TEAM_ITEM_NAME,
                     itemMap);

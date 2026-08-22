@@ -140,12 +140,12 @@ public class BalancedTeamExpansion extends PlaceholderExpansion {
             if (sub.toLowerCase(Locale.ROOT).startsWith("created_")) {
                 String targetTeamName = sub.substring(8);
                 Team team = plugin.getTeamManager().getTeamByName(targetTeamName);
-                return (team != null && team.getCreatedAt() != null) ? TimeUtil.formatDate(team.getCreatedAt()) : "";
+                return (team != null && team.getCreatedAt() != null) ? TimeUtil.formatDate(player != null ? player.getPlayer() : null, team.getCreatedAt()) : "";
             }
             if (sub.toLowerCase(Locale.ROOT).startsWith("created_at_")) {
                 String targetTeamName = sub.substring(11);
                 Team team = plugin.getTeamManager().getTeamByName(targetTeamName);
-                return (team != null && team.getCreatedAt() != null) ? TimeUtil.formatDate(team.getCreatedAt()) : "";
+                return (team != null && team.getCreatedAt() != null) ? TimeUtil.formatDate(player != null ? player.getPlayer() : null, team.getCreatedAt()) : "";
             }
 
             // %balancedteam_team_ff_<teamName>% 或 %balancedteam_team_friendly_fire_<teamName>%
@@ -227,7 +227,7 @@ public class BalancedTeamExpansion extends PlaceholderExpansion {
 
                 case "friendly_fire_formatted":
                 case "ff_formatted":
-                    return "关闭";
+                    return plugin.getConfigManager().getRawMessage(onlinePlayer, "status.off");
 
                 case "max_members":
                     return String.valueOf(plugin.getConfigManager().getMaxMembers());
@@ -301,14 +301,14 @@ public class BalancedTeamExpansion extends PlaceholderExpansion {
 
             case "friendly_fire_formatted":
             case "ff_formatted":
-                return team.isFriendlyFire() ? "开启" : "关闭";
+                return plugin.getConfigManager().getRawMessage(onlinePlayer, team.isFriendlyFire() ? "status.on" : "status.off");
 
             case "created_at":
             case "team_created_at":
-                return team.getCreatedAt() != null ? TimeUtil.formatDate(team.getCreatedAt()) : "";
+                return team.getCreatedAt() != null ? TimeUtil.formatDate(onlinePlayer, team.getCreatedAt()) : "";
 
             case "joined_at":
-                return (member != null && member.getJoinedAt() != null) ? TimeUtil.formatDate(member.getJoinedAt()) : "";
+                return (member != null && member.getJoinedAt() != null) ? TimeUtil.formatDate(onlinePlayer, member.getJoinedAt()) : "";
 
             case "members":
             case "member_count":

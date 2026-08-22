@@ -6,6 +6,52 @@ All notable changes to this project are documented here.
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.4] - 2026-08-22
+
+### 新增
+
+- **时间单位与持续时间多语言可配置化 (TimeUtil & Localization)**：
+  - 在各语言配置文件（`zh_CN.yml`、`zh_TW.yml`、`en_US.yml`）中新增 `time_unit` 配置节点，全面支持天 (`day`)、时 (`hour`)、分 (`minute`)、秒 (`second`) 及缺省文本 (`unknown`) 的自定义配置；
+  - `TimeUtil` 内部默认单位全面更新为 `d` / `h` / `min` / `sec` / `Unknown`；
+  - `TimeUtil` 扩展支持 `formatDuration(CommandSender sender, long seconds)` 与 `formatDate(CommandSender sender, Date date)`，支持按发送者/玩家当前生效的语言动态渲染时间单位与未知文本；
+  - `ConfigManager.load()` 中增加 `syncTimeUnits()` 方法，实现语言包重载时全局时间单位的自动同步。
+- **控制台指令兼容与合理性支持 (Console Command Support)**：
+  - 解除主指令 `/team` 入口处对控制台的全局拦截，按子指令适用性进行精准放行与处理；
+  - **控制台全服团队列表展示**：控制台执行 `/team list [页码]` 时，自动转换为清晰的文本分页列表格式输出全服队伍名称、队长、人数、友伤状态及同盟/宿敌数；
+  - **团队详情查询支持控制台**：控制台可通过 `/team info <团队名>` 查询指定团队的详细信息；
+  - **多语言管理指令支持控制台**：控制台可通过 `/team lang` / `/teamlang` 查看当前语言模式与状态、列出所有可用语言包以及执行热重载；
+  - **控制台帮助支持**：控制台执行 `/team` 或 `/team help` 时直接输出文本帮助信息；
+  - **交互指令安全隔离**：对仅限玩家执行的游戏内队伍操作指令（如创建、邀请、踢人、解散、打开 GUI 界面等）进行明确拦截并友好提示 `player_only`。
+
+### 优化与修复
+
+- **排查并消除硬编码多语言文本**：
+  - 修复 `BalancedTeamExpansion` 中 `%balancedteam_friendly_fire_formatted%` 与 `%balancedteam_ff_formatted%` 硬编码中文 `"开启"` / `"关闭"` 的问题，改为从玩家语言配置 `status.on` / `status.off` 动态读取；
+  - 优化各 GUI 界面（`TeamListGui`、`TeamDetailGui`、`MemberManageGui`）及指令输出中的日期格式化调用，适配玩家本地语言。
+
+### Added
+
+- **Configurable Time & Duration Units Localization (TimeUtil & Localization)**:
+  - Added `time_unit` configuration section across all language files (`zh_CN.yml`, `zh_TW.yml`, `en_US.yml`), supporting custom formatting for `day`, `hour`, `minute`, `second`, and `unknown`;
+  - Standardized default internal time units in `TimeUtil` to `d` / `h` / `min` / `sec` / `Unknown`;
+  - Enhanced `TimeUtil` with `formatDuration(CommandSender sender, long seconds)` and `formatDate(CommandSender sender, Date date)` overloads to dynamically format units based on player's active locale;
+  - Added `syncTimeUnits()` in `ConfigManager.load()` to automatically sync time units upon plugin load and reload.
+- **Comprehensive Console Command Support**:
+  - Lifted the blanket restriction on console execution for `/team` root command, enabling reasonable sub-commands for server console;
+  - **Console Text Team List**: Console executing `/team list [page]` now outputs a paginated text list with team names, leaders, member counts, friendly fire status, and ally/enemy counts;
+  - **Team Info Query via Console**: Console can now query detailed information for any team via `/team info <teamName>`;
+  - **Language Commands for Console**: Console can now execute `/team lang` / `/teamlang` to view language status, list loaded languages, and reload language files;
+  - **Console Help Support**: Executing `/team` or `/team help` from console now outputs the command help manual;
+  - **Safe Isolation of Player-only Commands**: Interactive commands (such as create, invite, kick, disband, open GUI, etc.) are strictly checked and return `player_only` message when invoked by console.
+
+### Improved & Fixed
+
+- **Eliminated Hardcoded Localization Strings**:
+  - Fixed hardcoded `"开启"` / `"关闭"` in `%balancedteam_friendly_fire_formatted%` / `%balancedteam_ff_formatted%` within `BalancedTeamExpansion`, now dynamically resolving `status.on` / `status.off` based on player locale;
+  - Refactored date formatting across all GUIs (`TeamListGui`, `TeamDetailGui`, `MemberManageGui`) and commands to adapt to the sender's language configuration.
+
+---
+
 ## [1.1.3] - 2026-08-22
 
 ### 新增

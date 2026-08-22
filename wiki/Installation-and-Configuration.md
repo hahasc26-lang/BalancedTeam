@@ -144,3 +144,10 @@ chat:
   ```
 - Configure the user, password, host, and database name in `config.yml`.
 - All tables (`bt_teams`, `bt_members`, `bt_relations`, `bt_invites`, `bt_ally_requests`, `bt_applications`) are automatically generated and migrated on boot.
+
+---
+
+## Navigation
+
+| [← Back to Home](https://github.com/hahasc26-lang/BalancedTeam/wiki) | [Next: Commands & Permissions →](https://github.com/hahasc26-lang/BalancedTeam/wiki/Commands-and-Permissions) |
+| :--- | :--- |
