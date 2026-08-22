@@ -24,7 +24,9 @@
 - **团队聊天** — `/tc` 专属频道，支持锁定模式；OP 可监听所有频道
 - **图形化 GUI** — 团队菜单、成员管理、全服列表、操作确认界面
 - **双存储引擎** — MySQL（生产推荐）/ SQLite（开箱即用），HikariCP 连接池
-- **自动多语言系统** — 读取 Minecraft 客户端 Locale 自动检测语言，支持前缀模糊匹配（如 `zh_HK` 自动匹配 `zh_CN`/`zh_TW`）、服务端回退与全量内存缓存；内置 `zh_CN` / `zh_TW` / `en_US`，支持玩家使用 `/teamlang` 自主切换或恢复自动。
+- **PlaceholderAPI 占位符支持** — 原生集成 35+ 个占位符变量，支持在计分板、Tab 列表、称号、聊天等中调用团队与玩家数据
+- **自动多语言系统** — 读取 Minecraft 客户端 Locale 自动检测语言，支持前缀模糊匹配（如 `zh_HK` 自动匹配 `zh_CN`/`zh_TW`）、服务端回退与全量内存缓存；内置 `zh_CN` / `zh_TW` / `en_US`，支持玩家使用 `/teamlang` 自主切换或恢复自动
+- **完整官方 Wiki** — 详细的 [GitHub Wiki 文档](https://github.com/hahasc26-lang/BalancedTeam/wiki) 涵盖安装配置、指令权限、GUI、战斗平衡与技术架构
 
 ---
 
@@ -162,7 +164,8 @@ A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive**
 - **Graphical GUI** — Team menu, member management, server-wide list, confirmation dialogs
 - **Dual Storage** — MySQL (production) / SQLite (zero-config), backed by HikariCP
 - **PlaceholderAPI Support** — Full PlaceholderAPI integration with dozens of team and player placeholders
-- **Auto Multi-Language System** — Auto-detects Minecraft client locale via `Player.getLocale()`, with smart fuzzy matching (e.g. `zh_HK` falls back to `zh_CN`/`zh_TW`), server fallbacks, and in-memory caching. Built-in `zh_CN` / `zh_TW` / `en_US`; players can override or reset via `/teamlang`.
+- **Auto Multi-Language System** — Auto-detects Minecraft client locale via `Player.getLocale()`, with smart fuzzy matching (e.g. `zh_HK` falls back to `zh_CN`/`zh_TW`), server fallbacks, and in-memory caching. Built-in `zh_CN` / `zh_TW` / `en_US`; players can override or reset via `/teamlang`
+- **Comprehensive Official Wiki** — Complete [GitHub Wiki Documentation](https://github.com/hahasc26-lang/BalancedTeam/wiki) covering installation, configuration, commands, GUI guide, and combat mechanics
 
 ---
 

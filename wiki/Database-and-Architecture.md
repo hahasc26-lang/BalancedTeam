@@ -4,7 +4,7 @@
 
 ---
 
-## 🏗️ Layered Architecture Diagram
+## Layered Architecture Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -31,7 +31,7 @@
 
 ---
 
-## 🗄️ Database Table Schemas
+## Database Table Schemas
 
 All tables use the configured table prefix (default: `bt_`).
 
@@ -99,7 +99,7 @@ Stores pending player join applications.
 
 ---
 
-## ⚡ Concurrency & In-Memory Performance Guarantees
+## Concurrency & In-Memory Performance Guarantees
 
 1. **Pre-Warmed In-Memory Cache**:
    - During startup, `TeamManager.loadAllData()` pre-loads all teams, members, and relations into memory.

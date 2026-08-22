@@ -4,7 +4,7 @@
 
 ---
 
-## 🤝 The Diplomacy System
+## The Diplomacy System
 
 Diplomacy allows teams to establish formal relationships with other teams, altering damage calculation rules and communication options.
 
@@ -24,7 +24,7 @@ Diplomacy allows teams to establish formal relationships with other teams, alter
 
 ---
 
-## 📜 Alliances (Allies)
+## Alliances (Allies)
 
 - **Bilateral Agreement**: To form an alliance, an Officer or Leader must send an alliance request (`/team ally <teamName>`). The target team's Officers or Leader must accept the request before the pact takes effect.
 - **Alliance Request Timeout**: Unanswered alliance requests expire automatically after `balance.ally_request_timeout_seconds` (default: 3600 seconds).
@@ -34,7 +34,7 @@ Diplomacy allows teams to establish formal relationships with other teams, alter
 
 ---
 
-## ⚔️ Hostilities (Enemies)
+## Hostilities (Enemies)
 
 - **War Declaration**: Any Officer or Leader can mark another team as an enemy (`/team enemy <teamName>`) without requiring the target's consent.
 - **Enemy Cap (`balance.max_enemies`)**: Configurable limit (default: 10) on active marked enemy teams.
@@ -42,7 +42,7 @@ Diplomacy allows teams to establish formal relationships with other teams, alter
 
 ---
 
-## 🛡️ Combat Balance & Anti-Abuse Rules
+## Combat Balance & Anti-Abuse Rules
 
 ### 1. Friendly Fire Toggle with PvP Cooldown
 - **The Problem**: In vanilla team systems, players frequently toggle friendly fire on/off rapidly during team fights to avoid accidental team hits while firing weapons or throwing splash potions.
@@ -54,7 +54,7 @@ Diplomacy allows teams to establish formal relationships with other teams, alter
 
 ---
 
-## 🎯 Damage Interception Matrix (`DamageListener`)
+## Damage Interception Matrix (`DamageListener`)
 
 BalancedTeam intercepts and evaluates damage in real-time across all possible Bukkit attack vectors:
 

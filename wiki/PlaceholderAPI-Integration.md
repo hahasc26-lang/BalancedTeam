@@ -4,7 +4,7 @@
 
 ---
 
-## 📌 Placeholder Format
+## Placeholder Format
 
 - **Expansion Identifier**: `balancedteam`
 - **Pattern**: `%balancedteam_<variable>%`
@@ -12,7 +12,7 @@
 
 ---
 
-## 📋 Comprehensive Placeholder Reference Table
+## Comprehensive Placeholder Reference Table
 
 ### 1. Player & Current Team Identity
 | Placeholder | Description | Example Output | Fallback (No Team) |
@@ -88,7 +88,7 @@
 
 ---
 
-## 🎨 Example Configurations
+## Example Configurations
 
 ### 1. Chat Formatting (e.g. TAB or EssentialsX Chat)
 ```yaml

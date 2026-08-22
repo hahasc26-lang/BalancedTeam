@@ -11,7 +11,7 @@
 
 ---
 
-## 📚 Table of Contents
+## Table of Contents
 
 | Page | Description |
 | :--- | :--- |
@@ -25,34 +25,34 @@
 
 ---
 
-## ⚡ Key Feature Highlights
+## Key Feature Highlights
 
-### 🛡️ 1. Game Balance & Anti-Abuse
+### 1. Game Balance & Anti-Abuse
 - **Hard-capped Alliances and Enemies**: Prevents mega-alliances from monopolizing the server economy and combat.
 - **Combat Friendly Fire Cooldowns**: Configurable cooldown timers on friendly fire toggling prevent players from abusing protection mid-fight.
 - **Team-Hop Backstab Prevention**: Imposes a cooldown timer after leaving or disbanding a team before creating or joining another, stopping mid-combat betrayal exploits.
 
-### ⚡ 2. High-Concurrency Asynchronous Architecture
+### 2. High-Concurrency Asynchronous Architecture
 - **Zero Main-Thread Blocking**: All database operations (CRUD, invites, alliance requests, applications) run asynchronously via `CompletableFuture`.
 - **Bidirectional In-Memory Caching**: Ultra-fast lookups (`O(1)`) by Team ID, Team Name, and Player UUID with concurrent hash maps.
 - **HikariCP Connection Pool**: Enterprise-grade connection pooling with automatic reconnection and SQLite / MySQL dual-engine support.
 
-### 🌐 3. Seamless Multi-Language System
+### 3. Seamless Multi-Language System
 - **Per-Player Automatic Locale Detection**: Dynamically inspects incoming packets to determine player language settings via `Player.getLocale()`.
 - **Smart Fallback & Fuzzy Matching**: Intelligently handles sub-locales (e.g., `zh_HK` $\to$ `zh_CN`/`zh_TW`) before falling back to server default.
 - **Player Overrides**: Players can lock their desired language via `/teamlang <code|auto>` without affecting others on the server.
 
-### 🖥️ 4. Dynamic & Safe GUI System
+### 4. Dynamic & Safe GUI System
 - **Interactive Chest GUIs**: Intuitive management menus for teams, members, relations, invitations, and applications.
 - **Unified 6-Mode Confirmation GUI (`ConfirmGui`)**: Destructive actions (Disband, Leave, Kick, Transfer, Promote, Demote) require explicit confirmation with double pre-validation and rapid-click debounce protection.
 
-### 🔌 5. PlaceholderAPI Integration
+### 5. PlaceholderAPI Integration
 - **35+ Built-in Placeholders**: Export detailed team data, roles, member counts, online statuses, creation dates, and dynamic relation evaluations (`%balancedteam_relation_<player>%`) to Tablist, Scoreboards, Holograms, and Chat plugins.
 
 ---
 
-## 🚀 Quick Start in 30 Seconds
+## Quick Start in 30 Seconds
 
-1. Drop `BalancedTeam-1.1.2.jar` into your server's `plugins/` folder.
+1. Drop `BalancedTeam-x.x.x.jar` into your server's `plugins/` folder.
 2. Start the server (SQLite is enabled by default with zero configuration required).
 3. Type `/team` in-game to open the interactive team dashboard!

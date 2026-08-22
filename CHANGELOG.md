@@ -6,6 +6,34 @@ All notable changes to this project are documented here.
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.3] - 2026-08-22
+
+### 新增
+
+- **原生 PlaceholderAPI (PAPI) 变量扩展支持**：
+  - 新增 `BalancedTeamExpansion` 原生扩展类，统一注册标识符 `%balancedteam_<变量名>%`；
+  - 提供 35+ 个占位符变量，全面支持团队基础属性、成员职位/等级、友伤状态、创建与入队时间、在线与总人数统计、盟友与敌对列表、全服统计以及动态关系判定（如 `%balancedteam_relation_<玩家名>%`、`%balancedteam_is_ally_<玩家名>%` 等）；
+  - 全面支持离线玩家安全查询及未入队状态下的友好默认值兜底，避免空指针与异常。
+- **双向变量解析工具 (PAPIUtil)**：
+  - 增强 `PAPIUtil` 工具类，封装生命周期注册/注销以及字符串和列表的无异常安全解析；
+  - 团队聊天 (`ChatManager`) 及管理员监听格式全面支持解析第三方 PAPI 占位符（如 Vault 称号、前缀等）。
+- **软依赖与文档完善**：
+  - `plugin.yml` 中新增 `softdepend: [PlaceholderAPI]` 确保插件加载顺序；
+  - 发布了包含 8 大核心模块的完整官方 GitHub 英文 Wiki 文档。
+
+### Added
+
+- **Native PlaceholderAPI (PAPI) Expansion Support**:
+  - Implemented `BalancedTeamExpansion` with `%balancedteam_<variable>%` identifier;
+  - Added 35+ placeholders covering team identity, roles, friendly fire status, timestamps, member counts, online statuses, ally/enemy lists, global server stats, and dynamic target relation queries (e.g. `%balancedteam_relation_<player>%`, `%balancedteam_is_ally_<player>%`);
+  - Safe default fallbacks for offline players and non-team members to prevent NullPointerExceptions.
+- **Bidirectional Placeholder Utilities (PAPIUtil)**:
+  - Enhanced `PAPIUtil` with safe expansion lifecycle management and exception-free string/list parsing;
+  - Integrated PAPI parsing into team chat (`ChatManager`) and admin spy messages.
+- **Soft Dependency & Documentation**:
+  - Added `softdepend: [PlaceholderAPI]` to `plugin.yml`;
+  - Published comprehensive 8-page English Wiki documentation on GitHub.
+
 ---
 
 ## [1.1.2] - 2026-08-21

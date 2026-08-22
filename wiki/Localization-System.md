@@ -4,7 +4,7 @@
 
 ---
 
-## 🌟 Key Localization Features
+## Key Localization Features
 
 - **Automatic Client Locale Detection**: Reads each player's Minecraft client language setting via `Player.getLocale()` when they connect.
 - **Smart Prefix Fuzzy Matching**: Intelligently maps regional variations (e.g. `en_GB`, `en_CA` $\to$ `en_US`; `zh_HK`, `zh_MO` $\to$ `zh_TW`/`zh_CN`).
@@ -14,7 +14,7 @@
 
 ---
 
-## 🔄 Locale Resolution Flowchart
+## Locale Resolution Flowchart
 
 When sending a message or opening a GUI for a player, the localization engine evaluates language selection in this priority:
 
@@ -42,7 +42,7 @@ When sending a message or opening a GUI for a player, the localization engine ev
 
 ---
 
-## 📦 Built-In Language Packs
+## Built-In Language Packs
 
 | Language Code | File Name | Display Name |
 | :--- | :--- | :--- |
@@ -52,7 +52,7 @@ When sending a message or opening a GUI for a player, the localization engine ev
 
 ---
 
-## ✍️ Creating a Custom Language Pack
+## Creating a Custom Language Pack
 
 Adding support for a new language (e.g., Japanese `ja_JP`, Russian `ru_RU`, French `fr_FR`, German `de_DE`, Spanish `es_ES`) is straightforward:
 
@@ -68,7 +68,7 @@ Adding support for a new language (e.g., Japanese `ja_JP`, Russian `ru_RU`, Fren
 
 ---
 
-## 💬 Player Commands for Language Switching
+## Player Commands for Language Switching
 
 - **`/teamlang`**: View active language code, client detection status, and help.
 - **`/teamlang list`**: Displays all supported language packs loaded on the server.

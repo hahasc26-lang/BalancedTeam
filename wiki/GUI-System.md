@@ -6,7 +6,7 @@ All menus are dynamically rendered according to each player's active language lo
 
 ---
 
-## 🧭 Menu Architecture Overview
+## Menu Architecture Overview
 
 ```
                       /team Command
@@ -24,7 +24,7 @@ All menus are dynamically rendered according to each player's active language lo
 
 ---
 
-## 📊 Core Menus
+## Core Menus
 
 ### 1. Team Dashboard (`TeamDashboardGui`)
 Accessed by typing `/team` while currently belonging to a team:
@@ -44,7 +44,7 @@ Accessed by typing `/team` when not currently belonging to any team:
 
 ---
 
-## 👥 Member Management (`MemberManageGui`)
+## Member Management (`MemberManageGui`)
 
 Manage team members with intuitive mouse interactions:
 
@@ -56,7 +56,7 @@ Manage team members with intuitive mouse interactions:
 
 ---
 
-## 🔔 Notification Center (`NotificationGui`)
+## Notification Center (`NotificationGui`)
 
 The Notification Center centralizes all incoming requests into a single, clean management screen:
 1. **Pending Invitations**: Invitations received from other teams allowing one-click **Accept** or **Deny**.
@@ -65,20 +65,20 @@ The Notification Center centralizes all incoming requests into a single, clean m
 
 ---
 
-## 🛡️ Unified 6-Mode Confirmation System (`ConfirmGui`)
+## Unified 6-Mode Confirmation System (`ConfirmGui`)
 
 To completely prevent accidental clicks and catastrophic mistakes, all destructive or sensitive team actions are routed through a standardized confirmation dialogue:
 
 | Mode | Icon | Operation | Permissions & Rules |
 | :--- | :--- | :--- | :--- |
-| `DISBAND` | 🧨 TNT | Disband Team | Leader only. Permanently deletes the team and cancels all pacts. |
-| `LEAVE` | 🚪 Oak Door | Leave Team | Non-leader members. Enforces leave-team cooldown against combat-hopping. |
-| `KICK` | 🥾 Boots | Kick Member | Leader & Officers. Caller's role level must strictly exceed target's level. |
-| `TRANSFER` | 👑 Gold Helmet | Transfer Leader | Leader only. Passes leader status to member and demotes former leader to Officer. |
-| `PROMOTE` | 🛡️ Gold Armor | Promote Member | Leader only. Promotes Member (Level 1) to Officer (Level 2). |
-| `DEMOTE` | 🛡️ Iron Armor | Demote Officer | Leader only. Demotes Officer (Level 2) back to Member (Level 1). |
+| `DISBAND` | TNT | Disband Team | Leader only. Permanently deletes the team and cancels all pacts. |
+| `LEAVE` | Oak Door | Leave Team | Non-leader members. Enforces leave-team cooldown against combat-hopping. |
+| `KICK` | Boots | Kick Member | Leader & Officers. Caller's role level must strictly exceed target's level. |
+| `TRANSFER` | Gold Helmet | Transfer Leader | Leader only. Passes leader status to member and demotes former leader to Officer. |
+| `PROMOTE` | Gold Armor | Promote Member | Leader only. Promotes Member (Level 1) to Officer (Level 2). |
+| `DEMOTE` | Iron Armor | Demote Officer | Leader only. Demotes Officer (Level 2) back to Member (Level 1). |
 
-### 🔒 Built-in Safety Features
+### Built-in Safety Features
 - **Double Pre-Validation**: Verifies player permissions, team membership, and target validity both *before* opening the GUI and *at the exact moment* the confirm button is pressed.
 - **Single-Execution Click Guard**: Disables the confirm button immediately upon first click to prevent double-firing caused by rapid clicks or packet spam.
 - **Audio Feedback**: Plays distinct anvil/experience sounds on success and villager denial sounds on rejection.

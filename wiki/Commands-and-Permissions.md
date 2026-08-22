@@ -4,7 +4,7 @@ This page provides an exhaustive reference for all player and administrator comm
 
 ---
 
-## 🎮 Player Commands (`/team`)
+## Player Commands (`/team`)
 
 **Main Command:** `/team`  
 **Aliases:** `/t`, `/clan`, `/bt`  
@@ -37,7 +37,7 @@ This page provides an exhaustive reference for all player and administrator comm
 
 ---
 
-## 💬 Team Chat Commands (`/teammsg`)
+## Team Chat Commands (`/teammsg`)
 
 **Main Command:** `/teammsg`  
 **Aliases:** `/tc`, `/tm`, `/teamchat`  
@@ -50,7 +50,7 @@ This page provides an exhaustive reference for all player and administrator comm
 
 ---
 
-## 🌐 Language Management Commands (`/teamlang`)
+## Language Management Commands (`/teamlang`)
 
 **Main Command:** `/teamlang`  
 **Aliases:** `/tlang`, `/btlang`, `/clanlang`  
@@ -65,7 +65,7 @@ This page provides an exhaustive reference for all player and administrator comm
 
 ---
 
-## 🛡️ Administrator Commands (`/teamadmin`)
+## Administrator Commands (`/teamadmin`)
 
 **Main Command:** `/teamadmin`  
 **Aliases:** `/ta`, `/btadmin`  
@@ -81,7 +81,7 @@ This page provides an exhaustive reference for all player and administrator comm
 
 ---
 
-## 🔑 Permissions Node Reference
+## Permissions Node Reference
 
 | Node | Default | Description |
 | :--- | :--- | :--- |

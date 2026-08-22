@@ -4,7 +4,7 @@ This guide walks you through installing, configuring, and optimizing **BalancedT
 
 ---
 
-## 🛠️ System Requirements
+## System Requirements
 
 | Requirement | Minimum / Recommended |
 | :--- | :--- |
@@ -15,7 +15,7 @@ This guide walks you through installing, configuring, and optimizing **BalancedT
 
 ---
 
-## 📥 Installation Steps
+## Installation Steps
 
 1. **Download**: Grab the latest release `BalancedTeam-x.x.x.jar` from the GitHub releases page.
 2. **Deploy**: Place the jar into your server's `plugins/` directory.
@@ -30,7 +30,7 @@ This guide walks you through installing, configuring, and optimizing **BalancedT
 
 ---
 
-## ⚙️ Configuration Reference (`config.yml`)
+## Configuration Reference (`config.yml`)
 
 Below is the complete reference for all configuration options available in `config.yml`:
 
@@ -129,7 +129,7 @@ chat:
 
 ---
 
-## 🗄️ Database Setup Details
+## Database Setup Details
 
 ### Option A: SQLite (Default / Single-Server Setup)
 - **Zero Configuration Required**: Simply set `database.type: "sqlite"`.
