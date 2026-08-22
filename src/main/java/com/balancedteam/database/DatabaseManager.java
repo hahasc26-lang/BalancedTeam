@@ -42,20 +42,20 @@ public class DatabaseManager {
             try {
                 initMySQL();
                 this.isMySQL = true;
-                plugin.getLogger().info("[Database] 成功连接至 MySQL 数据库！");
+                com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.DB_MYSQL_CONNECTED);
             } catch (Exception e) {
-                plugin.getLogger().log(Level.WARNING, "===============================================================");
-                plugin.getLogger().log(Level.WARNING, "[Database] 无法连接到 MySQL 数据库 (" + e.getMessage() + ")");
-                plugin.getLogger().log(Level.WARNING, "[Database] 请检查 config.yml 中的 MySQL 地址、端口、用户名和密码。");
-                plugin.getLogger().log(Level.WARNING, "[Database] 为确保服务器正常运行，正在自动切换为 SQLite 本地数据库...");
-                plugin.getLogger().log(Level.WARNING, "===============================================================");
+                com.balancedteam.util.PluginLogger.warning(com.balancedteam.util.PluginLogger.LogKey.DB_MYSQL_FAIL_LINE);
+                com.balancedteam.util.PluginLogger.warning(com.balancedteam.util.PluginLogger.LogKey.DB_MYSQL_FAIL_MSG, e.getMessage());
+                com.balancedteam.util.PluginLogger.warning(com.balancedteam.util.PluginLogger.LogKey.DB_MYSQL_FAIL_HINT);
+                com.balancedteam.util.PluginLogger.warning(com.balancedteam.util.PluginLogger.LogKey.DB_MYSQL_FAIL_FALLBACK);
+                com.balancedteam.util.PluginLogger.warning(com.balancedteam.util.PluginLogger.LogKey.DB_MYSQL_FAIL_LINE);
                 initSQLite();
                 this.isMySQL = false;
             }
         } else {
             initSQLite();
             this.isMySQL = false;
-            plugin.getLogger().info("[Database] 正在使用 SQLite 本地数据库模式。");
+            com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.DB_SQLITE_MODE);
         }
 
         // 初始化数据表结构
@@ -129,7 +129,7 @@ public class DatabaseManager {
      */
     private String sanitizeTablePrefix(String prefix) {
         if (prefix == null || !prefix.matches("^[a-zA-Z0-9_]{1,32}$")) {
-            plugin.getLogger().warning("[Database] 检测到非法数据表前缀配置 '" + prefix + "'，已自动重置为默认前缀 'bt_' 以保证安全！");
+            com.balancedteam.util.PluginLogger.warning(com.balancedteam.util.PluginLogger.LogKey.DB_PREFIX_SECURITY_WARN, prefix);
             return "bt_";
         }
         return prefix;
@@ -191,7 +191,7 @@ public class DatabaseManager {
                     try {
                         conn.rollback();
                     } catch (SQLException rollbackEx) {
-                        plugin.getLogger().log(Level.SEVERE, "[Database] 事务回滚失败", rollbackEx);
+                        com.balancedteam.util.PluginLogger.log(Level.SEVERE, com.balancedteam.util.PluginLogger.LogKey.DB_ROLLBACK_FAIL, rollbackEx);
                     }
                     throw new com.balancedteam.database.exception.DatabaseException("数据库事务执行失败: " + e.getMessage(), e);
                 } finally {

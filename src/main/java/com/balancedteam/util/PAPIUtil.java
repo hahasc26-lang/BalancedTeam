@@ -39,7 +39,7 @@ public class PAPIUtil {
             }
             return expansionInstance.register();
         } catch (Throwable t) {
-            plugin.getLogger().log(Level.WARNING, "[BalancedTeam] 注册 PlaceholderAPI 扩展失败: " + t.getMessage(), t);
+            PluginLogger.log(Level.WARNING, PluginLogger.LogKey.PAPI_REGISTER_ERROR, t, t.getMessage());
             return false;
         }
     }

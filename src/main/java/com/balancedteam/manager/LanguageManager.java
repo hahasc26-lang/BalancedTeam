@@ -71,16 +71,10 @@ public class LanguageManager {
 
         // 3. 确定服务端配置的默认语言
         String configuredLang = plugin.getConfig().getString("language", DEFAULT_LANGUAGE);
-        if (configuredLang == null || configuredLang.trim().isEmpty()) {
-            configuredLang = DEFAULT_LANGUAGE;
-        }
-        if (configuredLang.toLowerCase().endsWith(".yml")) {
-            configuredLang = configuredLang.substring(0, configuredLang.length() - 4);
-        }
         this.serverDefaultLanguage = resolveLanguageCode(configuredLang);
 
-        plugin.getLogger().info("[Lang] 语言管理器初始化完成，已载入 " + languageConfigs.size() 
-                + " 个语言包，服务端默认语言为: " + getCanonicalCode(serverDefaultLanguage));
+        com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.LANG_INIT_SUCCESS, 
+                languageConfigs.size(), getCanonicalCode(serverDefaultLanguage));
 
         // 4. 加载玩家语言偏好持久化数据
         loadUserPreferences();
@@ -101,7 +95,7 @@ public class LanguageManager {
                 try {
                     plugin.saveResource(resourcePath, false);
                 } catch (Exception e) {
-                    plugin.getLogger().warning("[Lang] 释放内置语言文件失败: " + resourcePath);
+                    com.balancedteam.util.PluginLogger.warning(com.balancedteam.util.PluginLogger.LogKey.LANG_RELEASE_FAIL, resourcePath);
                 }
             }
         }
@@ -130,7 +124,7 @@ public class LanguageManager {
                 try {
                     config.save(file);
                 } catch (Exception e) {
-                    plugin.getLogger().log(Level.WARNING, "[Lang] 保存补全语言文件失败: " + fileName, e);
+                    com.balancedteam.util.PluginLogger.log(Level.WARNING, com.balancedteam.util.PluginLogger.LogKey.LANG_SAVE_COMPLETION_FAIL, e, fileName);
                 }
             }
 
@@ -144,7 +138,7 @@ public class LanguageManager {
             canonicalCodes.put(normalized, code);
             displayNames.put(normalized, dispName);
         } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "[Lang] 加载语言文件 " + fileName + " 失败！", e);
+            com.balancedteam.util.PluginLogger.log(Level.SEVERE, com.balancedteam.util.PluginLogger.LogKey.LANG_LOAD_FAIL, e, fileName);
         }
     }
 
@@ -186,16 +180,20 @@ public class LanguageManager {
             }
             userPrefConfig.save(userPrefFile);
         } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "[Lang] 保存玩家语言偏好数据失败", e);
+            com.balancedteam.util.PluginLogger.log(Level.WARNING, com.balancedteam.util.PluginLogger.LogKey.LANG_SAVE_PREF_FAIL, e);
         }
     }
 
     /**
-     * 标准化代码字符串 (小写, 替换横杠为下划线, 去除 .yml)
+     * 标准化代码字符串 (支持相对路径解析、小写、替换横杠为下划线、去除 .yml)
      */
     public static String normalizeCode(String code) {
         if (code == null) return "";
-        String s = code.trim().toLowerCase().replace('-', '_');
+        String s = code.trim().replace('\\', '/');
+        if (s.contains("/")) {
+            s = s.substring(s.lastIndexOf('/') + 1);
+        }
+        s = s.toLowerCase().replace('-', '_');
         if (s.endsWith(".yml")) {
             s = s.substring(0, s.length() - 4);
         }

@@ -40,8 +40,10 @@ Below is the complete reference for all configuration options available in `conf
 # Supports asynchronous MySQL / SQLite data storage with high-concurrency optimization.
 # ===================================================================
 
-# Server Default Language Setting (corresponds to file names in plugins/BalancedTeam/lang/ without .yml)
-# Built-in languages: zh_CN (Simplified Chinese), zh_TW (Traditional Chinese), en_US (English)
+# Server Default Language Setting
+# Supports language codes (e.g. en_US, zh_CN, zh_TW), file names (e.g. en_US.yml), or relative paths (e.g. lang/en_US.yml, lang/zh_CN.yml).
+# Built-in languages: zh_CN (Simplified Chinese), zh_TW (Traditional Chinese), en_US (English).
+# Note: Changing this language path will also automatically switch server console output logs (startup banner, database, lifecycle, etc.) to the corresponding language.
 language: "en_US"
 
 # Database Configuration

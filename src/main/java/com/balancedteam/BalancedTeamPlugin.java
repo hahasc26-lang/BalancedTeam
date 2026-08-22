@@ -55,22 +55,22 @@ public class BalancedTeamPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        getLogger().info("==========================================");
-        getLogger().info("   BalancedTeam 团队插件 正在启动...");
-        getLogger().info("==========================================");
-
-        // 1. 初始化多语言与配置管理器
+        // 1. 初始化多语言与配置管理器 (优先加载以确认控制台输出语言)
         this.languageManager = new LanguageManager(this);
         this.configManager = new ConfigManager(this);
         this.configManager.load();
+
+        com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.BANNER_LINE);
+        com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.BANNER_ENABLING);
+        com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.BANNER_LINE);
 
         // 2. 初始化数据库连接池
         this.databaseManager = new DatabaseManager(this);
         try {
             this.databaseManager.init();
-            getLogger().info("[Database] 数据库连接池初始化成功，数据表校验完成！");
+            com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.DB_POOL_INIT_SUCCESS);
         } catch (SQLException e) {
-            getLogger().log(Level.SEVERE, "[Database] 数据库连接失败！请检查 config.yml 数据库配置", e);
+            com.balancedteam.util.PluginLogger.log(Level.SEVERE, com.balancedteam.util.PluginLogger.LogKey.DB_CONNECT_FAIL, e);
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -93,29 +93,29 @@ public class BalancedTeamPlugin extends JavaPlugin {
         // 4. 异步全量预热内存缓存
         relationDao.loadAllRelations().thenAccept(relations -> {
             relationManager.init(relations);
-            getLogger().info("[Database] 已加载 " + relations.size() + " 条外交关系到内存。");
+            com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.DB_LOADED_RELATIONS, relations.size());
         });
 
         allyRequestDao.loadAllValidRequests(System.currentTimeMillis()).thenAccept(requests -> {
             relationManager.initRequests(requests);
             int count = requests.values().stream().mapToInt(map -> map.size()).sum();
-            getLogger().info("[Database] 已加载 " + count + " 条有效同盟申请到内存。");
+            com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.DB_LOADED_ALLY_REQUESTS, count);
         });
 
         inviteDao.loadAllValidInvites(System.currentTimeMillis()).thenAccept(invites -> {
             inviteManager.init(invites);
             int count = invites.values().stream().mapToInt(map -> map.size()).sum();
-            getLogger().info("[Database] 已加载 " + count + " 条有效入队邀请到内存。");
+            com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.DB_LOADED_INVITES, count);
         });
 
         applicationDao.loadAllValidApplications(System.currentTimeMillis()).thenAccept(applications -> {
             applicationManager.init(applications);
             int count = applications.values().stream().mapToInt(map -> map.size()).sum();
-            getLogger().info("[Database] 已加载 " + count + " 条有效入队申请到内存。");
+            com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.DB_LOADED_APPLICATIONS, count);
         });
 
         teamManager.loadAllData().thenRun(() -> {
-            getLogger().info("[Database] 已成功将全服 " + teamManager.getAllTeams().size() + " 个团队数据预热至内存缓存！");
+            com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.DB_PRELOAD_TEAMS_SUCCESS, teamManager.getAllTeams().size());
         });
 
         // 5. 注册事件监听器
@@ -151,20 +151,20 @@ public class BalancedTeamPlugin extends JavaPlugin {
         // 7. 注册 PlaceholderAPI 扩展
         if (PAPIUtil.hasPAPI()) {
             if (PAPIUtil.registerExpansion(this)) {
-                getLogger().info("[BalancedTeam] 检测到 PlaceholderAPI 插件，已成功注册占位符扩展！");
+                com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.PAPI_HOOK_SUCCESS);
             } else {
-                getLogger().warning("[BalancedTeam] 检测到 PlaceholderAPI 插件，但占位符扩展注册失败！");
+                com.balancedteam.util.PluginLogger.warning(com.balancedteam.util.PluginLogger.LogKey.PAPI_HOOK_FAILED);
             }
         } else {
-            getLogger().info("[BalancedTeam] 未检测到 PlaceholderAPI 插件，占位符功能不可用！");
+            com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.PAPI_NOT_FOUND);
         }
 
-        getLogger().info("[BalancedTeam] 插件启动成功！");
+        com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.PLUGIN_ENABLED);
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("[BalancedTeam] 正在安全保存并关闭数据连接池与偏好数据...");
+        com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.PLUGIN_DISABLING);
         PAPIUtil.unregisterExpansion();
         if (languageManager != null) {
             languageManager.saveUserPreferences();
@@ -172,7 +172,7 @@ public class BalancedTeamPlugin extends JavaPlugin {
         if (databaseManager != null) {
             databaseManager.close();
         }
-        getLogger().info("[BalancedTeam] 插件已安全卸载。");
+        com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.PLUGIN_DISABLED);
     }
 
     public static BalancedTeamPlugin getInstance() {

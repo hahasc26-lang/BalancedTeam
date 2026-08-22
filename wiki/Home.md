@@ -40,6 +40,7 @@
 ### 3. Seamless Multi-Language System
 - **Per-Player Automatic Locale Detection**: Dynamically inspects incoming packets to determine player language settings via `Player.getLocale()`.
 - **Smart Fallback & Fuzzy Matching**: Intelligently handles sub-locales (e.g., `zh_HK` $\to$ `zh_CN`/`zh_TW`) before falling back to server default.
+- **Server Console Log Internationalization**: Automatically adapts all server console output logs (startup banner, database, cache preloading, lifecycle) to the language code or relative path configured in `config.yml`.
 - **Player Overrides**: Players can lock their desired language via `/teamlang <code|auto>` without affecting others on the server.
 
 ### 4. Dynamic & Safe GUI System

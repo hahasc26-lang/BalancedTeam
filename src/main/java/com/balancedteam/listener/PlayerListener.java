@@ -33,9 +33,13 @@ public class PlayerListener implements Listener {
                 clientLocale = player.getLocale();
             } catch (Throwable ignored) {}
             String effectiveCode = langMgr.getEffectiveLanguageCode(player);
-            plugin.getLogger().info("[Lang] 玩家 " + player.getName() + " 加入，客户端 Locale: " 
-                    + clientLocale + "，匹配生效语言: " + langMgr.getCanonicalCode(effectiveCode) 
-                    + " (" + langMgr.getDisplayName(effectiveCode) + ")");
+            com.balancedteam.util.PluginLogger.info(
+                    com.balancedteam.util.PluginLogger.LogKey.PLAYER_JOIN_LOCALE,
+                    player.getName(),
+                    clientLocale,
+                    langMgr.getCanonicalCode(effectiveCode),
+                    langMgr.getDisplayName(effectiveCode)
+            );
         }
     }
 

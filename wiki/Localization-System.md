@@ -8,8 +8,11 @@
 
 - **Automatic Client Locale Detection**: Reads each player's Minecraft client language setting via `Player.getLocale()` when they connect.
 - **Smart Prefix Fuzzy Matching**: Intelligently maps regional variations (e.g. `en_GB`, `en_CA` $\to$ `en_US`; `zh_HK`, `zh_MO` $\to$ `zh_TW`/`zh_CN`).
+- **Relative Path & Code Configuration**: `config.yml` accepts language codes (e.g. `en_US`, `zh_CN`), file names (e.g. `en_US.yml`), or relative paths (e.g. `lang/en_US.yml`, `lang/zh_CN.yml`).
+- **Automatic Server Console Log Localization**: Server console output logs (startup banner, database initialization, table verification, data preloading, PlaceholderAPI hooking, reload, player join locale detection, and safe shutdown) automatically switch to match the configured language in `config.yml` without exposing manual log configurations.
 - **High-Performance Memory Caching**: All language files in `plugins/BalancedTeam/lang/*.yml` are fully pre-cached in memory on startup, ensuring $O(1)$ lookup time and zero disk I/O during gameplay.
 - **Auto-Completion for Missing Keys**: If a custom language pack lacks newly introduced keys, the plugin automatically completes missing entries from the default pack and saves them without breaking existing translations.
+- **Configurable Time Units**: Supports custom day, hour, minute, and second duration labels configured via `time_unit` in language files.
 - **Player Overrides & Persistence**: Players can lock their language preference using `/teamlang <code|auto>`, which is persisted in `data/user_languages.yml` across logins.
 
 ---
