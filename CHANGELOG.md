@@ -6,7 +6,7 @@ All notable changes to this project are documented here.
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [1.1.4] - 2026-08-22
+## [1.1.5] - 2026-08-22
 
 ### 新增
 
@@ -14,6 +14,20 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - `src/main/resources/config.yml` 中的 `language` 设置全面支持语言代码（如 `en_US`、`zh_CN`、`zh_TW`）、文件名（如 `en_US.yml`）或相对路径（如 `lang/en_US.yml`、`lang/zh_CN.yml`、`lang\zh_TW.yml`）指定服务端默认语言；
   - 新增 `PluginLogger` 控制台日志国际化管理器，当 `config.yml` 中的相对路径/语言发生更改或重载时，服务端控制台输出日志（包括启动横幅、数据库连接与建表校验、数据全量缓存预热、PlaceholderAPI 挂载、重载、玩家加入语言检测、安全卸载等）将自动同步切换为对应的语言输出；
   - 严格采用内置国际化模板，无需在外部配置文件中手动配置各条日志文本。
+
+### Added
+
+- **Server Console Log Localization & Relative Path Support**:
+  - `language` in `config.yml` now supports language codes (e.g. `en_US`, `zh_CN`, `zh_TW`), file names (e.g. `en_US.yml`), and relative paths (e.g. `lang/en_US.yml`, `lang/zh_CN.yml`);
+  - Added `PluginLogger` server log internationalization manager. Changing the language relative path in `config.yml` automatically switches all server console output logs (startup banner, database initialization & table verification, data preloading, PlaceholderAPI hooking, reload, player join locale detection, safe shutdown, etc.) to the configured language;
+  - Server logs are cleanly managed internally without requiring manual config entries for log strings.
+
+---
+
+## [1.1.4] - 2026-08-22
+
+### 新增
+
 - **时间单位与持续时间多语言可配置化 (TimeUtil & Localization)**：
   - 在各语言配置文件（`zh_CN.yml`、`zh_TW.yml`、`en_US.yml`）中新增 `time_unit` 配置节点，全面支持天 (`day`)、时 (`hour`)、分 (`minute`)、秒 (`second`) 及缺省文本 (`unknown`) 的自定义配置；
   - `TimeUtil` 内部默认单位全面更新为 `d` / `h` / `min` / `sec` / `Unknown`；
@@ -35,10 +49,6 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- **Server Console Log Localization & Relative Path Support**:
-  - `language` in `config.yml` now supports language codes (e.g. `en_US`, `zh_CN`, `zh_TW`), file names (e.g. `en_US.yml`), and relative paths (e.g. `lang/en_US.yml`, `lang/zh_CN.yml`);
-  - Added `PluginLogger` server log internationalization manager. Changing the language relative path in `config.yml` automatically switches all server console output logs (startup banner, database initialization & table verification, data preloading, PlaceholderAPI hooking, reload, player join locale detection, safe shutdown, etc.) to the configured language;
-  - Server logs are cleanly managed internally without requiring manual config entries for log strings.
 - **Configurable Time & Duration Units Localization (TimeUtil & Localization)**:
   - Added `time_unit` configuration section across all language files (`zh_CN.yml`, `zh_TW.yml`, `en_US.yml`), supporting custom formatting for `day`, `hour`, `minute`, `second`, and `unknown`;
   - Standardized default internal time units in `TimeUtil` to `d` / `h` / `min` / `sec` / `Unknown`;
