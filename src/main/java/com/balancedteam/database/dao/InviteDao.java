@@ -61,7 +61,7 @@ public class InviteDao {
                 ps.setString(2, targetUuid.toString());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除入队邀请失败 (TeamId: " + teamId + ", Target: " + targetUuid + ")", e);
+                throw new DatabaseException("Failed to delete invite (TeamId: " + teamId + ", Target: " + targetUuid + ")", e);
             }
         });
     }
@@ -77,7 +77,7 @@ public class InviteDao {
                 ps.setInt(1, teamId);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除团队所有入队邀请失败 (TeamId: " + teamId + ")", e);
+                throw new DatabaseException("Failed to delete all invites for team (TeamId: " + teamId + ")", e);
             }
         });
     }
@@ -104,7 +104,7 @@ public class InviteDao {
                     }
                 }
             } catch (SQLException e) {
-                throw new DatabaseException("加载未过期入队邀请失败", e);
+                throw new DatabaseException("Failed to load valid invites", e);
             }
             return result;
         });
@@ -121,7 +121,7 @@ public class InviteDao {
                 ps.setLong(1, now);
                 return ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("清理过期入队邀请失败", e);
+                throw new DatabaseException("Failed to clean expired invites", e);
             }
         });
     }

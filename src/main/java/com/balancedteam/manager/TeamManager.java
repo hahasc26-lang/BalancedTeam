@@ -132,7 +132,7 @@ public class TeamManager {
                         teamId = rs.getInt(1);
                         team.setId(teamId);
                     } else {
-                        throw new com.balancedteam.database.exception.DatabaseException("创建团队事务失败，未生成主键 ID");
+                        throw new com.balancedteam.database.exception.DatabaseException("Failed to execute create team transaction, no generated key ID returned");
                     }
                 }
             }

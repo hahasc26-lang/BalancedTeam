@@ -60,7 +60,7 @@ public class AllyRequestDao {
                 ps.setInt(2, toTeamId);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除同盟申请失败 (From: " + fromTeamId + ", To: " + toTeamId + ")", e);
+                throw new DatabaseException("Failed to delete ally request (From: " + fromTeamId + ", To: " + toTeamId + ")", e);
             }
         });
     }
@@ -77,7 +77,7 @@ public class AllyRequestDao {
                 ps.setInt(2, teamId);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除团队关联同盟申请失败 (TeamId: " + teamId + ")", e);
+                throw new DatabaseException("Failed to delete ally requests for team (TeamId: " + teamId + ")", e);
             }
         });
     }
@@ -103,7 +103,7 @@ public class AllyRequestDao {
                     }
                 }
             } catch (SQLException e) {
-                throw new DatabaseException("加载未过期同盟申请失败", e);
+                throw new DatabaseException("Failed to load valid ally requests", e);
             }
             return result;
         });
@@ -120,7 +120,7 @@ public class AllyRequestDao {
                 ps.setLong(1, now);
                 return ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("清理过期同盟申请失败", e);
+                throw new DatabaseException("Failed to clean expired ally requests", e);
             }
         });
     }

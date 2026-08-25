@@ -61,7 +61,7 @@ public class ApplicationDao {
                 ps.setString(2, playerUuid.toString());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除入队申请失败 (TeamId: " + teamId + ", Player: " + playerUuid + ")", e);
+                throw new DatabaseException("Failed to delete application (TeamId: " + teamId + ", Player: " + playerUuid + ")", e);
             }
         });
     }
@@ -77,7 +77,7 @@ public class ApplicationDao {
                 ps.setInt(1, teamId);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除团队所有入队申请失败 (TeamId: " + teamId + ")", e);
+                throw new DatabaseException("Failed to delete all applications for team (TeamId: " + teamId + ")", e);
             }
         });
     }
@@ -93,7 +93,7 @@ public class ApplicationDao {
                 ps.setString(1, playerUuid.toString());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除玩家所有入队申请失败 (Player: " + playerUuid + ")", e);
+                throw new DatabaseException("Failed to delete all applications for player (Player: " + playerUuid + ")", e);
             }
         });
     }
@@ -121,7 +121,7 @@ public class ApplicationDao {
                     }
                 }
             } catch (SQLException e) {
-                throw new DatabaseException("加载未过期入队申请失败", e);
+                throw new DatabaseException("Failed to load valid applications", e);
             }
             return result;
         });
@@ -138,7 +138,7 @@ public class ApplicationDao {
                 ps.setLong(1, now);
                 return ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("清理过期入队申请失败", e);
+                throw new DatabaseException("Failed to clean expired applications", e);
             }
         });
     }

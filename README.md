@@ -1,7 +1,7 @@
 # BalancedTeam
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Minecraft-1.20.4%2B-brightgreen?style=flat-square&logo=minecraft" alt="Minecraft Version">
+  <img src="https://img.shields.io/badge/Minecraft-1.20.x--26.2-brightgreen?style=flat-square&logo=minecraft" alt="Minecraft Version">
   <img src="https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk" alt="Java 21">
   <img src="https://img.shields.io/badge/Build-Maven-blue?style=flat-square&logo=apache-maven" alt="Maven">
   <img src="https://img.shields.io/badge/PlaceholderAPI-Supported-blueviolet?style=flat-square" alt="PlaceholderAPI">

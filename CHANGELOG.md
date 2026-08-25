@@ -6,6 +6,26 @@ All notable changes to this project are documented here.
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.6] - 2026-08-25
+
+### 变更 / Changed
+
+- **扩展跨版本兼容性 (Minecraft 1.20.x - 26.2)**：
+  - 增强了音频播放 (`SoundUtil`) 和伤害判定监听器等底层交互的跨版本安全容错机制，确保在 Minecraft 1.20.x 至 26.2 (包括 Bukkit, Spigot, Paper, Purpur 等衍生服务端) 上稳定运行；
+  - 完善了 Java 21 运行环境兼容与文档版本徽标更新。
+- **DAO 层持久化错误报告全英文标准化 (DAO English Error Reports)**：
+  - 将所有 DAO 数据访问层（`TeamDao`、`MemberDao`、`RelationDao`、`InviteDao`、`ApplicationDao`、`AllyRequestDao`）以及 `DatabaseManager` / `TeamManager` 抛出的 `DatabaseException` 异常与错误信息全面替换为标准规范的英文描述，便于国际化日志收集与服务端自动化错误排查。
+
+### Added / Changed (English)
+
+- **Extended Cross-Version Compatibility (Minecraft 1.20.x - 26.2)**:
+  - Enhanced version resilience and safe fallback in `SoundUtil` and damage listeners, ensuring smooth and flawless operation on Minecraft 1.20.x through 26.2 across Bukkit, Spigot, Paper, and Purpur platforms;
+  - Updated documentation, guides, and version badges for modern Java 21+ environments.
+- **Standardized English Error Messages for DAO Layer**:
+  - Replaced all persistence error reports and `DatabaseException` messages across all DAO classes (`TeamDao`, `MemberDao`, `RelationDao`, `InviteDao`, `ApplicationDao`, `AllyRequestDao`) and `DatabaseManager` / `TeamManager` with clear, standardized English error messages for consistent logging and troubleshooting.
+
+---
+
 ## [1.1.5] - 2026-08-22
 
 ### 新增

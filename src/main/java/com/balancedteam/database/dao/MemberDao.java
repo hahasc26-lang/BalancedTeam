@@ -50,7 +50,7 @@ public class MemberDao {
 
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("保存成员信息失败 (UUID: " + member.getUuid() + ")", e);
+                throw new DatabaseException("Failed to save member info (UUID: " + member.getUuid() + ")", e);
             }
         });
     }
@@ -67,7 +67,7 @@ public class MemberDao {
                 ps.setString(1, uuid.toString());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除成员失败 (UUID: " + uuid + ")", e);
+                throw new DatabaseException("Failed to delete member (UUID: " + uuid + ")", e);
             }
         });
     }
@@ -84,7 +84,7 @@ public class MemberDao {
                 ps.setInt(1, teamId);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除团队成员失败 (TeamId: " + teamId + ")", e);
+                throw new DatabaseException("Failed to delete team members (TeamId: " + teamId + ")", e);
             }
         });
     }
@@ -105,7 +105,7 @@ public class MemberDao {
                 }
                 return Optional.empty();
             } catch (SQLException e) {
-                throw new DatabaseException("查询成员失败 (UUID: " + uuid + ")", e);
+                throw new DatabaseException("Failed to query member (UUID: " + uuid + ")", e);
             }
         });
     }
@@ -126,7 +126,7 @@ public class MemberDao {
                     }
                 }
             } catch (SQLException e) {
-                throw new DatabaseException("查询团队所有成员失败 (TeamId: " + teamId + ")", e);
+                throw new DatabaseException("Failed to query all members for team (TeamId: " + teamId + ")", e);
             }
             return list;
         });
@@ -147,7 +147,7 @@ public class MemberDao {
                     list.add(mapResultSetToMember(rs));
                 }
             } catch (SQLException e) {
-                throw new DatabaseException("加载全部成员数据失败", e);
+                throw new DatabaseException("Failed to load all member data", e);
             }
             return list;
         });

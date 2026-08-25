@@ -63,8 +63,12 @@ public final class SoundUtil {
      * @param pitch  音调
      */
     private static void play(Player player, Sound sound, float volume, float pitch) {
-        if (player != null && player.isOnline()) {
-            player.playSound(player.getLocation(), sound, volume, pitch);
+        if (player != null && player.isOnline() && sound != null) {
+            try {
+                player.playSound(player.getLocation(), sound, volume, pitch);
+            } catch (Throwable ignored) {
+                // 跨版本容错：防止极特殊或未来衍生版本中音效枚举差异导致异常
+            }
         }
     }
 }

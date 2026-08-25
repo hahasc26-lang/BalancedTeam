@@ -49,9 +49,9 @@ public class TeamDao {
                         return id;
                     }
                 }
-                throw new DatabaseException("创建团队失败，未生成主键 ID: " + team.getName());
+                throw new DatabaseException("Failed to create team, no generated key ID returned: " + team.getName());
             } catch (SQLException e) {
-                throw new DatabaseException("创建团队数据库操作失败 (" + team.getName() + ")", e);
+                throw new DatabaseException("Failed to execute database operation for creating team (" + team.getName() + ")", e);
             }
         });
     }
@@ -72,7 +72,7 @@ public class TeamDao {
 
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("更新团队信息失败 (TeamId: " + team.getId() + ")", e);
+                throw new DatabaseException("Failed to update team info (TeamId: " + team.getId() + ")", e);
             }
         });
     }
@@ -89,7 +89,7 @@ public class TeamDao {
                 ps.setInt(1, teamId);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除团队失败 (TeamId: " + teamId + ")", e);
+                throw new DatabaseException("Failed to delete team (TeamId: " + teamId + ")", e);
             }
         });
     }
@@ -110,7 +110,7 @@ public class TeamDao {
                 }
                 return Optional.empty();
             } catch (SQLException e) {
-                throw new DatabaseException("查询团队失败 (TeamId: " + teamId + ")", e);
+                throw new DatabaseException("Failed to query team (TeamId: " + teamId + ")", e);
             }
         });
     }
@@ -131,7 +131,7 @@ public class TeamDao {
                 }
                 return Optional.empty();
             } catch (SQLException e) {
-                throw new DatabaseException("按名称查询团队失败 (Name: " + name + ")", e);
+                throw new DatabaseException("Failed to query team by name (Name: " + name + ")", e);
             }
         });
     }
@@ -151,7 +151,7 @@ public class TeamDao {
                     list.add(mapResultSetToTeam(rs));
                 }
             } catch (SQLException e) {
-                throw new DatabaseException("加载全部团队数据失败", e);
+                throw new DatabaseException("Failed to load all team data", e);
             }
             return list;
         });

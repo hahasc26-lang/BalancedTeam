@@ -193,14 +193,14 @@ public class DatabaseManager {
                     } catch (SQLException rollbackEx) {
                         com.balancedteam.util.PluginLogger.log(Level.SEVERE, com.balancedteam.util.PluginLogger.LogKey.DB_ROLLBACK_FAIL, rollbackEx);
                     }
-                    throw new com.balancedteam.database.exception.DatabaseException("数据库事务执行失败: " + e.getMessage(), e);
+                    throw new com.balancedteam.database.exception.DatabaseException("Database transaction execution failed: " + e.getMessage(), e);
                 } finally {
                     try {
                         conn.setAutoCommit(initialAutoCommit);
                     } catch (SQLException ignored) {}
                 }
             } catch (SQLException e) {
-                throw new com.balancedteam.database.exception.DatabaseException("获取数据库连接失败: " + e.getMessage(), e);
+                throw new com.balancedteam.database.exception.DatabaseException("Failed to get database connection: " + e.getMessage(), e);
             }
         });
     }

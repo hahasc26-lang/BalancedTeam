@@ -49,9 +49,9 @@ public class RelationDao {
                         return id;
                     }
                 }
-                throw new DatabaseException("创建外交关系失败，未生成主键 ID");
+                throw new DatabaseException("Failed to create relation, no generated key ID returned");
             } catch (SQLException e) {
-                throw new DatabaseException("创建外交关系数据库操作失败 (" + relation.getTeamId1() + " <-> " + relation.getTeamId2() + ")", e);
+                throw new DatabaseException("Failed to execute database operation for creating relation (" + relation.getTeamId1() + " <-> " + relation.getTeamId2() + ")", e);
             }
         });
     }
@@ -69,7 +69,7 @@ public class RelationDao {
                 ps.setInt(2, relationId);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("更新外交关系状态失败 (RelationId: " + relationId + ")", e);
+                throw new DatabaseException("Failed to update relation status (RelationId: " + relationId + ")", e);
             }
         });
     }
@@ -86,7 +86,7 @@ public class RelationDao {
                 ps.setInt(1, relationId);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除外交关系失败 (RelationId: " + relationId + ")", e);
+                throw new DatabaseException("Failed to delete relation (RelationId: " + relationId + ")", e);
             }
         });
     }
@@ -104,7 +104,7 @@ public class RelationDao {
                 ps.setInt(2, teamId);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new DatabaseException("删除团队所有外交关系失败 (TeamId: " + teamId + ")", e);
+                throw new DatabaseException("Failed to delete all relations for team (TeamId: " + teamId + ")", e);
             }
         });
     }
@@ -126,7 +126,7 @@ public class RelationDao {
                     }
                 }
             } catch (SQLException e) {
-                throw new DatabaseException("查询团队外交关系失败 (TeamId: " + teamId + ")", e);
+                throw new DatabaseException("Failed to query team relations (TeamId: " + teamId + ")", e);
             }
             return list;
         });
@@ -147,7 +147,7 @@ public class RelationDao {
                     list.add(mapResultSetToRelation(rs));
                 }
             } catch (SQLException e) {
-                throw new DatabaseException("加载全部外交关系数据失败", e);
+                throw new DatabaseException("Failed to load all relation data", e);
             }
             return list;
         });
