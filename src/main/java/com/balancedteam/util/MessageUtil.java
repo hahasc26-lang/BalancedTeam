@@ -81,11 +81,11 @@ public class MessageUtil {
     }
 
     /**
-     * 向玩家发送原始消息
+     * 向玩家发送原始消息（直接发送已由调用方格式化好的内容，避免二次正则转色）
      */
     public static void sendRawMessage(Player player, String message) {
         if (player != null && player.isOnline() && message != null && !message.isEmpty()) {
-            player.sendMessage(color(message));
+            player.sendMessage(message);
         }
     }
 }

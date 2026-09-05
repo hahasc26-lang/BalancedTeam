@@ -64,6 +64,7 @@ public class ChatManager {
 
     /**
      * 发送团队聊天消息并分发给队员和开启监听的管理员
+     * 修复 PAPI 注入漏洞：确保先解析格式模板中的变量，最后再安全替换玩家聊天内容
      */
     public void sendTeamChat(Player sender, Team team, String message) {
         if (sender == null || team == null || message == null || message.trim().isEmpty()) {
@@ -73,14 +74,20 @@ public class ChatManager {
         TeamMember member = team.getMember(sender.getUniqueId());
         String roleName = member != null ? plugin.getConfigManager().getRoleDisplayName(member.getRole()) : plugin.getConfigManager().getRawMessage("role.unknown");
 
-        // 格式化团队消息
+        // 检查颜色代码权限：有权限则解析颜色，否则保留纯文本避免普通玩家滥用颜色/混淆代码
+        String processedMessage = message;
+        if (sender.hasPermission("balancedteam.chat.color")) {
+            processedMessage = MessageUtil.color(processedMessage);
+        }
+
+        // 1. 格式化团队消息：先对前缀模板解析 PAPI 与颜色，再将处理后的消息内容替换进 {MESSAGE}
         String format = plugin.getConfigManager().getChatFormat();
-        String rawFormattedMsg = format
+        String prefixTemplate = format
                 .replace("{TEAM}", team.getName())
                 .replace("{ROLE}", roleName)
-                .replace("{PLAYER}", sender.getName())
-                .replace("{MESSAGE}", message);
-        String formattedMsg = MessageUtil.color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawFormattedMsg));
+                .replace("{PLAYER}", sender.getName());
+        String formattedPrefix = MessageUtil.color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, prefixTemplate));
+        String formattedMsg = formattedPrefix.replace("{MESSAGE}", processedMessage);
 
         // 发送给队内所有在线成员
         for (UUID memberUuid : team.getMembers().keySet()) {
@@ -90,14 +97,14 @@ public class ChatManager {
             }
         }
 
-        // 格式化管理员监听消息
+        // 2. 格式化管理员监听消息
         String spyFormat = plugin.getConfigManager().getSpyFormat();
-        String rawSpyFormattedMsg = spyFormat
+        String rawSpyPrefix = spyFormat
                 .replace("{TEAM}", team.getName())
                 .replace("{ROLE}", roleName)
-                .replace("{PLAYER}", sender.getName())
-                .replace("{MESSAGE}", message);
-        String spyFormattedMsg = MessageUtil.color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawSpyFormattedMsg));
+                .replace("{PLAYER}", sender.getName());
+        String spyFormattedPrefix = MessageUtil.color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawSpyPrefix));
+        String spyFormattedMsg = spyFormattedPrefix.replace("{MESSAGE}", processedMessage);
 
         // 分发给所有在线且开启监听的非同队管理员
         for (UUID adminUuid : spyPlayers) {

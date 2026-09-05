@@ -41,3 +41,6 @@ permissions:
   balancedteam.admin.spy:
     description: 允许监听所有团队聊天
     default: op
+  balancedteam.chat.color:
+    description: 允许在团队聊天中使用颜色代码
+    default: op

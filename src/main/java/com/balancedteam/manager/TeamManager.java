@@ -231,10 +231,15 @@ public class TeamManager {
     }
 
     /**
-     * 添加成员
+     * 添加成员（具备并发人数上限与重复加入双重防护）
      */
     public CompletableFuture<Boolean> addMember(Team team, UUID playerUuid, TeamRole role) {
         if (team == null || isPlayerInTeam(playerUuid)) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        int maxMembers = plugin.getConfigManager().getMaxMembers();
+        if (team.getMemberCount() >= maxMembers) {
             return CompletableFuture.completedFuture(false);
         }
 
@@ -246,8 +251,15 @@ public class TeamManager {
         );
 
         return memberDao.saveMember(member).thenApply(v -> {
-            team.addMember(member);
-            playerTeamMap.put(playerUuid, team.getId());
+            synchronized (team) {
+                // 并发双重检查：防止并发接受时团队人数突破配置上限
+                if (team.getMemberCount() >= maxMembers) {
+                    memberDao.deleteMember(playerUuid);
+                    return false;
+                }
+                team.addMember(member);
+                playerTeamMap.put(playerUuid, team.getId());
+            }
             // 清理该玩家加入队伍前在其他队伍的所有未决申请
             plugin.getApplicationManager().onPlayerJoinedTeam(playerUuid);
             return true;

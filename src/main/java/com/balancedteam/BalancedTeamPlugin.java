@@ -85,7 +85,7 @@ public class BalancedTeamPlugin extends JavaPlugin {
 
         this.inviteManager = new InviteManager(inviteDao);
         this.applicationManager = new com.balancedteam.manager.ApplicationManager(applicationDao);
-        this.relationManager = new RelationManager(relationDao, allyRequestDao);
+        this.relationManager = new RelationManager(this, relationDao, allyRequestDao);
         this.chatManager = new ChatManager(this);
         this.chatInputManager = new ChatInputManager(this);
         this.teamManager = new TeamManager(this, teamDao, memberDao);

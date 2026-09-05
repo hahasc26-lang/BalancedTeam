@@ -6,6 +6,28 @@ All notable changes to this project are documented here.
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.7] - 2026-09-05
+
+### 安全与修复 / Security & Fixed
+
+- **修复 PlaceholderAPI 聊天占位符注入漏洞 (PAPI Injection Fix)**：
+  - 调整 `ChatManager` 中的格式化求值顺序，确保在将玩家聊天内容拼入模板前先行解析模板中的 PAPI 变量与颜色，杜绝玩家在聊天栏输入恶意占位符变量引发的敏感信息探测与脚本执行风险；
+  - 规范团队聊天颜色权限校验，仅拥有 `balancedteam.chat.color` 权限的玩家才可发送带色彩与样式的消息，并优化 `MessageUtil.sendRawMessage` 为直接发送已格式化文本，避免重复正则转色。
+- **强化团队人数与外交关系并发上限防护 (Concurrency Boundary Protection)**：
+  - 在 `TeamManager.addMember` 内部增加前置检查与落库后双重同步锁（`synchronized`）校验，防止多名玩家并发接受邀请/申请时突破配置的 `max_members` 上限；
+  - 在 `RelationManager` 内部增加同盟数（`max_allies`）与宿敌数（`max_enemies`）的全局上限以及已有同盟/敌对互斥防御校验，杜绝并发越界。
+
+### Security & Fixed (English)
+
+- **Patched PlaceholderAPI Chat Injection Vulnerability**:
+  - Adjusted evaluation order in `ChatManager` to resolve PAPI variables on the message template prior to inserting the user's chat message, completely mitigating placeholder injection risks (such as unauthorized script evaluation or sensitive variable inspection);
+  - Added strict permission checks (`balancedteam.chat.color`) for chat color code parsing and optimized `MessageUtil.sendRawMessage` to send pre-formatted messages directly without redundant regex color passes.
+- **Enhanced Concurrency Boundary Protection for Team Size & Relations**:
+  - Added pre-checks and synchronized double-checked locking inside `TeamManager.addMember` to strictly enforce `max_members` during concurrent member joins;
+  - Added global boundary checks for `max_allies` and `max_enemies` as well as mutual exclusion checks inside `RelationManager` to prevent relation limit bypasses during concurrent requests.
+
+---
+
 ## [1.1.6] - 2026-08-25
 
 ### 变更 / Changed

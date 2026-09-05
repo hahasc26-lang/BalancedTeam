@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
  */
 public class RelationManager {
 
+    private final com.balancedteam.BalancedTeamPlugin plugin;
     private final RelationDao relationDao;
     private final AllyRequestDao allyRequestDao;
 
@@ -26,9 +27,14 @@ public class RelationManager {
     // 内存暂存盟友申请超时记录: TargetTeamId -> (RequesterTeamId -> ExpireTimestamp)
     private final Map<Integer, Map<Integer, Long>> pendingAllyRequests = new ConcurrentHashMap<>();
 
-    public RelationManager(RelationDao relationDao, AllyRequestDao allyRequestDao) {
+    public RelationManager(com.balancedteam.BalancedTeamPlugin plugin, RelationDao relationDao, AllyRequestDao allyRequestDao) {
+        this.plugin = plugin;
         this.relationDao = relationDao;
         this.allyRequestDao = allyRequestDao;
+    }
+
+    public RelationManager(RelationDao relationDao, AllyRequestDao allyRequestDao) {
+        this(com.balancedteam.BalancedTeamPlugin.getInstance(), relationDao, allyRequestDao);
     }
 
     public void init(List<TeamRelation> loadedRelations) {
@@ -56,9 +62,19 @@ public class RelationManager {
     }
 
     /**
-     * 发送结盟请求（内存暂存并持久化到数据库）
+     * 发送结盟请求（具备同盟上限、已有同盟/宿敌关系互斥检查）
      */
     public void sendAllyRequest(int fromTeamId, int toTeamId, long timeoutSeconds) {
+        if (plugin != null && plugin.getConfigManager() != null) {
+            int maxAllies = plugin.getConfigManager().getMaxAllies();
+            if (getAllies(fromTeamId).size() >= maxAllies || getAllies(toTeamId).size() >= maxAllies) {
+                return;
+            }
+        }
+        if (isAlly(fromTeamId, toTeamId) || isEnemy(fromTeamId, toTeamId)) {
+            return;
+        }
+
         long expireTime = System.currentTimeMillis() + (timeoutSeconds * 1000L);
         pendingAllyRequests.computeIfAbsent(toTeamId, k -> new ConcurrentHashMap<>())
                 .put(fromTeamId, expireTime);
@@ -90,9 +106,19 @@ public class RelationManager {
     }
 
     /**
-     * 消费（接受）结盟申请并持久化
+     * 消费（接受）结盟申请并持久化（增加双向同盟上限与互斥防御校验）
      */
     public CompletableFuture<Boolean> acceptAllyRequest(int requesterTeamId, int acceptingTeamId) {
+        if (plugin != null && plugin.getConfigManager() != null) {
+            int maxAllies = plugin.getConfigManager().getMaxAllies();
+            if (getAllies(requesterTeamId).size() >= maxAllies || getAllies(acceptingTeamId).size() >= maxAllies) {
+                return CompletableFuture.completedFuture(false);
+            }
+        }
+        if (isAlly(requesterTeamId, acceptingTeamId) || isEnemy(requesterTeamId, acceptingTeamId)) {
+            return CompletableFuture.completedFuture(false);
+        }
+
         Map<Integer, Long> map = pendingAllyRequests.get(acceptingTeamId);
         if (map != null) {
             map.remove(requesterTeamId);
@@ -156,11 +182,18 @@ public class RelationManager {
     }
 
     /**
-     * 添加敌对关系 (单向/双方)
+     * 添加敌对关系 (单向/双方，具备宿敌上限与同盟互斥校验)
      */
     public CompletableFuture<Boolean> addEnemy(int teamId1, int teamId2) {
-        if (isEnemy(teamId1, teamId2)) {
+        if (isEnemy(teamId1, teamId2) || isAlly(teamId1, teamId2)) {
             return CompletableFuture.completedFuture(false);
+        }
+
+        if (plugin != null && plugin.getConfigManager() != null) {
+            int maxEnemies = plugin.getConfigManager().getMaxEnemies();
+            if (getEnemies(teamId1).size() >= maxEnemies || getEnemies(teamId2).size() >= maxEnemies) {
+                return CompletableFuture.completedFuture(false);
+            }
         }
 
         TeamRelation relation = new TeamRelation(
