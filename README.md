@@ -13,6 +13,9 @@
   <a href="https://ko-fi.com/X5Z326V65O"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi"></a>
 </p>
 
+- **Modrinth**:[https://github.com/hahasc26-lang/BalancedTeam](https://modrinth.com/plugin/balancedteam)
+- **Spigot**:[https://github.com/hahasc26-lang/BalancedTeam/wiki](https://www.spigotmc.org/resources/balancedteam.138143/)
+
 <p align="center">
   <b>中文</b> | <a href="#english">English</a>
 </p>
