@@ -1,5 +1,6 @@
 # ===================================================================
 # BalancedTeam Plugin Configuration (config.yml)
+# By haha
 # Supports asynchronous MySQL / SQLite data storage with high-concurrency optimization.
 # ===================================================================
 
