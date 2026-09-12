@@ -6,7 +6,68 @@ All notable changes to this project are documented here.
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.0] - 2026-09-12
+
+### 新增 / Added
+
+- **队伍聊天全局开关 `enable_chat` (Global Chat Toggle)**：
+  - `config.yml` 的 `chat` 节点新增 `enable_chat` 布尔配置项（默认 `true`），管理员将其设为 `false` 后，所有队伍聊天入口（`/team chat`、`/tc`、聊天锁定模式）均立即失效；
+  - `ConfigManager` 新增 `isChatEnabled()` 方法统一读取该配置项；
+  - `ChatManager.sendTeamChat()` 入口增加全局开关守卫，作为消息分发的最终屏障；
+  - `PlayerListener`（聊天锁定模式监听）、`TeamCommand.handleChat()`（`/team chat` 子指令）、`TeamMsgCommand.onCommand()`（`/tc` 系列指令）均同步添加 `isChatEnabled()` 前置检测；玩家处于聊天锁定模式时若全局聊天被关闭，会被自动清出该模式。
+- **快捷聊天指令独立开关 `enable_tc_command` (TC Command Toggle)**：
+  - `config.yml` 的 `chat` 节点已有 `enable_tc_command` 配置项，现于 `ConfigManager` 新增 `isTcCommandEnabled()` 方法统一读取；
+  - `TeamMsgCommand.onCommand()` 在指令入口处先行检测该开关，`enable_tc_command: false` 时禁止玩家使用 `/tc`、`/tm`、`/teammsg` 等快捷聊天指令，并向玩家返回提示消息。
+- **终端监听队伍聊天 `console_listen_team_chat` (Console Spy)**：
+  - `ConfigManager` 新增 `isConsoleListenTeamChat()` 方法读取 `chat.console_listen_team_chat`（默认 `true`）；
+  - `ChatManager.sendTeamChat()` 在完成队内消息分发与管理员监听分发后，若该开关开启，将使用与队内相同的格式字符串在服务器控制台打印完整的聊天行，方便服务器后台留存记录。
+- **多语言新消息键 (New Language Keys)**：
+  - 三套语言文件（`zh_CN.yml`、`zh_TW.yml`、`en_US.yml`）新增：
+    - `chat_disabled`：全局聊天功能已被管理员关闭时的提示；
+    - `chat_tc_disabled`：`/tc` 快捷指令已被管理员禁用时的提示。
+
+### 变更 / Changed
+
+- **`ConfigManager` 方法补全与文档完善**：
+  - `getChatFormat()` 默认值修复：补回误删的 `{TEAM}` 占位符，使其与 `config.yml` 中的 `chat.format` 默认值完全对齐；
+  - `getSpyFormat()` 默认值统一：将硬编码默认值中的 `Spy` 改回 `SPY`，与 `config.yml` 保持一致；
+  - 两个方法的 Javadoc 改写为标准 HTML 列表格式，补全 `@return` 描述，枚举全部支持的占位符（`{TEAM}`、`{ROLE}`、`{PLAYER}`、`{MESSAGE}`）。
+- **版本号升级 `1.1.7` → `1.2.0`**：
+  - `pom.xml` 版本号由 `1.1.7` 升级至 `1.2.0`，反映本次功能性新增的语义化版本变更。
+
+---
+
+### Added (English)
+
+- **Global Chat Toggle `enable_chat`**:
+  - New boolean `enable_chat` key added under the `chat` node in `config.yml` (defaults to `true`). When set to `false`, all team chat entry points (`/team chat`, `/tc`, chat lock mode) are immediately disabled;
+  - `ConfigManager` now exposes `isChatEnabled()` as a unified reader for this option;
+  - `ChatManager.sendTeamChat()` enforces the global toggle as a final barrier before dispatching any message;
+  - `PlayerListener` (chat lock mode), `TeamCommand.handleChat()`, and `TeamMsgCommand.onCommand()` all add a `isChatEnabled()` pre-check; players currently in chat lock mode are automatically ejected when the feature is disabled.
+- **TC Command Independent Toggle `enable_tc_command`**:
+  - `ConfigManager` now exposes `isTcCommandEnabled()` to read `chat.enable_tc_command`;
+  - `TeamMsgCommand.onCommand()` checks this flag first; when disabled, `/tc`, `/tm`, and `/teammsg` are all blocked and a feedback message is sent to the player.
+- **Console Team Chat Spy `console_listen_team_chat`**:
+  - `ConfigManager` now exposes `isConsoleListenTeamChat()` to read `chat.console_listen_team_chat` (defaults to `true`);
+  - `ChatManager.sendTeamChat()` prints the fully formatted chat line to the server console after member and admin dispatch, using the same `chat.format` template, enabling server-side logging.
+- **New Language Keys**:
+  - All three language files (`zh_CN.yml`, `zh_TW.yml`, `en_US.yml`) gain:
+    - `chat_disabled`: Shown when a player attempts team chat while the feature is globally disabled;
+    - `chat_tc_disabled`: Shown when a player uses `/tc` while the shortcut command is disabled.
+
+### Changed (English)
+
+- **`ConfigManager` Method Fixes & Documentation**:
+  - `getChatFormat()` default value restored: re-added the missing `{TEAM}` placeholder to match the `chat.format` default in `config.yml`;
+  - `getSpyFormat()` default value corrected: `Spy` → `SPY` in hardcoded fallback, consistent with `config.yml`;
+  - Both methods' Javadoc rewritten to standard HTML list format with full `@return` descriptions and complete placeholder documentation.
+- **Version Bump `1.1.7` → `1.2.0`**:
+  - `pom.xml` version updated to `1.2.0` to reflect the semantic version increment for new feature additions.
+
+---
+
 ## [1.1.7] - 2026-09-05
+
 
 ### 安全与修复 / Security & Fixed
 

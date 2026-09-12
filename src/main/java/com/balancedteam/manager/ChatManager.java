@@ -123,26 +123,9 @@ public class ChatManager {
             }
         }
 
-        // 3. 终端监听 (如果开启)
+        // 3. 终端监听 (如果开启)：复用已格式化的 spy 格式消息，与管理员监听内容保持一致
         if (plugin.getConfigManager().isConsoleListenTeamChat()) {
-            // 读取并准备控制台输出的格式
-            String consoleFormat = plugin.getConfigManager().getChatFormat();
-
-            // 把团队、职业、玩家名占位符替换为真实值，得到“原始”前缀字符串
-            String rawConsolePrefix = consoleFormat
-                    .replace("{TEAM}", team.getName())
-                    .replace("{ROLE}", roleName)
-                    .replace("{PLAYER}", sender.getName());
-
-            // 交给 PlaceholderAPI（PAPI）处理可能的自定义占位符，并上色
-            String consoleFormattedPrefix = MessageUtil.color(
-                    com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawConsolePrefix));
-
-            // 把已经完成的前缀中的 {MESSAGE} 再替换为实际的聊天内容
-            String consoleFormattedMsg = consoleFormattedPrefix.replace("{MESSAGE}", processedMessage);
-
-            // 将完整的、已上色的聊天行打印到服务器控制台
-            System.out.println(consoleFormattedMsg);
+            plugin.getLogger().info(spyFormattedMsg);
         }
     }
 }
