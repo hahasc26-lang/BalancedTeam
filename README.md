@@ -16,6 +16,8 @@
 - **Modrinth**:[https://github.com/hahasc26-lang/BalancedTeam](https://modrinth.com/plugin/balancedteam)
 - **Spigot**:[https://github.com/hahasc26-lang/BalancedTeam/wiki](https://www.spigotmc.org/resources/balancedteam.138143/)
 
+---
+
 <p align="center">
   <b>中文</b> | <a href="#english">English</a>
 </p>
