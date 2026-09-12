@@ -70,9 +70,14 @@ public class ChatManager {
         if (sender == null || team == null || message == null || message.trim().isEmpty()) {
             return;
         }
+        // 全局聊天开关检测
+        if (!plugin.getConfigManager().isChatEnabled()) {
+            return;
+        }
 
         TeamMember member = team.getMember(sender.getUniqueId());
-        String roleName = member != null ? plugin.getConfigManager().getRoleDisplayName(member.getRole()) : plugin.getConfigManager().getRawMessage("role.unknown");
+        String roleName = member != null ? plugin.getConfigManager().getRoleDisplayName(member.getRole())
+                : plugin.getConfigManager().getRawMessage("role.unknown");
 
         // 检查颜色代码权限：有权限则解析颜色，否则保留纯文本避免普通玩家滥用颜色/混淆代码
         String processedMessage = message;
@@ -86,7 +91,8 @@ public class ChatManager {
                 .replace("{TEAM}", team.getName())
                 .replace("{ROLE}", roleName)
                 .replace("{PLAYER}", sender.getName());
-        String formattedPrefix = MessageUtil.color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, prefixTemplate));
+        String formattedPrefix = MessageUtil
+                .color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, prefixTemplate));
         String formattedMsg = formattedPrefix.replace("{MESSAGE}", processedMessage);
 
         // 发送给队内所有在线成员
@@ -103,7 +109,8 @@ public class ChatManager {
                 .replace("{TEAM}", team.getName())
                 .replace("{ROLE}", roleName)
                 .replace("{PLAYER}", sender.getName());
-        String spyFormattedPrefix = MessageUtil.color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawSpyPrefix));
+        String spyFormattedPrefix = MessageUtil
+                .color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawSpyPrefix));
         String spyFormattedMsg = spyFormattedPrefix.replace("{MESSAGE}", processedMessage);
 
         // 分发给所有在线且开启监听的非同队管理员
@@ -114,6 +121,28 @@ public class ChatManager {
                     MessageUtil.sendRawMessage(admin, spyFormattedMsg);
                 }
             }
+        }
+
+        // 3. 终端监听 (如果开启)
+        if (plugin.getConfigManager().isConsoleListenTeamChat()) {
+            // 读取并准备控制台输出的格式
+            String consoleFormat = plugin.getConfigManager().getChatFormat();
+
+            // 把团队、职业、玩家名占位符替换为真实值，得到“原始”前缀字符串
+            String rawConsolePrefix = consoleFormat
+                    .replace("{TEAM}", team.getName())
+                    .replace("{ROLE}", roleName)
+                    .replace("{PLAYER}", sender.getName());
+
+            // 交给 PlaceholderAPI（PAPI）处理可能的自定义占位符，并上色
+            String consoleFormattedPrefix = MessageUtil.color(
+                    com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawConsolePrefix));
+
+            // 把已经完成的前缀中的 {MESSAGE} 再替换为实际的聊天内容
+            String consoleFormattedMsg = consoleFormattedPrefix.replace("{MESSAGE}", processedMessage);
+
+            // 将完整的、已上色的聊天行打印到服务器控制台
+            System.out.println(consoleFormattedMsg);
         }
     }
 }

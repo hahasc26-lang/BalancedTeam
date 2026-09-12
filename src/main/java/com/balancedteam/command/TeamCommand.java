@@ -557,6 +557,11 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
             MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
             return;
         }
+        // 全局聊天开关检测
+        if (!plugin.getConfigManager().isChatEnabled()) {
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "chat_disabled"));
+            return;
+        }
 
         if (args.length > 1) {
             StringBuilder sb = new StringBuilder();

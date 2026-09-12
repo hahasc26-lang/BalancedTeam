@@ -31,6 +31,18 @@ public class TeamMsgCommand implements CommandExecutor, TabCompleter {
         }
 
         Player player = (Player) sender;
+
+        // /tc 快捷指令开关检测
+        if (!plugin.getConfigManager().isTcCommandEnabled()) {
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(sender, "chat_tc_disabled"));
+            return true;
+        }
+        // 全局聊天开关检测
+        if (!plugin.getConfigManager().isChatEnabled()) {
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(sender, "chat_disabled"));
+            return true;
+        }
+
         Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (team == null) {
             MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));

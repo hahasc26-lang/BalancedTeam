@@ -56,6 +56,11 @@ public class PlayerListener implements Listener {
 
         // 2. 团队聊天模式处理
         if (plugin.getChatManager().isInTeamChatMode(player.getUniqueId())) {
+            // 全局聊天开关检测：关闭时自动退出模式并通知玩家
+            if (!plugin.getConfigManager().isChatEnabled()) {
+                plugin.getChatManager().removePlayer(player.getUniqueId());
+                return;
+            }
             Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
             if (team != null) {
                 event.setCancelled(true);

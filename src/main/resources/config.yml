@@ -64,9 +64,13 @@ balance:
 
 # Team Chat Configuration
 chat:
+  # Global switch for the team chat feature (false = team chat completely disabled)
+  enable_chat: true
   # Team chat format: {TEAM} team name, {ROLE} role display name, {PLAYER} sender name, {MESSAGE} message content
   format: "&8[&b{TEAM}&8] &7[{ROLE}&7] &f{PLAYER}&7: &b{MESSAGE}"
   # Admin spy chat format for monitoring team communications
   spy_format: "&8[&cSPY&8] &7[&e{TEAM}&7] &7[{ROLE}&7] &f{PLAYER}&7: &f{MESSAGE}"
   # Whether the quick shortcut command /tc <message> is enabled
   enable_tc_command: true
+  # Whether the console listen to team chat
+  console_listen_team_chat: true

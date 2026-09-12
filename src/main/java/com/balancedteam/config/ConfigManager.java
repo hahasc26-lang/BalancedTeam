@@ -56,8 +56,7 @@ public class ConfigManager {
                 isValidMessage(uHour) ? uHour : null,
                 isValidMessage(uMin) ? uMin : null,
                 isValidMessage(uSec) ? uSec : null,
-                isValidMessage(uUnknown) ? uUnknown : null
-        );
+                isValidMessage(uUnknown) ? uUnknown : null);
     }
 
     private boolean isValidMessage(String msg) {
@@ -236,7 +235,8 @@ public class ConfigManager {
     // =========================================================================
 
     public String getRoleDisplayName(CommandSender sender, TeamRole role) {
-        if (role == null) return getRawMessage(sender, "role.unknown");
+        if (role == null)
+            return getRawMessage(sender, "role.unknown");
         switch (role) {
             case LEADER:
                 return getRawMessage(sender, "role.leader");
@@ -324,11 +324,60 @@ public class ConfigManager {
         return team != null && team.isFriendlyFire();
     }
 
-    public String getChatFormat() {
-        return config.getString("chat.format", "&8[&b团队&8] &7[{ROLE}&7] &f{PLAYER}&7: &b{MESSAGE}");
+    /**
+     * 队伍聊天功能全局开关（false = 队伍聊天完全禁用）
+     */
+    public boolean isChatEnabled() {
+        return config.getBoolean("chat.enable_chat", true);
     }
 
+    /**
+     * 快捷指令 /tc <message> 是否启用
+     */
+    public boolean isTcCommandEnabled() {
+        return config.getBoolean("chat.enable_tc_command", true);
+    }
+
+    /**
+     * 终端是否监听队伍聊天
+     */
+    public boolean isConsoleListenTeamChat() {
+        return config.getBoolean("chat.console_listen_team_chat", true);
+    }
+
+    /**
+     * 队伍聊天格式，从 config.yml 的 {@code chat.format} 读取。
+     * <p>
+     * 支持以下占位符：
+     * </p>
+     * <ul>
+     * <li>{TEAM} — 队伍名称</li>
+     * <li>{ROLE} — 角色显示名称</li>
+     * <li>{PLAYER} — 玩家名称</li>
+     * <li>{MESSAGE} — 聊天消息内容</li>
+     * </ul>
+     *
+     * @return 队伍聊天的格式字符串（含颜色代码占位符）
+     */
+    public String getChatFormat() {
+        return config.getString("chat.format", "&8[&b{TEAM}&8] &7[{ROLE}&7] &f{PLAYER}&7: &b{MESSAGE}");
+    }
+
+    /**
+     * 管理员监听（Spy）聊天格式，从 config.yml 的 {@code chat.spy_format} 读取。
+     * <p>
+     * 支持以下占位符：
+     * </p>
+     * <ul>
+     * <li>{TEAM} — 队伍名称</li>
+     * <li>{ROLE} — 角色显示名称</li>
+     * <li>{PLAYER} — 玩家名称</li>
+     * <li>{MESSAGE} — 聊天消息内容</li>
+     * </ul>
+     *
+     * @return 管理员监听聊天的格式字符串（含颜色代码占位符）
+     */
     public String getSpyFormat() {
-        return config.getString("chat.spy_format", "&8[&c监听&8] &7[&e{TEAM}&7] &7[{ROLE}&7] &f{PLAYER}&7: &f{MESSAGE}");
+        return config.getString("chat.spy_format", "&8[&cSPY&8] &7[&e{TEAM}&7] &7[{ROLE}&7] &f{PLAYER}&7: &f{MESSAGE}");
     }
 }

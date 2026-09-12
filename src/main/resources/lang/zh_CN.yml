@@ -161,6 +161,8 @@ enemy_not_enemy: "&c你的团队并没有将 &e{TEAM} &c设为敌对！"
 # -------------------------------------------------------------------
 chat_team_toggle_on: "&a已切换至团队聊天模式！直接发送消息即可在队内交流。"
 chat_team_toggle_off: "&7已切回公共聊天模式。"
+chat_disabled: "&c队伍聊天功能当前已被管理员关闭。"
+chat_tc_disabled: "&c快捷聊天指令 /tc 当前已被管理员禁用。"
 spy_toggle_on: "&a[监听] 管理员团队聊天监听已开启！"
 spy_toggle_off: "&c[监听] 管理员团队聊天监听已关闭！"
 
