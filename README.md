@@ -10,6 +10,10 @@
 </p>
 
 <p align="center">
+  <a href="https://ko-fi.com/X5Z326V65O"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi"></a>
+</p>
+
+<p align="center">
   <b>中文</b> | <a href="#english">English</a>
 </p>
 
@@ -152,6 +156,14 @@ lines:
 
 ---
 
+## 赞助
+
+如果觉得这个项目对你有帮助，欢迎请作者喝一杯咖啡！
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X5Z326V65O)
+
+---
+
 ## 许可证
 
 [MIT License](LICENSE)
@@ -164,6 +176,10 @@ lines:
 
 <p align="center">
   <a href="#balancedteam">中文</a> | <b>English</b>
+</p>
+
+<p align="center">
+  <a href="https://ko-fi.com/X5Z326V65O"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi"></a>
 </p>
 
 A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive** Minecraft servers. Compatible with Bukkit / Spigot / Paper with native **PlaceholderAPI** integration.
@@ -302,6 +318,22 @@ lines:
   - '&7Members: &a%balancedteam_online%&7/&f%balancedteam_members%'
   - '&7Allies: &b%balancedteam_allies%&7/&f%balancedteam_max_allies%'
 ```
+
+---
+
+## Support
+
+If you find this project helpful, consider buying me a coffee!
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X5Z326V65O)
+
+---
+
+## Support
+
+If you find this project helpful, consider buying me a coffee!
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X5Z326V65O)
 
 ---
 

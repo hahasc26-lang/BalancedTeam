@@ -5,7 +5,7 @@ api-version: '1.20'
 author: haha
 description: High-performance Clan/Team plugin for Anarchy servers with MySQL, GUI and balanced combat.
 
-softdepend: ["PlaceholderAPI"] #This sets PlaceholderAPI as an optional dependency for plugin.
+softdepend: ["PlaceholderAPI"]
 
 libraries:
   - com.zaxxer:HikariCP:5.1.0
@@ -14,33 +14,34 @@ libraries:
 
 commands:
   team:
-    description: 团队系统主指令
+    description: Main command for the team system
     aliases: [t, clan, bt]
     usage: /team help
   teamadmin:
-    description: 团队系统管理员指令
+    description: Admin command for the team system
     aliases: [ta, btadmin]
     permission: balancedteam.admin
     usage: /teamadmin help
   teammsg:
-    description: 发送团队聊天消息或切换团队聊天锁定模式
+    description: Send a team chat message or toggle team chat lock mode
     aliases: [tc, tm, teamchat]
-    usage: /teammsg [消息内容]
+    usage: /teammsg [message]
   teamlang:
-    description: 切换或查看语言设置
+    description: Switch or view language settings
     aliases: [tlang, btlang, clanlang]
-    usage: /teamlang [list|auto|<语言代码>]
+    usage: /teamlang [list|auto|<language code>]
 
 permissions:
   balancedteam.use:
-    description: 允许使用团队基础指令
+    description: Allows use of basic team commands
     default: true
   balancedteam.admin:
-    description: 允许使用团队管理员指令
+    description: Allows use of team admin commands
     default: op
   balancedteam.admin.spy:
-    description: 允许监听所有团队聊天
+    description: Allows spying on all team chats
     default: op
   balancedteam.chat.color:
-    description: 允许在团队聊天中使用颜色代码
+    description: Allows using color codes in team chat
     default: op
+    
