@@ -22,7 +22,7 @@
 - **团队管理** — 创建、解散、邀请、踢人、转让队长、设置副队长、申请入队
 - **外交系统** — 结盟 / 解盟、宣战 / 求和，均有数量上限防止全服联合
 - **平衡机制** — 友伤开关（带冷却）、同盟保护、退队冷却防战斗背刺
-- **团队聊天** — `/tc` 专属频道，支持锁定模式；OP 可监听所有频道
+- **团队聊天** — `/tc` 专属频道，支持锁定模式；OP 可监听所有频道 (可以关闭全服聊天和监听)
 - **图形化 GUI** — 团队菜单、成员管理、全服列表、操作确认界面
 - **双存储引擎** — MySQL（生产推荐）/ SQLite（开箱即用），HikariCP 连接池
 - **PlaceholderAPI 占位符支持** — 原生集成 35+ 个占位符变量，支持在计分板、Tab 列表、称号、聊天等中调用团队与玩家数据
@@ -175,7 +175,7 @@ A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive**
 - **Team Management** — Create, disband, invite, kick, promote, transfer leadership, apply to join
 - **Diplomacy** — Ally / Unally, War / Peace with configurable caps to prevent server-wide coalitions
 - **Balance Mechanics** — Friendly fire toggle (with cooldown), ally protection, leave cooldown against backstabs
-- **Team Chat** — `/tc` channel with lock mode; OP spy mode to monitor all channels
+- **Team Chat** — `/tc` channel with lock mode; OP spy mode to monitor all channels (can disable)
 - **Graphical GUI** — Team menu, member management, server-wide list, confirmation dialogs
 - **Dual Storage** — MySQL (production) / SQLite (zero-config), backed by HikariCP
 - **PlaceholderAPI Support** — Full PlaceholderAPI integration with dozens of team and player placeholders
