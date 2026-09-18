@@ -35,13 +35,25 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - `team_list_empty`：控制台全服团队列表为空时的提示；
     - `team_list_header`：控制台团队列表分页表头（支持 `{PAGE}`、`{TOTAL}` 占位符）；
     - `team_list_item`：控制台团队条目格式化输出（支持 `{TEAM}`、`{LEADER}`、`{MEMBERS}`、`{MAX}`、`{FF}`、`{ALLIES}`、`{ENEMIES}`）；
-    - `team_list_footer`：控制台团队列表翻页提示（支持 `{NEXT_PAGE}` 占位符）。
+    - `team_list_footer`：控制台团队列表翻页提示（支持 `{NEXT_PAGE}` 占位符）；
+    - `chat_input_timeout`：聊天栏输入会话超时自动取消提示；
+    - `chat_input_cancelled`：聊天栏输入主动取消提示；
+    - `chat_input_suggest_hover`：聊天栏快捷建议文本悬浮提示；
+    - `gui.list.empty_item_name` / `gui.list.empty_item_lore`：全服团队列表无团队时的占位符物品名称与 Lore；
+    - `gui.menu.ff_status_prefix`：团队控制面板友伤状态前缀文本。
 
 ### 优化与修复 / Improved & Fixed
 
-- **清除命令类中的硬编码中文字符串 (Eliminate Command Hardcoded Strings)**：
-  - 彻底清理了 `TeamCommand`（`sendConsoleTeamList`、`handleInfo`）与 `TeamLangCommand` 中残留的硬编码中文提示，全面改由多语言配置文件动态获取；
+- **清除命令类与队伍聊天中的硬编码中文字符串 (Eliminate Command & Chat Hardcoded Strings)**：
+  - 彻底清理了 `TeamCommand`（`sendConsoleTeamList`、`handleInfo`、`handleChat`、`handleFriendlyFire`、`handleAlly`、`handleEnemy`）与 `TeamLangCommand` 中残留的硬编码中文提示，全面改由多语言配置文件动态获取；
+  - 彻底清理了 `ChatInputManager` 聊天栏输入捕获（超时取消、取消输入、快速建议 hover 悬浮）中的硬编码中文；
+  - 彻底清理了 `TeamMenuGui`（友伤状态前缀）与 `TeamListGui`（团队列表为空占位符）中的硬编码中文；
   - 队伍信息中的队长缺省名与友伤开关状态全面对接语言文件的 `time_unit.unknown` 与 `status.on` / `status.off`。
+- **队伍聊天与解散广播接收端动态多语言适配 (Recipient-Aware Chat & Broadcast Localization)**：
+  - `ChatManager`：团队聊天消息分发时，根据接收队员/管理员的个人语言偏好动态格式化职位名称 `{ROLE}`（中文显示队长/管理员，英文显示 Leader/Officer 等）；
+  - `TeamCommand`：修复了 `handleChat`（切换队伍聊天）、`handleFriendlyFire`、`handleAlly`、`handleEnemy` 未传入 `Player` 实例导致非中文客户端收到服务端默认语言提示的问题；
+  - `TeamManager`：修复了解散团队全服广播（`team_disband_broadcast`）未传入接收玩家实例的问题；
+  - `PlayerListener`：优化团队聊天模式检测，当玩家已不在队伍或全局聊天已关闭时自动退出模式并向玩家发送本地化提示。
 - **全量命令消息动态多语言适配 (Dynamic Sender-Aware Localization)**：
   - 全面排查并修复 `TeamCommand`、`TeamAdminCommand`、`TeamMsgCommand` 中此前未传 `sender`/`player` 的 `getMessage(...)` 与 `getMessageList(...)` 调用，确保玩家执行任何指令时均能严格根据其自身的生效语言呈现，杜绝部分指令错误回退为全服默认语言的问题。
 - **版本号升级 `1.2.0` → `1.2.1`**：

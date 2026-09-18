@@ -186,7 +186,7 @@ public class TeamManager {
             if (p != null && p.isOnline()) {
                 Map<String, String> map = new HashMap<>();
                 map.put("TEAM", team.getName());
-                MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage("team_disband_broadcast", map));
+                MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_disband_broadcast", map));
             }
         }
 

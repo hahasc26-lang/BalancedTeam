@@ -19,6 +19,8 @@ public final class GuiConfigKeys {
     public static final String LIST_NEXT_PAGE = "gui.list.next_page";
     public static final String LIST_SUMMARY_ITEM_NAME = "gui.list.summary_item_name";
     public static final String LIST_SUMMARY_ITEM_LORE = "gui.list.summary_item_lore";
+    public static final String LIST_EMPTY_ITEM_NAME = "gui.list.empty_item_name";
+    public static final String LIST_EMPTY_ITEM_LORE = "gui.list.empty_item_lore";
 
     // ==========================================
     // 2. 团队详情界面
@@ -50,6 +52,7 @@ public final class GuiConfigKeys {
     public static final String MENU_FF_ITEM_NAME = "gui.menu.ff_item_name";
     public static final String MENU_FF_STATUS_ON = "gui.menu.ff_status_on";
     public static final String MENU_FF_STATUS_OFF = "gui.menu.ff_status_off";
+    public static final String MENU_FF_STATUS_PREFIX = "gui.menu.ff_status_prefix";
     public static final String MENU_FF_LEADER_TIP = "gui.menu.ff_leader_tip";
     public static final String MENU_FF_NON_LEADER_TIP = "gui.menu.ff_non_leader_tip";
     public static final String MENU_FF_DISABLED_TIP = "gui.menu.ff_disabled_tip";

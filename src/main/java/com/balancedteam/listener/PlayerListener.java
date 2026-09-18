@@ -3,6 +3,7 @@ package com.balancedteam.listener;
 import com.balancedteam.BalancedTeamPlugin;
 import com.balancedteam.manager.ClientLanguageManager;
 import com.balancedteam.model.Team;
+import com.balancedteam.util.MessageUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -59,6 +60,7 @@ public class PlayerListener implements Listener {
             // 全局聊天开关检测：关闭时自动退出模式并通知玩家
             if (!plugin.getConfigManager().isChatEnabled()) {
                 plugin.getChatManager().removePlayer(player.getUniqueId());
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "chat_disabled"));
                 return;
             }
             Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
@@ -66,8 +68,10 @@ public class PlayerListener implements Listener {
                 event.setCancelled(true);
                 plugin.getChatManager().sendTeamChat(player, team, message);
             } else {
-                // 如果已不在团队中，自动关闭团队聊天模式
-                plugin.getChatManager().toggleTeamChatMode(player.getUniqueId());
+                // 如果已不在团队中，自动关闭团队聊天模式并通知
+                plugin.getChatManager().removePlayer(player.getUniqueId());
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "chat_team_toggle_off"));
             }
         }
     }

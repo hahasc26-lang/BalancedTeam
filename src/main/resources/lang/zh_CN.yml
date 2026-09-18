@@ -171,6 +171,9 @@ chat_disabled: "&c队伍聊天功能当前已被管理员关闭。"
 chat_tc_disabled: "&c快捷聊天指令 /tc 当前已被管理员禁用。"
 spy_toggle_on: "&a[监听] 管理员团队聊天监听已开启！"
 spy_toggle_off: "&c[监听] 管理员团队聊天监听已关闭！"
+chat_input_timeout: "&7[BalancedTeam] 输入已超时取消。"
+chat_input_cancelled: "&7已取消输入。"
+chat_input_suggest_hover: "&7点击自动在聊天栏填入 /team invite "
 
 # -------------------------------------------------------------------
 # 管理员指令提示
@@ -278,6 +281,9 @@ gui:
     summary_item_lore:
       - "&7总团队数: &b{TOTAL_TEAMS}"
       - "&7当前页码: &e{PAGE} &7/ &f{TOTAL_PAGES}"
+    empty_item_name: "&7(暂无已创建的团队)"
+    empty_item_lore:
+      - "&7输入 /team create <团队名称> 创建全服第一个团队！"
 
   # 2. 团队详情界面
   detail:
@@ -324,6 +330,7 @@ gui:
     ff_item_name: "&6⚔ 团队友伤开关"
     ff_status_on: "&c开启 (互相可造成伤害)"
     ff_status_off: "&a关闭 (互相免疫伤害)"
+    ff_status_prefix: "&7当前状态: "
     ff_leader_tip: "&e▶ 点击切换友伤状态 (冷却: {COOLDOWN}秒)"
     ff_non_leader_tip: "&c✖ 仅队长有权修改此设置"
     ff_disabled_tip: "&c✖ 服务器已锁定友伤开启，禁止修改"

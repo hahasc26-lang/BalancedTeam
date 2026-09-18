@@ -96,9 +96,11 @@ public class TeamListGui {
 
         // 若服务器暂无团队，显示占位符 (槽位 22)
         if (allTeams.isEmpty()) {
+            String emptyName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_EMPTY_ITEM_NAME);
+            List<String> emptyLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.LIST_EMPTY_ITEM_LORE);
             PagedGuiHelper.setupEmptyPlaceholder(inv, 22, Material.PAPER,
-                    "&7(暂无已创建的团队)",
-                    Collections.singletonList("&7输入 /team create <团队名称> 创建全服第一个团队！"));
+                    emptyName != null && !emptyName.isEmpty() ? emptyName : "&7(暂无已创建的团队)",
+                    emptyLore != null && !emptyLore.isEmpty() ? emptyLore : Collections.singletonList("&7输入 /team create <团队名称> 创建全服第一个团队！"));
         }
 
         // 底部控制栏 (槽位 45-53) 背景填充

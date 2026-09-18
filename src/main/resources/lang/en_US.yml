@@ -171,6 +171,9 @@ chat_disabled: "&cTeam chat has been disabled by an administrator."
 chat_tc_disabled: "&cThe /tc shortcut command has been disabled by an administrator."
 spy_toggle_on: "&a[Spy] Admin team chat spy has been enabled!"
 spy_toggle_off: "&c[Spy] Admin team chat spy has been disabled!"
+chat_input_timeout: "&7[BalancedTeam] Chat input timed out and was cancelled."
+chat_input_cancelled: "&7Chat input cancelled."
+chat_input_suggest_hover: "&7Click to auto-fill /team invite in chat bar"
 
 # -------------------------------------------------------------------
 # Admin Commands
@@ -278,6 +281,9 @@ gui:
     summary_item_lore:
       - "&7Total Teams: &b{TOTAL_TEAMS}"
       - "&7Current Page: &e{PAGE} &7/ &f{TOTAL_PAGES}"
+    empty_item_name: "&7(No teams created yet)"
+    empty_item_lore:
+      - "&7Type /team create <TeamName> to create the first team!"
 
   # 2. Team Details GUI
   detail:
@@ -324,6 +330,7 @@ gui:
     ff_item_name: "&6⚔ Friendly Fire Toggle"
     ff_status_on: "&cEnabled (Can damage teammates)"
     ff_status_off: "&aDisabled (Immune to team damage)"
+    ff_status_prefix: "&7Current Status: "
     ff_leader_tip: "&e▶ Click to toggle friendly fire (Cooldown: {COOLDOWN}s)"
     ff_non_leader_tip: "&c✖ Only the leader can toggle this setting"
     ff_disabled_tip: "&c✖ Server has locked friendly fire ON, toggling disabled"

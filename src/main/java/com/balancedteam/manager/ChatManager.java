@@ -76,8 +76,6 @@ public class ChatManager {
         }
 
         TeamMember member = team.getMember(sender.getUniqueId());
-        String roleName = member != null ? plugin.getConfigManager().getRoleDisplayName(member.getRole())
-                : plugin.getConfigManager().getRawMessage("role.unknown");
 
         // 检查颜色代码权限：有权限则解析颜色，否则保留纯文本避免普通玩家滥用颜色/混淆代码
         String processedMessage = message;
@@ -85,47 +83,56 @@ public class ChatManager {
             processedMessage = MessageUtil.color(processedMessage);
         }
 
-        // 1. 格式化团队消息：先对前缀模板解析 PAPI 与颜色，再将处理后的消息内容替换进 {MESSAGE}
+        // 1. 发送给队内所有在线成员 (根据接收玩家客户端语言动态本地化职位 {ROLE})
         String format = plugin.getConfigManager().getChatFormat();
-        String prefixTemplate = format
-                .replace("{TEAM}", team.getName())
-                .replace("{ROLE}", roleName)
-                .replace("{PLAYER}", sender.getName());
-        String formattedPrefix = MessageUtil
-                .color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, prefixTemplate));
-        String formattedMsg = formattedPrefix.replace("{MESSAGE}", processedMessage);
-
-        // 发送给队内所有在线成员
         for (UUID memberUuid : team.getMembers().keySet()) {
             Player p = Bukkit.getPlayer(memberUuid);
             if (p != null && p.isOnline()) {
+                String roleName = member != null ? plugin.getConfigManager().getRoleDisplayName(p, member.getRole())
+                        : plugin.getConfigManager().getRawMessage(p, "role.unknown");
+                String prefixTemplate = format
+                        .replace("{TEAM}", team.getName())
+                        .replace("{ROLE}", roleName != null ? roleName : "")
+                        .replace("{PLAYER}", sender.getName());
+                String formattedPrefix = MessageUtil
+                        .color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, prefixTemplate));
+                String formattedMsg = formattedPrefix.replace("{MESSAGE}", processedMessage);
                 MessageUtil.sendRawMessage(p, formattedMsg);
             }
         }
 
-        // 2. 格式化管理员监听消息
+        // 2. 格式化管理员监听消息 (根据管理员客户端语言动态本地化职位 {ROLE})
         String spyFormat = plugin.getConfigManager().getSpyFormat();
-        String rawSpyPrefix = spyFormat
-                .replace("{TEAM}", team.getName())
-                .replace("{ROLE}", roleName)
-                .replace("{PLAYER}", sender.getName());
-        String spyFormattedPrefix = MessageUtil
-                .color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawSpyPrefix));
-        String spyFormattedMsg = spyFormattedPrefix.replace("{MESSAGE}", processedMessage);
-
-        // 分发给所有在线且开启监听的非同队管理员
         for (UUID adminUuid : spyPlayers) {
             if (!team.hasMember(adminUuid)) {
                 Player admin = Bukkit.getPlayer(adminUuid);
                 if (admin != null && admin.isOnline() && admin.hasPermission("balancedteam.admin.spy")) {
+                    String adminRoleName = member != null ? plugin.getConfigManager().getRoleDisplayName(admin, member.getRole())
+                            : plugin.getConfigManager().getRawMessage(admin, "role.unknown");
+                    String rawSpyPrefix = spyFormat
+                            .replace("{TEAM}", team.getName())
+                            .replace("{ROLE}", adminRoleName != null ? adminRoleName : "")
+                            .replace("{PLAYER}", sender.getName());
+                    String spyFormattedPrefix = MessageUtil
+                            .color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawSpyPrefix));
+                    String spyFormattedMsg = spyFormattedPrefix.replace("{MESSAGE}", processedMessage);
                     MessageUtil.sendRawMessage(admin, spyFormattedMsg);
                 }
             }
         }
 
-        // 3. 终端监听 (如果开启)：复用已格式化的 spy 格式消息，与管理员监听内容保持一致
+        // 3. 终端监听 (如果开启)：使用服务端默认语言格式化职位名
         if (plugin.getConfigManager().isConsoleListenTeamChat()) {
-            plugin.getLogger().info(spyFormattedMsg);
+            String consoleRoleName = member != null ? plugin.getConfigManager().getRoleDisplayName(member.getRole())
+                    : plugin.getConfigManager().getRawMessage("role.unknown");
+            String rawSpyPrefix = spyFormat
+                    .replace("{TEAM}", team.getName())
+                    .replace("{ROLE}", consoleRoleName != null ? consoleRoleName : "")
+                    .replace("{PLAYER}", sender.getName());
+            String consoleFormattedPrefix = MessageUtil
+                    .color(com.balancedteam.util.PAPIUtil.setPlaceholders(sender, rawSpyPrefix));
+            String consoleFormattedMsg = consoleFormattedPrefix.replace("{MESSAGE}", processedMessage);
+            plugin.getLogger().info(consoleFormattedMsg);
         }
     }
 }

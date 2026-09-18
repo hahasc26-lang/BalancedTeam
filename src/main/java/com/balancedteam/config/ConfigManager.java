@@ -246,8 +246,16 @@ public class ConfigManager {
         return result;
     }
 
+    public List<String> getMessageList(CommandSender sender, String key) {
+        return getMessageList(sender, key, null);
+    }
+
     public List<String> getMessageList(String key, Map<String, String> placeholders) {
         return getMessageList((CommandSender) null, key, placeholders);
+    }
+
+    public List<String> getMessageList(String key) {
+        return getMessageList((CommandSender) null, key, null);
     }
 
     // =========================================================================

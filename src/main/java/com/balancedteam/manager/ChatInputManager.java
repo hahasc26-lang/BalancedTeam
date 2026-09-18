@@ -57,7 +57,7 @@ public class ChatInputManager {
         session.timeoutTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
             InputSession removed = activeSessions.remove(uuid);
             if (removed != null) {
-                MessageUtil.sendMessage(player, "&7[BalancedTeam] 输入已超时取消。");
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "chat_input_timeout"));
                 if (removed.onCancel != null) {
                     removed.onCancel.run();
                 }
@@ -69,12 +69,15 @@ public class ChatInputManager {
         // 发送提示文本与可点击的快速填入建议
         MessageUtil.sendMessage(player, promptMessage);
 
-        String suggestText = plugin.getConfigManager().getRawMessage("gui.player_select.chat_prompt_suggest");
+        String suggestText = plugin.getConfigManager().getRawMessage(player, "gui.player_select.chat_prompt_suggest");
         if (suggestText != null && !suggestText.isEmpty()) {
             try {
                 TextComponent suggestComp = new TextComponent(MessageUtil.color(suggestText));
                 suggestComp.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/team invite "));
-                suggestComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(MessageUtil.color("&7点击自动在聊天栏填入 /team invite "))));
+                String hoverText = plugin.getConfigManager().getRawMessage(player, "chat_input_suggest_hover");
+                if (hoverText != null && !hoverText.isEmpty()) {
+                    suggestComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(MessageUtil.color(hoverText))));
+                }
                 player.spigot().sendMessage(suggestComp);
             } catch (Throwable fallback) {
                 // 兼容纯 Bukkit 环境 (无 spigot chat component 支持时退回普通提示)
@@ -103,8 +106,12 @@ public class ChatInputManager {
 
         String input = message.trim();
         if ("cancel".equalsIgnoreCase(input) || "取消".equals(input) || "exit".equalsIgnoreCase(input)) {
-            String cancelMsg = plugin.getConfigManager().getRawMessage("gui.player_select.chat_cancel");
-            MessageUtil.sendMessage(player, cancelMsg != null ? cancelMsg : "&7已取消输入。");
+            String cancelMsg = plugin.getConfigManager().getRawMessage(player, "gui.player_select.chat_cancel");
+            if (cancelMsg != null && !cancelMsg.isEmpty()) {
+                MessageUtil.sendMessage(player, cancelMsg);
+            } else {
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "chat_input_cancelled"));
+            }
             if (session.onCancel != null) {
                 Bukkit.getScheduler().runTask(plugin, session.onCancel);
             }
@@ -129,7 +136,7 @@ public class ChatInputManager {
                 session.timeoutTask.cancel();
             }
             if (notify) {
-                MessageUtil.sendMessage(player, "&7已取消输入。");
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "chat_input_cancelled"));
             }
             if (session.onCancel != null) {
                 Bukkit.getScheduler().runTask(plugin, session.onCancel);

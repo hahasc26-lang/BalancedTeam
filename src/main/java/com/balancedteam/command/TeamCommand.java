@@ -572,7 +572,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
     private void handleChat(Player player, String[] args) {
         Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (team == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             return;
         }
         // 全局聊天开关检测
@@ -590,14 +590,14 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         } else {
             boolean enabled = plugin.getChatManager().toggleTeamChatMode(player.getUniqueId());
             String key = enabled ? "chat_team_toggle_on" : "chat_team_toggle_off";
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(key));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, key));
         }
     }
 
     private void handleFriendlyFire(Player player, String[] args) {
         Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (team == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             return;
         }
 
@@ -606,21 +606,21 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 
         if (args.length < 2) {
             String status = plugin.getConfigManager().isFriendlyFireActive(team)
-                    ? plugin.getConfigManager().getRawMessage("status.on")
-                    : plugin.getConfigManager().getRawMessage("status.off");
+                    ? plugin.getConfigManager().getRawMessage(player, "status.on")
+                    : plugin.getConfigManager().getRawMessage(player, "status.off");
             Map<String, String> map = new HashMap<>();
             map.put("STATUS", status);
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_ff_status", map));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_ff_status", map));
             return;
         }
 
         if (!plugin.getConfigManager().isAllowFriendlyFireToggle()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_ff_toggle_disabled"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_ff_toggle_disabled"));
             return;
         }
 
         if (!isLeader) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_leader"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_leader"));
             return;
         }
 
@@ -628,7 +628,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         if (cd > 0) {
             Map<String, String> map = new HashMap<>();
             map.put("TIME", String.valueOf(cd));
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("cooldown", map));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "cooldown", map));
             return;
         }
 
@@ -636,26 +636,26 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         plugin.getTeamManager().setFriendlyFire(team, enable, player.getUniqueId()).thenAccept(success -> {
             if (success) {
                 String key = enable ? "team_ff_toggle_on" : "team_ff_toggle_off";
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(key));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, key));
             }
         });
     }
 
     private void handleAlly(Player player, String[] args) {
         if (args.length < 2) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("usage_ally"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "usage_ally"));
             return;
         }
 
         Team myTeam = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (myTeam == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             return;
         }
 
         TeamMember member = myTeam.getMember(player.getUniqueId());
         if (member == null || member.getRole() != TeamRole.LEADER) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_leader"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_leader"));
             return;
         }
 
@@ -665,7 +665,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 TeamSelectGui.open(plugin, player, TeamSelectGui.SelectMode.ALLY, 1);
                 return;
             }
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_specify_target"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_specify_target"));
             return;
         }
 
@@ -674,12 +674,12 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         if (targetTeam == null) {
             Map<String, String> map = new HashMap<>();
             map.put("TEAM", targetTeamName);
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_found", map));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_found", map));
             return;
         }
 
         if (myTeam.getId() == targetTeam.getId()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_cant_ally_self"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_cant_ally_self"));
             return;
         }
 
@@ -688,7 +688,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 if (plugin.getRelationManager().isAlly(myTeam.getId(), targetTeam.getId())) {
                     Map<String, String> map = new HashMap<>();
                     map.put("TEAM", targetTeam.getName());
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_already_allied", map));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_already_allied", map));
                     return;
                 }
 
@@ -696,18 +696,18 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                         .getMaxAllies()) {
                     Map<String, String> map = new HashMap<>();
                     map.put("MAX", String.valueOf(plugin.getConfigManager().getMaxAllies()));
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_max_reached", map));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_max_reached", map));
                     return;
                 }
 
                 if (plugin.getRelationManager().getAllies(targetTeam.getId()).size() >= plugin.getConfigManager()
                         .getMaxAllies()) {
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_target_max_reached"));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_target_max_reached"));
                     return;
                 }
 
                 if (plugin.getRelationManager().hasPendingAllyRequest(myTeam.getId(), targetTeam.getId())) {
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_already_requested"));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_already_requested"));
                     return;
                 }
 
@@ -716,14 +716,14 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 
                 Map<String, String> map = new HashMap<>();
                 map.put("TEAM", targetTeam.getName());
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_request_sent", map));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_request_sent", map));
 
                 Player targetLeader = Bukkit.getPlayer(targetTeam.getLeaderUuid());
                 if (targetLeader != null && targetLeader.isOnline()) {
                     Map<String, String> reqMap = new HashMap<>();
                     reqMap.put("TEAM", myTeam.getName());
                     MessageUtil.sendMessage(targetLeader,
-                            plugin.getConfigManager().getMessage("ally_request_received", reqMap));
+                            plugin.getConfigManager().getMessage(targetLeader, "ally_request_received", reqMap));
                 }
                 break;
             }
@@ -732,7 +732,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                     Map<String, String> map = new HashMap<>();
                     map.put("TEAM", targetTeam.getName());
                     MessageUtil.sendMessage(player,
-                            plugin.getConfigManager().getMessage("ally_no_pending_request", map));
+                            plugin.getConfigManager().getMessage(player, "ally_no_pending_request", map));
                     return;
                 }
 
@@ -745,14 +745,14 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                                 map.put("TEAM2", targetTeam.getName());
 
                                 MessageUtil.sendMessage(player,
-                                        plugin.getConfigManager().getMessage("ally_established", map));
+                                        plugin.getConfigManager().getMessage(player, "ally_established", map));
 
                                 Player targetLeader = Bukkit.getPlayer(targetTeam.getLeaderUuid());
                                 if (targetLeader != null && targetLeader.isOnline()) {
                                     Map<String, String> m2 = new HashMap<>();
                                     m2.put("TEAM", myTeam.getName());
                                     MessageUtil.sendMessage(targetLeader,
-                                            plugin.getConfigManager().getMessage("ally_established", m2));
+                                            plugin.getConfigManager().getMessage(targetLeader, "ally_established", m2));
                                 }
                             }
                         });
@@ -762,7 +762,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 if (!plugin.getRelationManager().isAlly(myTeam.getId(), targetTeam.getId())) {
                     Map<String, String> map = new HashMap<>();
                     map.put("TEAM", targetTeam.getName());
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_not_allied", map));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_not_allied", map));
                     return;
                 }
 
@@ -771,32 +771,32 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                         Map<String, String> map = new HashMap<>();
                         map.put("TEAM", targetTeam.getName());
                         MessageUtil.sendMessage(player,
-                                plugin.getConfigManager().getMessage("ally_remove_success", map));
+                                plugin.getConfigManager().getMessage(player, "ally_remove_success", map));
                     }
                 });
                 break;
             }
             default:
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("ally_unknown_sub"));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_unknown_sub"));
                 break;
         }
     }
 
     private void handleEnemy(Player player, String[] args) {
         if (args.length < 2) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("usage_enemy"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "usage_enemy"));
             return;
         }
 
         Team myTeam = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (myTeam == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             return;
         }
 
         TeamMember member = myTeam.getMember(player.getUniqueId());
         if (member == null || !member.getRole().isAtLeast(TeamRole.OFFICER)) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_officer_or_leader"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_officer_or_leader"));
             return;
         }
 
@@ -806,7 +806,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 TeamSelectGui.open(plugin, player, TeamSelectGui.SelectMode.ENEMY, 1);
                 return;
             }
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_specify_target"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_specify_target"));
             return;
         }
 
@@ -815,25 +815,25 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         if (targetTeam == null) {
             Map<String, String> map = new HashMap<>();
             map.put("TEAM", targetTeamName);
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_found", map));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_found", map));
             return;
         }
 
         if (myTeam.getId() == targetTeam.getId()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_add_self"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_add_self"));
             return;
         }
 
         if (action.equals("add")) {
             if (plugin.getRelationManager().isAlly(myTeam.getId(), targetTeam.getId())) {
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_cant_enemy_ally"));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_cant_enemy_ally"));
                 return;
             }
 
             if (plugin.getRelationManager().isEnemy(myTeam.getId(), targetTeam.getId())) {
                 Map<String, String> map = new HashMap<>();
                 map.put("TEAM", targetTeam.getName());
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_already_enemy", map));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_already_enemy", map));
                 return;
             }
 
@@ -841,7 +841,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                     .getMaxEnemies()) {
                 Map<String, String> map = new HashMap<>();
                 map.put("MAX", String.valueOf(plugin.getConfigManager().getMaxEnemies()));
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_max_reached", map));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_max_reached", map));
                 return;
             }
 
@@ -849,7 +849,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 if (success) {
                     Map<String, String> map = new HashMap<>();
                     map.put("TEAM", targetTeam.getName());
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("enemy_add_success", map));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_add_success", map));
                 }
             });
         } else if (action.equals("remove")) {

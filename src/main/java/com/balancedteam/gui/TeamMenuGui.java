@@ -138,8 +138,12 @@ public class TeamMenuGui {
             ffTip = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_NON_LEADER_TIP, ffMap);
         }
 
+        String statusPrefix = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_STATUS_PREFIX);
+        if (statusPrefix == null || statusPrefix.isEmpty()) {
+            statusPrefix = "&7当前状态: ";
+        }
         List<String> ffLore = new ArrayList<>();
-        ffLore.add("&7当前状态: " + ffStatusText);
+        ffLore.add(statusPrefix + ffStatusText);
         ffLore.add("");
         ffLore.add(ffTip);
 
