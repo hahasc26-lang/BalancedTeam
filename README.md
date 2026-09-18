@@ -19,6 +19,169 @@
 ---
 
 <p align="center">
+  <a href="#chinese">中文</a> | <b>English</b>
+</p>
+
+<a name="english"></a>
+
+# BalancedTeam — English
+
+A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive** Minecraft servers. Compatible with Bukkit / Spigot / Paper with native **PlaceholderAPI** integration.
+
+---
+
+## Features
+
+- **Team Management** — Create, disband, invite, kick, promote, transfer leadership, apply to join
+- **Diplomacy** — Ally / Unally, War / Peace with configurable caps to prevent server-wide coalitions
+- **Balance Mechanics** — Friendly fire toggle (with cooldown), ally protection, leave cooldown against backstabs
+- **Team Chat** — `/tc` channel with lock mode; OP spy mode to monitor all channels (can disable)
+- **Graphical GUI** — Team menu, member management, server-wide list, confirmation dialogs
+- **Dual Storage** — MySQL (production) / SQLite (zero-config), backed by HikariCP
+- **PlaceholderAPI Support** — Full PlaceholderAPI integration with dozens of team and player placeholders
+- **Auto Multi-Language System** — Auto-detects Minecraft client locale via `Player.getLocale()`, with smart fuzzy matching (e.g. `zh_HK` falls back to `zh_CN`/`zh_TW`), server fallbacks, and in-memory caching. Built-in `zh_CN` / `zh_TW` / `en_US`; players can override or reset via `/teamlang`; supports language codes or relative paths (e.g. `lang/en_US.yml` or `en_US`) in `config.yml`, which automatically adapts all server console output logs (startup banner, database, cache preloading, lifecycle, etc.) to the configured language
+- **Comprehensive Official Wiki** — Complete [GitHub Wiki Documentation](https://github.com/hahasc26-lang/BalancedTeam/wiki) covering installation, configuration, commands, GUI guide, and combat mechanics
+
+---
+
+## Installation
+
+1. Download the latest `BalancedTeam-x.x.x.jar` from [Releases](../../releases)
+2. Drop it into your server's `plugins/` folder and restart
+3. Edit `plugins/BalancedTeam/config.yml` (defaults to SQLite — no extra setup needed)
+4. Restart or `/reload confirm` to apply
+
+**Build from source:**
+```bash
+git clone https://github.com/hahasc26-lang/BalancedTeam.git
+cd BalancedTeam
+mvn clean package          # Standard build
+mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
+```
+
+---
+
+## Commands
+
+**`/team`** (aliases: `/t` `/clan` `/bt`)
+
+| Command | Description |
+|---------|-------------|
+| `/team` | Open team menu |
+| `/team create <name>` | Create a team |
+| `/team invite/kick/leave` | Member management |
+| `/team promote/demote/transfer` | Role management |
+| `/team ally/unally/enemy/peace` | Diplomacy |
+| `/team apply/accept/deny` | Applications & invitations |
+| `/team ff` | Toggle friendly fire |
+| `/team info/list` | View info |
+| `/team lang` | Language settings |
+
+**`/teamlang`** (aliases: `/tlang` `/btlang` `/clanlang`)
+
+| Command | Description |
+|---------|-------------|
+| `/teamlang` | View current language status and help |
+| `/teamlang list` | View all supported language packs |
+| `/teamlang <code>` | Manually switch language (e.g. `/teamlang en_US`) |
+| `/teamlang auto` | Reset to client auto-detection mode |
+| `/teamlang reload` | Reload all language files (Admin only) |
+
+**`/teamadmin`** (alias: `/ta`) — Force disband, kick, spy on chat, reload configs
+
+**`/teammsg`** (aliases: `/tc` `/tm`) — Send or lock team chat
+
+---
+
+## Permissions
+
+| Permission | Default | Description |
+|------------|---------|-------------|
+| `balancedteam.use` | Everyone | Basic commands |
+| `balancedteam.admin` | OP | Admin commands and language reload |
+| `balancedteam.admin.spy` | OP | Monitor team chats |
+
+---
+
+## PlaceholderAPI Placeholders
+
+Native [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) expansion with `%balancedteam_<placeholder>%`:
+
+| Placeholder | Description |
+|-------------|-------------|
+| `%balancedteam_in_team%` / `%balancedteam_has_team%` | Whether player is in a team (`true` / `false`) |
+| `%balancedteam_name%` / `%balancedteam_team_name%` | Player's team name |
+| `%balancedteam_id%` / `%balancedteam_team_id%` | Player's team ID |
+| `%balancedteam_tag%` | Formatted team tag (e.g. `[TeamName]`) |
+| `%balancedteam_leader%` / `%balancedteam_leader_name%` | Leader username |
+| `%balancedteam_leader_uuid%` | Leader UUID |
+| `%balancedteam_is_leader%` | Whether player is team leader (`true` / `false`) |
+| `%balancedteam_is_officer%` | Whether player is officer or leader (`true` / `false`) |
+| `%balancedteam_role%` | Role display name (e.g. `Leader`, `Officer`, `Member`) |
+| `%balancedteam_role_raw%` | Role enum name (`LEADER` / `OFFICER` / `MEMBER` / `NONE`) |
+| `%balancedteam_role_level%` | Role level number (`3` / `2` / `1` / `0`) |
+| `%balancedteam_description%` | Team description |
+| `%balancedteam_friendly_fire%` / `%balancedteam_ff%` | Friendly fire status (`true` / `false`) |
+| `%balancedteam_friendly_fire_formatted%` | Formatted friendly fire status |
+| `%balancedteam_created_at%` | Team creation time |
+| `%balancedteam_joined_at%` | Player team join time |
+| `%balancedteam_members%` / `%balancedteam_member_count%` | Current member count |
+| `%balancedteam_max_members%` | Max allowed members |
+| `%balancedteam_online%` / `%balancedteam_online_count%` | Online member count |
+| `%balancedteam_allies%` / `%balancedteam_ally_count%` | Allied teams count |
+| `%balancedteam_max_allies%` | Max allowed allies |
+| `%balancedteam_enemies%` / `%balancedteam_enemy_count%` | Enemy teams count |
+| `%balancedteam_max_enemies%` | Max allowed enemies |
+| `%balancedteam_allies_list%` | List of ally team names |
+| `%balancedteam_enemies_list%` | List of enemy team names |
+| `%balancedteam_total_teams%` | Total teams on server |
+| `%balancedteam_total_members%` | Total players in teams across server |
+| `%balancedteam_relation_<player>%` | Relation with target player (`SAME_TEAM` / `ALLY` / `ENEMY` / `NONE`) |
+| `%balancedteam_relation_team_<teamName>%` | Relation with target team (`SAME_TEAM` / `ALLY` / `ENEMY` / `NONE`) |
+| `%balancedteam_is_ally_<player>%` | Whether target player is ally (`true` / `false`) |
+| `%balancedteam_is_enemy_<player>%` | Whether target player is enemy (`true` / `false`) |
+| `%balancedteam_is_same_team_<player>%` | Whether target player is teammate (`true` / `false`) |
+| `%balancedteam_team_leader_<teamName>%` | Leader of specific team |
+| `%balancedteam_team_members_<teamName>%` | Member count of specific team |
+| `%balancedteam_team_online_<teamName>%` | Online member count of specific team |
+| `%balancedteam_team_desc_<teamName>%` | Description of specific team |
+| `%balancedteam_team_created_<teamName>%` | Creation time of specific team |
+| `%balancedteam_team_ff_<teamName>%` | Friendly fire of specific team |
+| `%balancedteam_team_exists_<teamName>%` | Whether specific team exists (`true` / `false`) |
+
+**Configuration Examples (e.g. TAB / Scoreboards / Chat Format):**
+```yaml
+# Chat format example
+format: '{balancedteam_tag} &7[{balancedteam_role}&7] &f{DISPLAYNAME}&7: &f{MESSAGE}'
+
+# Scoreboard example
+lines:
+  - '&b&lMY TEAM'
+  - '&7Team: &f%balancedteam_name%'
+  - '&7Role: &e%balancedteam_role%'
+  - '&7Members: &a%balancedteam_online%&7/&f%balancedteam_members%'
+  - '&7Allies: &b%balancedteam_allies%&7/&f%balancedteam_max_allies%'
+```
+
+---
+
+## Support
+
+If you find this project helpful, consider buying me a coffee!
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X5Z326V65O)
+
+---
+
+## License
+
+[MIT License](LICENSE)
+
+---
+
+<a name="chinese"></a>
+
+<p align="center">
   <b>中文</b> | <a href="#english">English</a>
 </p>
 
@@ -170,178 +333,5 @@ lines:
 ---
 
 ## 许可证
-
-[MIT License](LICENSE)
-
----
-
-<a name="english"></a>
-
-# BalancedTeam — English
-
-<p align="center">
-  <a href="#balancedteam">中文</a> | <b>English</b>
-</p>
-
-<p align="center">
-  <a href="https://ko-fi.com/X5Z326V65O"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi"></a>
-</p>
-
-A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive** Minecraft servers. Compatible with Bukkit / Spigot / Paper with native **PlaceholderAPI** integration.
-
----
-
-## Features
-
-- **Team Management** — Create, disband, invite, kick, promote, transfer leadership, apply to join
-- **Diplomacy** — Ally / Unally, War / Peace with configurable caps to prevent server-wide coalitions
-- **Balance Mechanics** — Friendly fire toggle (with cooldown), ally protection, leave cooldown against backstabs
-- **Team Chat** — `/tc` channel with lock mode; OP spy mode to monitor all channels (can disable)
-- **Graphical GUI** — Team menu, member management, server-wide list, confirmation dialogs
-- **Dual Storage** — MySQL (production) / SQLite (zero-config), backed by HikariCP
-- **PlaceholderAPI Support** — Full PlaceholderAPI integration with dozens of team and player placeholders
-- **Auto Multi-Language System** — Auto-detects Minecraft client locale via `Player.getLocale()`, with smart fuzzy matching (e.g. `zh_HK` falls back to `zh_CN`/`zh_TW`), server fallbacks, and in-memory caching. Built-in `zh_CN` / `zh_TW` / `en_US`; players can override or reset via `/teamlang`; supports language codes or relative paths (e.g. `lang/en_US.yml` or `en_US`) in `config.yml`, which automatically adapts all server console output logs (startup banner, database, cache preloading, lifecycle, etc.) to the configured language
-- **Comprehensive Official Wiki** — Complete [GitHub Wiki Documentation](https://github.com/hahasc26-lang/BalancedTeam/wiki) covering installation, configuration, commands, GUI guide, and combat mechanics
-
----
-
-## Installation
-
-1. Download the latest `BalancedTeam-x.x.x.jar` from [Releases](../../releases)
-2. Drop it into your server's `plugins/` folder and restart
-3. Edit `plugins/BalancedTeam/config.yml` (defaults to SQLite — no extra setup needed)
-4. Restart or `/reload confirm` to apply
-
-**Build from source:**
-```bash
-git clone https://github.com/hahasc26-lang/BalancedTeam.git
-cd BalancedTeam
-mvn clean package          # Standard build
-mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
-```
-
----
-
-## Commands
-
-**`/team`** (aliases: `/t` `/clan` `/bt`)
-
-| Command | Description |
-|---------|-------------|
-| `/team` | Open team menu |
-| `/team create <name>` | Create a team |
-| `/team invite/kick/leave` | Member management |
-| `/team promote/demote/transfer` | Role management |
-| `/team ally/unally/enemy/peace` | Diplomacy |
-| `/team apply/accept/deny` | Applications & invitations |
-| `/team ff` | Toggle friendly fire |
-| `/team info/list` | View info |
-| `/team lang` | Language settings |
-
-**`/teamlang`** (aliases: `/tlang` `/btlang` `/clanlang`)
-
-| Command | Description |
-|---------|-------------|
-| `/teamlang` | View current language status and help |
-| `/teamlang list` | View all supported language packs |
-| `/teamlang <code>` | Manually switch language (e.g. `/teamlang en_US`) |
-| `/teamlang auto` | Reset to client auto-detection mode |
-| `/teamlang reload` | Reload all language files (Admin only) |
-
-**`/teamadmin`** (alias: `/ta`) — Force disband, kick, spy on chat, reload configs
-
-**`/teammsg`** (aliases: `/tc` `/tm`) — Send or lock team chat
-
----
-
-## Permissions
-
-| Permission | Default | Description |
-|------------|---------|-------------|
-| `balancedteam.use` | Everyone | Basic commands |
-| `balancedteam.admin` | OP | Admin commands and language reload |
-| `balancedteam.admin.spy` | OP | Monitor team chats |
-
----
-
-## PlaceholderAPI Placeholders
-
-Native [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) expansion with `%balancedteam_<placeholder>%`:
-
-| Placeholder | Description |
-|-------------|-------------|
-| `%balancedteam_in_team%` / `%balancedteam_has_team%` | Whether player is in a team (`true` / `false`) |
-| `%balancedteam_name%` / `%balancedteam_team_name%` | Player's team name |
-| `%balancedteam_id%` / `%balancedteam_team_id%` | Player's team ID |
-| `%balancedteam_tag%` | Formatted team tag (e.g. `[TeamName]`) |
-| `%balancedteam_leader%` / `%balancedteam_leader_name%` | Leader username |
-| `%balancedteam_leader_uuid%` | Leader UUID |
-| `%balancedteam_is_leader%` | Whether player is team leader (`true` / `false`) |
-| `%balancedteam_is_officer%` | Whether player is officer or leader (`true` / `false`) |
-| `%balancedteam_role%` | Role display name (e.g. `Leader`, `Officer`, `Member`) |
-| `%balancedteam_role_raw%` | Role enum name (`LEADER` / `OFFICER` / `MEMBER` / `NONE`) |
-| `%balancedteam_role_level%` | Role level number (`3` / `2` / `1` / `0`) |
-| `%balancedteam_description%` | Team description |
-| `%balancedteam_friendly_fire%` / `%balancedteam_ff%` | Friendly fire status (`true` / `false`) |
-| `%balancedteam_friendly_fire_formatted%` | Formatted friendly fire status |
-| `%balancedteam_created_at%` | Team creation time |
-| `%balancedteam_joined_at%` | Player team join time |
-| `%balancedteam_members%` / `%balancedteam_member_count%` | Current member count |
-| `%balancedteam_max_members%` | Max allowed members |
-| `%balancedteam_online%` / `%balancedteam_online_count%` | Online member count |
-| `%balancedteam_allies%` / `%balancedteam_ally_count%` | Allied teams count |
-| `%balancedteam_max_allies%` | Max allowed allies |
-| `%balancedteam_enemies%` / `%balancedteam_enemy_count%` | Enemy teams count |
-| `%balancedteam_max_enemies%` | Max allowed enemies |
-| `%balancedteam_allies_list%` | List of ally team names |
-| `%balancedteam_enemies_list%` | List of enemy team names |
-| `%balancedteam_total_teams%` | Total teams on server |
-| `%balancedteam_total_members%` | Total players in teams across server |
-| `%balancedteam_relation_<player>%` | Relation with target player (`SAME_TEAM` / `ALLY` / `ENEMY` / `NONE`) |
-| `%balancedteam_relation_team_<teamName>%` | Relation with target team (`SAME_TEAM` / `ALLY` / `ENEMY` / `NONE`) |
-| `%balancedteam_is_ally_<player>%` | Whether target player is ally (`true` / `false`) |
-| `%balancedteam_is_enemy_<player>%` | Whether target player is enemy (`true` / `false`) |
-| `%balancedteam_is_same_team_<player>%` | Whether target player is teammate (`true` / `false`) |
-| `%balancedteam_team_leader_<teamName>%` | Leader of specific team |
-| `%balancedteam_team_members_<teamName>%` | Member count of specific team |
-| `%balancedteam_team_online_<teamName>%` | Online member count of specific team |
-| `%balancedteam_team_desc_<teamName>%` | Description of specific team |
-| `%balancedteam_team_created_<teamName>%` | Creation time of specific team |
-| `%balancedteam_team_ff_<teamName>%` | Friendly fire of specific team |
-| `%balancedteam_team_exists_<teamName>%` | Whether specific team exists (`true` / `false`) |
-
-**Configuration Examples (e.g. TAB / Scoreboards / Chat Format):**
-```yaml
-# Chat format example
-format: '{balancedteam_tag} &7[{balancedteam_role}&7] &f{DISPLAYNAME}&7: &f{MESSAGE}'
-
-# Scoreboard example
-lines:
-  - '&b&lMY TEAM'
-  - '&7Team: &f%balancedteam_name%'
-  - '&7Role: &e%balancedteam_role%'
-  - '&7Members: &a%balancedteam_online%&7/&f%balancedteam_members%'
-  - '&7Allies: &b%balancedteam_allies%&7/&f%balancedteam_max_allies%'
-```
-
----
-
-## Support
-
-If you find this project helpful, consider buying me a coffee!
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X5Z326V65O)
-
----
-
-## Support
-
-If you find this project helpful, consider buying me a coffee!
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X5Z326V65O)
-
----
-
-## License
 
 [MIT License](LICENSE)
