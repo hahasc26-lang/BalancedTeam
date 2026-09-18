@@ -24,7 +24,7 @@
 
 <a name="english"></a>
 
-# BalancedTeam — English
+# BalancedTeam
 
 A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive** Minecraft servers. Compatible with Bukkit / Spigot / Paper with native **PlaceholderAPI** integration.
 
