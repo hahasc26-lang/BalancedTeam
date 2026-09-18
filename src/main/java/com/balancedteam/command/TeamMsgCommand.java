@@ -26,7 +26,7 @@ public class TeamMsgCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage("player_only"));
+            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "player_only"));
             return true;
         }
 
@@ -34,18 +34,18 @@ public class TeamMsgCommand implements CommandExecutor, TabCompleter {
 
         // /tc 快捷指令开关检测
         if (!plugin.getConfigManager().isTcCommandEnabled()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(sender, "chat_tc_disabled"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "chat_tc_disabled"));
             return true;
         }
         // 全局聊天开关检测
         if (!plugin.getConfigManager().isChatEnabled()) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(sender, "chat_disabled"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "chat_disabled"));
             return true;
         }
 
         Team team = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
         if (team == null) {
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage("team_not_in_team"));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
             return true;
         }
 
@@ -60,7 +60,7 @@ public class TeamMsgCommand implements CommandExecutor, TabCompleter {
             // 切换团队聊天锁定模式
             boolean enabled = plugin.getChatManager().toggleTeamChatMode(player.getUniqueId());
             String key = enabled ? "chat_team_toggle_on" : "chat_team_toggle_off";
-            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(key));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, key));
         }
 
         return true;

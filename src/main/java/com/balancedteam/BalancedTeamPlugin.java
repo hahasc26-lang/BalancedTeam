@@ -16,7 +16,8 @@ import com.balancedteam.listener.PlayerListener;
 import com.balancedteam.manager.ChatInputManager;
 import com.balancedteam.manager.ChatManager;
 import com.balancedteam.manager.InviteManager;
-import com.balancedteam.manager.LanguageManager;
+import com.balancedteam.manager.ClientLanguageManager;
+import com.balancedteam.manager.ServerLanguageManager;
 import com.balancedteam.manager.RelationManager;
 import com.balancedteam.manager.TeamManager;
 import com.balancedteam.util.PAPIUtil;
@@ -33,7 +34,8 @@ public class BalancedTeamPlugin extends JavaPlugin {
 
     private static BalancedTeamPlugin instance;
 
-    private LanguageManager languageManager;
+    private ServerLanguageManager serverLanguageManager;
+    private ClientLanguageManager clientLanguageManager;
     private ConfigManager configManager;
     private DatabaseManager databaseManager;
 
@@ -55,8 +57,9 @@ public class BalancedTeamPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        // 1. 初始化多语言与配置管理器 (优先加载以确认控制台输出语言)
-        this.languageManager = new LanguageManager(this);
+        // 1. 初始化服务端与客户端多语言管理器及配置管理器
+        this.serverLanguageManager = new ServerLanguageManager(this);
+        this.clientLanguageManager = new ClientLanguageManager(this);
         this.configManager = new ConfigManager(this);
         this.configManager.load();
 
@@ -166,8 +169,8 @@ public class BalancedTeamPlugin extends JavaPlugin {
     public void onDisable() {
         com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.PLUGIN_DISABLING);
         PAPIUtil.unregisterExpansion();
-        if (languageManager != null) {
-            languageManager.saveUserPreferences();
+        if (clientLanguageManager != null) {
+            clientLanguageManager.saveUserPreferences();
         }
         if (databaseManager != null) {
             databaseManager.close();
@@ -179,8 +182,12 @@ public class BalancedTeamPlugin extends JavaPlugin {
         return instance;
     }
 
-    public LanguageManager getLanguageManager() {
-        return languageManager;
+    public ServerLanguageManager getServerLanguageManager() {
+        return serverLanguageManager;
+    }
+
+    public ClientLanguageManager getClientLanguageManager() {
+        return clientLanguageManager;
     }
 
     public ConfigManager getConfigManager() {

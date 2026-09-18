@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * 配置文件管理器
- * 代理并集成 LanguageManager 集中多语言系统，支持根据 CommandSender 动态适配客户端语言。
+ * 代理并集成 ServerLanguageManager 与 ClientLanguageManager 多语言系统，支持根据 CommandSender 动态适配客户端语言。
  */
 public class ConfigManager {
 
@@ -31,9 +31,12 @@ public class ConfigManager {
         plugin.reloadConfig();
         this.config = plugin.getConfig();
 
-        // 2. 加载多语言管理器
-        if (plugin.getLanguageManager() != null) {
-            plugin.getLanguageManager().load();
+        // 2. 加载服务端与客户端多语言管理器
+        if (plugin.getServerLanguageManager() != null) {
+            plugin.getServerLanguageManager().load();
+        }
+        if (plugin.getClientLanguageManager() != null) {
+            plugin.getClientLanguageManager().load();
         }
 
         // 3. 同步时间格式与单位到 TimeUtil
@@ -64,13 +67,30 @@ public class ConfigManager {
     }
 
     /**
-     * 获取服务端当前配置的默认语言代号 (例如 zh_CN, en_US)
+     * 获取服务端当前配置的语言代号 (例如 zh_CN, en_US)
+     */
+    public String getServerLanguage() {
+        if (plugin.getServerLanguageManager() != null) {
+            return plugin.getServerLanguageManager().getServerLanguageCanonical();
+        }
+        return "en_US";
+    }
+
+    /**
+     * 获取客户端/玩家默认语言代号 (例如 zh_CN, en_US)
+     */
+    public String getClientLanguage() {
+        if (plugin.getClientLanguageManager() != null) {
+            return plugin.getClientLanguageManager().getClientDefaultCanonical();
+        }
+        return "en_US";
+    }
+
+    /**
+     * 获取服务端当前配置的默认语言代号 (兼容旧代码)
      */
     public String getLanguage() {
-        if (plugin.getLanguageManager() != null) {
-            return plugin.getLanguageManager().getServerDefaultCanonical();
-        }
-        return "zh_CN";
+        return getServerLanguage();
     }
 
     public FileConfiguration getConfig() {
@@ -81,8 +101,8 @@ public class ConfigManager {
      * 获取服务端默认语言的配置对象
      */
     public FileConfiguration getMessages() {
-        if (plugin.getLanguageManager() != null) {
-            return plugin.getLanguageManager().getDefaultConfiguration();
+        if (plugin.getClientLanguageManager() != null) {
+            return plugin.getClientLanguageManager().getDefaultConfiguration();
         }
         return new YamlConfiguration();
     }
@@ -91,8 +111,8 @@ public class ConfigManager {
      * 获取指定发送者对应语言的配置对象
      */
     public FileConfiguration getMessages(CommandSender sender) {
-        if (plugin.getLanguageManager() != null) {
-            return plugin.getLanguageManager().getConfiguration(sender);
+        if (plugin.getClientLanguageManager() != null) {
+            return plugin.getClientLanguageManager().getConfiguration(sender);
         }
         return getMessages();
     }
@@ -121,8 +141,8 @@ public class ConfigManager {
             msg = langConfig.getDefaults().getString(key);
         }
         // 如果当前语言文件无此键，从默认语言尝试读取
-        if (msg == null && plugin.getLanguageManager() != null) {
-            FileConfiguration defConfig = plugin.getLanguageManager().getDefaultConfiguration();
+        if (msg == null && plugin.getClientLanguageManager() != null) {
+            FileConfiguration defConfig = plugin.getClientLanguageManager().getDefaultConfiguration();
             if (defConfig != null && defConfig != langConfig) {
                 msg = defConfig.getString(key);
             }
@@ -168,8 +188,8 @@ public class ConfigManager {
         if (msg == null && langConfig.getDefaults() != null) {
             msg = langConfig.getDefaults().getString(key);
         }
-        if (msg == null && plugin.getLanguageManager() != null) {
-            FileConfiguration defConfig = plugin.getLanguageManager().getDefaultConfiguration();
+        if (msg == null && plugin.getClientLanguageManager() != null) {
+            FileConfiguration defConfig = plugin.getClientLanguageManager().getDefaultConfiguration();
             if (defConfig != null && defConfig != langConfig) {
                 msg = defConfig.getString(key);
             }
@@ -205,8 +225,8 @@ public class ConfigManager {
         if ((list == null || list.isEmpty()) && langConfig.getDefaults() != null) {
             list = langConfig.getDefaults().getStringList(key);
         }
-        if ((list == null || list.isEmpty()) && plugin.getLanguageManager() != null) {
-            FileConfiguration defConfig = plugin.getLanguageManager().getDefaultConfiguration();
+        if ((list == null || list.isEmpty()) && plugin.getClientLanguageManager() != null) {
+            FileConfiguration defConfig = plugin.getClientLanguageManager().getDefaultConfiguration();
             if (defConfig != null && defConfig != langConfig) {
                 list = defConfig.getStringList(key);
             }

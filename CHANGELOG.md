@@ -6,6 +6,90 @@ All notable changes to this project are documented here.
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.1] - 2026-09-18
+
+### 重构 / Refactored
+
+- **多语言管理器架构拆分 (Language Architecture Decoupling)**：
+  - 将原先揉合在单一管理器中的逻辑彻底拆分为两个职责明确的独立管理器：
+    - `ServerLanguageManager`：专门负责管理服务端环境与控制台输出日志语言，读取 `config.yml` 中的 `server_messages_language`，直接为 `PluginLogger` 提供支持；
+    - `ClientLanguageManager`：专门负责管理客户端/玩家端的多语言系统，读取 `config.yml` 中的 `language`，负责语言包文件（`lang/*.yml`）的加载与补全、玩家偏好持久化（`data/user_languages.yml`）、客户端 Locale（`Player.getLocale()`）智能模糊匹配以及 `/teamlang` 系列指令；
+  - 彻底移除原历史类 `LanguageManager`，在 `BalancedTeamPlugin` 中提供 `getServerLanguageManager()` 与 `getClientLanguageManager()`，所有组件均无缝迁移。
+
+### 新增 / Added
+
+- **服务端日志支持多国语言扩展 (Server Language Expansion)**：
+  - 服务端语言支持由原先的 3 种（`zh_CN`、`zh_TW`、`en_US`）扩展至 7 种，新增支持：
+    - 日语（`ja_JP`）
+    - 俄语（`ru_RU`）
+    - 德语（`de_DE`）
+    - 西班牙语（`es_ES`）
+  - `ServerLanguageManager` 支持 `ja`、`ru`、`de`、`es` 等前缀模糊匹配；
+  - `PluginLogger` 中全部 30 项控制台日志均新增了上述 4 种语言的高质量本地化翻译；
+  - `config.yml` 中 `server_messages_language` 配置项注释同步更新列出 7 种内置语言。
+- **多语言新增键值 (New Language Keys)**：
+  - 三套语言文件（`zh_CN.yml`、`zh_TW.yml`、`en_US.yml`）新增国际化条目：
+    - `lang_not_initialized`：语言管理器未初始化提示；
+    - `lang_usage_set`：`/teamlang set` 指令使用说明；
+    - `usage_info`：`/team info` 帮助提示；
+    - `team_list_empty`：控制台全服团队列表为空时的提示；
+    - `team_list_header`：控制台团队列表分页表头（支持 `{PAGE}`、`{TOTAL}` 占位符）；
+    - `team_list_item`：控制台团队条目格式化输出（支持 `{TEAM}`、`{LEADER}`、`{MEMBERS}`、`{MAX}`、`{FF}`、`{ALLIES}`、`{ENEMIES}`）；
+    - `team_list_footer`：控制台团队列表翻页提示（支持 `{NEXT_PAGE}` 占位符）。
+
+### 优化与修复 / Improved & Fixed
+
+- **清除命令类中的硬编码中文字符串 (Eliminate Command Hardcoded Strings)**：
+  - 彻底清理了 `TeamCommand`（`sendConsoleTeamList`、`handleInfo`）与 `TeamLangCommand` 中残留的硬编码中文提示，全面改由多语言配置文件动态获取；
+  - 队伍信息中的队长缺省名与友伤开关状态全面对接语言文件的 `time_unit.unknown` 与 `status.on` / `status.off`。
+- **全量命令消息动态多语言适配 (Dynamic Sender-Aware Localization)**：
+  - 全面排查并修复 `TeamCommand`、`TeamAdminCommand`、`TeamMsgCommand` 中此前未传 `sender`/`player` 的 `getMessage(...)` 与 `getMessageList(...)` 调用，确保玩家执行任何指令时均能严格根据其自身的生效语言呈现，杜绝部分指令错误回退为全服默认语言的问题。
+- **版本号升级 `1.2.0` → `1.2.1`**：
+  - `pom.xml` 版本号升级为 `1.2.1`。
+
+---
+
+### Refactored (English)
+
+- **Language Architecture Decoupling**:
+  - Decoupled the previously monolithic language system into two single-responsibility managers:
+    - `ServerLanguageManager`: Exclusively manages server-side environment and console logging language, loads `server_messages_language` from `config.yml`, and backs `PluginLogger`;
+    - `ClientLanguageManager`: Exclusively manages player-facing localization, loads client default `language` from `config.yml`, manages language packs (`lang/*.yml`), player preferences persistence (`data/user_languages.yml`), client locale auto-detection (`Player.getLocale()`), fuzzy dialect matching, and `/teamlang` commands;
+  - Completely removed the legacy `LanguageManager` class; `BalancedTeamPlugin` now exposes `getServerLanguageManager()` and `getClientLanguageManager()`.
+
+### Added (English)
+
+- **Server Console Logging Multilingual Expansion**:
+  - Expanded built-in server language support from 3 (`zh_CN`, `zh_TW`, `en_US`) to 7 languages, adding:
+    - Japanese (`ja_JP`)
+    - Russian (`ru_RU`)
+    - German (`de_DE`)
+    - Spanish (`es_ES`)
+  - Added prefix fuzzy matching in `ServerLanguageManager` for `ja`, `ru`, `de`, and `es`;
+  - Added high-quality translations for all 30 console log entries in `PluginLogger`;
+  - Updated `config.yml` comments under `server_messages_language` to enumerate all 7 built-in language codes.
+- **New Language Keys**:
+  - Added new message keys across all three language files (`zh_CN.yml`, `zh_TW.yml`, `en_US.yml`):
+    - `lang_not_initialized`: Shown when language manager is uninitialized;
+    - `lang_usage_set`: Usage instructions for `/teamlang set`;
+    - `usage_info`: Usage syntax for `/team info`;
+    - `team_list_empty`: Console message when no teams exist on the server;
+    - `team_list_header`: Paginated header for console team list with `{PAGE}` and `{TOTAL}`;
+    - `team_list_item`: Formatted entry for console team list with placeholders;
+    - `team_list_footer`: Pagination footer for console team list with `{NEXT_PAGE}`.
+
+### Improved & Fixed (English)
+
+- **Eliminated Command Hardcoded Strings**:
+  - Completely replaced hardcoded Chinese strings in `TeamCommand` (`sendConsoleTeamList`, `handleInfo`) and `TeamLangCommand` with dynamic language pack lookups;
+  - Fallback leader names and friendly-fire toggle statuses now resolve via `time_unit.unknown` and `status.on` / `status.off`.
+- **Dynamic Sender-Aware Localization**:
+  - Fixed `getMessage(...)` and `getMessageList(...)` invocations across `TeamCommand`, `TeamAdminCommand`, and `TeamMsgCommand` that were missing the `sender`/`player` argument, ensuring all command responses strictly follow each player's active language preference rather than falling back to the server default.
+- **Version Bump `1.2.0` → `1.2.1`**:
+  - `pom.xml` version bumped to `1.2.1`.
+
+---
+
 ## [1.2.0] - 2026-09-12
 
 ### 新增 / Added

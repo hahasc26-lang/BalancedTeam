@@ -1,7 +1,7 @@
 package com.balancedteam.listener;
 
 import com.balancedteam.BalancedTeamPlugin;
-import com.balancedteam.manager.LanguageManager;
+import com.balancedteam.manager.ClientLanguageManager;
 import com.balancedteam.model.Team;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,7 +26,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        LanguageManager langMgr = plugin.getLanguageManager();
+        ClientLanguageManager langMgr = plugin.getClientLanguageManager();
         if (langMgr != null) {
             String clientLocale = "unknown";
             try {

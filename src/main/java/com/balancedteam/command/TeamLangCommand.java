@@ -1,7 +1,7 @@
 package com.balancedteam.command;
 
 import com.balancedteam.BalancedTeamPlugin;
-import com.balancedteam.manager.LanguageManager;
+import com.balancedteam.manager.ClientLanguageManager;
 import com.balancedteam.util.MessageUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -37,9 +37,9 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
      * 统一处理语言指令逻辑 (供 /teamlang 与 /team lang 共享)
      */
     public static boolean handleLangCommand(BalancedTeamPlugin plugin, CommandSender sender, String[] args) {
-        LanguageManager langMgr = plugin.getLanguageManager();
+        ClientLanguageManager langMgr = plugin.getClientLanguageManager();
         if (langMgr == null) {
-            MessageUtil.sendMessage(sender, "&c语言管理器尚未初始化！");
+            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_not_initialized"));
             return true;
         }
 
@@ -65,7 +65,7 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 Player pAuto = (Player) sender;
-                langMgr.setPlayerPreference(pAuto.getUniqueId(), LanguageManager.PREF_AUTO);
+                langMgr.setPlayerPreference(pAuto.getUniqueId(), ClientLanguageManager.PREF_AUTO);
                 String activeCode = langMgr.getEffectiveLanguageCode(pAuto);
                 String clientLocale = "unknown";
                 try {
@@ -83,6 +83,9 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
                     MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "no_permission"));
                     return true;
                 }
+                if (plugin.getServerLanguageManager() != null) {
+                    plugin.getServerLanguageManager().load();
+                }
                 langMgr.load();
                 Map<String, String> reloadMap = new HashMap<>();
                 reloadMap.put("COUNT", String.valueOf(langMgr.getAvailableLanguages().size()));
@@ -91,7 +94,7 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
 
             case "set":
                 if (args.length < 2) {
-                    MessageUtil.sendMessage(sender, "&c使用方法: /teamlang set <语言代码|auto>");
+                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_usage_set"));
                     return true;
                 }
                 setLanguage(plugin, sender, args[1]);
@@ -107,7 +110,7 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
     }
 
     private static void setLanguage(BalancedTeamPlugin plugin, CommandSender sender, String rawCode) {
-        LanguageManager langMgr = plugin.getLanguageManager();
+        ClientLanguageManager langMgr = plugin.getClientLanguageManager();
         if (!(sender instanceof Player)) {
             MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "player_only"));
             return;
@@ -116,7 +119,7 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
 
         if (rawCode.equalsIgnoreCase("auto")) {
-            langMgr.setPlayerPreference(player.getUniqueId(), LanguageManager.PREF_AUTO);
+            langMgr.setPlayerPreference(player.getUniqueId(), ClientLanguageManager.PREF_AUTO);
             String activeCode = langMgr.getEffectiveLanguageCode(player);
             String clientLocale = "unknown";
             try {
@@ -148,7 +151,7 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
     }
 
     private static void sendLangStatus(BalancedTeamPlugin plugin, CommandSender sender) {
-        LanguageManager langMgr = plugin.getLanguageManager();
+        ClientLanguageManager langMgr = plugin.getClientLanguageManager();
         String activeCode = langMgr.getEffectiveLanguageCode(sender);
         String clientLocale = "Console";
         String mode = plugin.getConfigManager().getRawMessage(sender, "lang_mode_auto");
@@ -174,7 +177,7 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
     }
 
     private static void sendLangList(BalancedTeamPlugin plugin, CommandSender sender) {
-        LanguageManager langMgr = plugin.getLanguageManager();
+        ClientLanguageManager langMgr = plugin.getClientLanguageManager();
         String activeCode = langMgr.getEffectiveLanguageCode(sender);
 
         MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_list_header"));
@@ -206,7 +209,7 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
      * Tab 补全处理
      */
     public static List<String> getTabCompletions(BalancedTeamPlugin plugin, CommandSender sender, String[] args) {
-        LanguageManager langMgr = plugin.getLanguageManager();
+        ClientLanguageManager langMgr = plugin.getClientLanguageManager();
         if (langMgr == null) return Collections.emptyList();
 
         if (args.length == 1) {
@@ -233,3 +236,4 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
         return Collections.emptyList();
     }
 }
+

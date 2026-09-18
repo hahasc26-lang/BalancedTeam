@@ -26,7 +26,7 @@ public class TeamAdminCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("balancedteam.admin")) {
-            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage("no_permission"));
+            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "no_permission"));
             return true;
         }
 
@@ -39,37 +39,37 @@ public class TeamAdminCommand implements CommandExecutor, TabCompleter {
         switch (sub) {
             case "spy":
                 if (!(sender instanceof Player)) {
-                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage("player_only"));
+                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "player_only"));
                     return true;
                 }
                 Player player = (Player) sender;
                 boolean enabled = plugin.getChatManager().toggleSpy(player.getUniqueId());
                 String key = enabled ? "spy_toggle_on" : "spy_toggle_off";
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(key));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, key));
                 break;
 
             case "disband":
                 if (args.length < 2) {
-                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage("admin_usage_disband"));
+                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "admin_usage_disband"));
                     return true;
                 }
                 Team team = plugin.getTeamManager().getTeamByName(args[1]);
                 if (team == null) {
                     Map<String, String> map = new HashMap<>();
                     map.put("TEAM", args[1]);
-                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage("admin_team_not_found", map));
+                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "admin_team_not_found", map));
                     return true;
                 }
                 plugin.getTeamManager().disbandTeam(team).thenRun(() -> {
                     Map<String, String> map = new HashMap<>();
                     map.put("TEAM", team.getName());
-                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage("admin_force_disband_success", map));
+                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "admin_force_disband_success", map));
                 });
                 break;
 
             case "reload":
                 plugin.getConfigManager().load();
-                MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage("reload_success"));
+                MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "reload_success"));
                 break;
 
             default:
@@ -81,7 +81,7 @@ public class TeamAdminCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendHelp(CommandSender sender) {
-        List<String> helpLines = plugin.getConfigManager().getMessageList("help.admin", Collections.emptyMap());
+        List<String> helpLines = plugin.getConfigManager().getMessageList(sender, "help.admin", Collections.emptyMap());
         for (String line : helpLines) {
             MessageUtil.sendMessage(sender, line);
         }

@@ -39,7 +39,13 @@ lang_help:
   - "&e/teamlang list &7- 查看服务器支持的所有语言列表"
   - "&e/teamlang <语言代码> &7- 手动切换指定语言 (如 &f/teamlang en_US&7)"
   - "&e/teamlang auto &7- 恢复为根据客户端自动检测语言"
-  - "&e/teamlang reload &7- 重载所有语言包 (管理员)"
+lang_not_initialized: "&c语言管理器尚未初始化！"
+lang_usage_set: "&c使用方法: /teamlang set <语言代码|auto>"
+usage_info: "&c使用方法: /team info <团队名称>"
+team_list_empty: "&7[BalancedTeam] 当前服务器暂无任何团队。"
+team_list_header: "&8====== &bBalancedTeam 全服团队列表 &7({PAGE}/{TOTAL}) &8======"
+team_list_item: "&7- &e{TEAM} &8| &7队长: &f{LEADER} &8| &7成员: &a{MEMBERS}&7/&c{MAX} &8| &7友伤: {FF} &8| &7同盟: &e{ALLIES} &8| &7宿敌: &c{ENEMIES}"
+team_list_footer: "&7使用 &e/team list {NEXT_PAGE} &7查看下一页。"
 
 # -------------------------------------------------------------------
 # 团队创建与解散

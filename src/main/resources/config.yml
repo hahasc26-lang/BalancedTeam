@@ -4,11 +4,15 @@
 # Supports asynchronous MySQL / SQLite data storage with high-concurrency optimization.
 # ===================================================================
 
-# Server Default Language Setting
+# Player Default Language Setting
 # Supports language codes (e.g. en_US, zh_CN, zh_TW), file names (e.g. en_US.yml), or relative paths (e.g. lang/en_US.yml, lang/zh_CN.yml).
-# Built-in languages: zh_CN (Simplified Chinese), zh_TW (Traditional Chinese), en_US (English).
-# Note: Changing this language path will also automatically switch the server console output logs (startup, database, lifecycle, etc.) to the corresponding language.
+# Built-in languages: zh_CN (Simplified Chinese), zh_TW (Traditional Chinese), en_US (English), you can add more.
 language: "en_US"
+
+# Server messages language setting
+# Supports language codes (e.g. en_US, zh_CN, zh_TW, ja_JP, ru_RU, de_DE, es_ES), file names (e.g. en_US.yml), or relative paths (e.g. lang/en_US.yml, lang/zh_CN.yml).
+# Built-in languages: zh_CN (Simplified Chinese), zh_TW (Traditional Chinese), en_US (English), ja_JP (Japanese), ru_RU (Russian), de_DE (German), es_ES (Spanish).
+server_messages_language: "en_US"
 
 # Database Configuration
 database:

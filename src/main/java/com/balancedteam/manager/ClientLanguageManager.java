@@ -15,13 +15,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 /**
- * 集中多语言管理器
- * 支持全量内存缓存、客户端语言自动检测 (Player.getLocale())、模糊匹配与回退机制、
- * 以及玩家自主切换与偏好持久化。
+ * 客户端/玩家多语言管理器
+ * 专门负责管理玩家端的多语言包加载与补全、客户端语言自动检测 (Player.getLocale())、
+ * 模糊匹配与回退机制、以及玩家自主切换语言与偏好持久化。
+ * 对应 config.yml 中的 language (玩家默认语言) 配置项。
  */
-public class LanguageManager {
+public class ClientLanguageManager {
 
-    public static final String DEFAULT_LANGUAGE = "zh_CN";
+    public static final String DEFAULT_LANGUAGE = "en_US";
     public static final String PREF_AUTO = "auto";
     private static final String[] BUILTIN_LANGUAGES = {"zh_CN", "zh_TW", "en_US"};
 
@@ -39,14 +40,14 @@ public class LanguageManager {
     private File userPrefFile;
     private YamlConfiguration userPrefConfig;
 
-    private String serverDefaultLanguage = DEFAULT_LANGUAGE;
+    private String clientDefaultLanguage = normalizeCode(DEFAULT_LANGUAGE);
 
-    public LanguageManager(BalancedTeamPlugin plugin) {
+    public ClientLanguageManager(BalancedTeamPlugin plugin) {
         this.plugin = plugin;
     }
 
     /**
-     * 加载/重载所有语言配置与玩家偏好
+     * 加载/重载所有客户端语言配置与玩家偏好
      */
     public synchronized void load() {
         languageConfigs.clear();
@@ -69,12 +70,18 @@ public class LanguageManager {
             }
         }
 
-        // 3. 确定服务端配置的默认语言
-        String configuredLang = plugin.getConfig().getString("language", DEFAULT_LANGUAGE);
-        this.serverDefaultLanguage = resolveLanguageCode(configuredLang);
+        // 3. 确定玩家客户端默认语言配置 (config.yml 中的 language 项)
+        String configuredLang = DEFAULT_LANGUAGE;
+        if (plugin.getConfig() != null) {
+            configuredLang = plugin.getConfig().getString("language", DEFAULT_LANGUAGE);
+        }
+        this.clientDefaultLanguage = resolveLanguageCode(configuredLang);
 
-        com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.LANG_INIT_SUCCESS, 
-                languageConfigs.size(), getCanonicalCode(serverDefaultLanguage));
+        com.balancedteam.util.PluginLogger.info(
+                com.balancedteam.util.PluginLogger.LogKey.LANG_INIT_SUCCESS,
+                languageConfigs.size(),
+                getCanonicalCode(clientDefaultLanguage)
+        );
 
         // 4. 加载玩家语言偏好持久化数据
         loadUserPreferences();
@@ -116,6 +123,9 @@ public class LanguageManager {
             InputStream defStream = plugin.getResource("lang/" + code + ".yml");
             if (defStream == null) {
                 defStream = plugin.getResource("lang/" + DEFAULT_LANGUAGE + ".yml");
+            }
+            if (defStream == null) {
+                defStream = plugin.getResource("lang/zh_CN.yml");
             }
             if (defStream != null) {
                 YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defStream, StandardCharsets.UTF_8));
@@ -185,31 +195,19 @@ public class LanguageManager {
     }
 
     /**
-     * 标准化代码字符串 (支持相对路径解析、小写、替换横杠为下划线、去除 .yml)
+     * 标准化代码字符串
      */
     public static String normalizeCode(String code) {
-        if (code == null) return "";
-        String s = code.trim().replace('\\', '/');
-        if (s.contains("/")) {
-            s = s.substring(s.lastIndexOf('/') + 1);
-        }
-        s = s.toLowerCase().replace('-', '_');
-        if (s.endsWith(".yml")) {
-            s = s.substring(0, s.length() - 4);
-        }
-        return s;
+        return ServerLanguageManager.normalizeCode(code);
     }
 
     /**
      * 智能语言解析匹配算法
-     * 匹配逻辑：精确匹配 -> 前缀模糊匹配 -> 服务端默认语言 -> 终极兜底语言
-     * 
-     * @param rawCode 客户端 locale 或语言代码 (如 "zh_CN", "zh_TW", "zh_HK", "en_GB")
-     * @return 解析匹配后规范化的已加载语言键 (例如 "zh_cn")
+     * 匹配逻辑：精确匹配 -> 前缀模糊匹配 -> 玩家默认语言 -> 服务端默认语言 -> 终极兜底
      */
     public String resolveLanguageCode(String rawCode) {
         if (rawCode == null || rawCode.trim().isEmpty()) {
-            return serverDefaultLanguage != null ? serverDefaultLanguage : normalizeCode(DEFAULT_LANGUAGE);
+            return clientDefaultLanguage != null ? clientDefaultLanguage : normalizeCode(DEFAULT_LANGUAGE);
         }
 
         String normalized = normalizeCode(rawCode);
@@ -219,24 +217,21 @@ public class LanguageManager {
             return normalized;
         }
 
-        // 2. 前缀模糊匹配 (如 zh_hk -> 寻找 zh_cn / zh_tw; en_gb -> 寻找 en_us)
+        // 2. 前缀模糊匹配 (如 zh_hk -> 寻找 zh_tw / zh_cn; en_gb -> 寻找 en_us)
         if (normalized.contains("_")) {
             String prefix = normalized.split("_")[0];
-            // 优先检查常见前缀匹配
             if (prefix.equals("zh")) {
                 if (normalized.contains("tw") || normalized.contains("hk") || normalized.contains("mo")) {
                     if (languageConfigs.containsKey("zh_tw")) return "zh_tw";
                 }
                 if (languageConfigs.containsKey("zh_cn")) return "zh_cn";
             }
-            // 通用前缀匹配
             for (String loadedKey : languageConfigs.keySet()) {
                 if (loadedKey.startsWith(prefix + "_") || loadedKey.equals(prefix)) {
                     return loadedKey;
                 }
             }
         } else {
-            // 如果传入仅为前缀 (如 "zh" 或 "en")
             for (String loadedKey : languageConfigs.keySet()) {
                 if (loadedKey.startsWith(normalized + "_") || loadedKey.equals(normalized)) {
                     return loadedKey;
@@ -244,17 +239,25 @@ public class LanguageManager {
             }
         }
 
-        // 3. 回退到服务端默认语言
-        if (serverDefaultLanguage != null && languageConfigs.containsKey(serverDefaultLanguage)) {
-            return serverDefaultLanguage;
+        // 3. 回退到客户端配置的默认语言
+        if (clientDefaultLanguage != null && languageConfigs.containsKey(clientDefaultLanguage)) {
+            return clientDefaultLanguage;
         }
 
-        // 4. 终极兜底 (返回任意已加载语言或 zh_cn)
-        if (languageConfigs.containsKey("zh_cn")) {
-            return "zh_cn";
+        // 4. 回退到服务端语言
+        if (plugin.getServerLanguageManager() != null) {
+            String serverLang = plugin.getServerLanguageManager().getServerLanguage();
+            if (serverLang != null && languageConfigs.containsKey(serverLang)) {
+                return serverLang;
+            }
         }
+
+        // 5. 终极兜底
         if (languageConfigs.containsKey("en_us")) {
             return "en_us";
+        }
+        if (languageConfigs.containsKey("zh_cn")) {
+            return "zh_cn";
         }
         if (!languageConfigs.isEmpty()) {
             return languageConfigs.keySet().iterator().next();
@@ -264,11 +267,15 @@ public class LanguageManager {
     }
 
     /**
-     * 获取指定 CommandSender / 玩家当前实际生效的语言代码 (normalized key)
+     * 获取指定 CommandSender 当前实际生效的语言代码 (若是玩家返回其偏好或客户端Locale，若为控制台则回退至服务端语言)
      */
     public String getEffectiveLanguageCode(CommandSender sender) {
         if (sender == null || !(sender instanceof Player)) {
-            return serverDefaultLanguage;
+            // 控制台/非玩家回退到服务端语言
+            if (plugin.getServerLanguageManager() != null) {
+                return plugin.getServerLanguageManager().getServerLanguage();
+            }
+            return clientDefaultLanguage;
         }
 
         Player player = (Player) sender;
@@ -304,19 +311,19 @@ public class LanguageManager {
         String code = getEffectiveLanguageCode(sender);
         YamlConfiguration config = languageConfigs.get(code);
         if (config == null) {
-            config = languageConfigs.get(serverDefaultLanguage);
-        }
-        if (config == null && !languageConfigs.isEmpty()) {
-            config = languageConfigs.values().iterator().next();
+            config = getDefaultConfiguration();
         }
         return config;
     }
 
     /**
-     * 获取全局/服务端默认语言配置对象
+     * 获取客户端默认语言配置对象
      */
     public YamlConfiguration getDefaultConfiguration() {
-        YamlConfiguration config = languageConfigs.get(serverDefaultLanguage);
+        YamlConfiguration config = languageConfigs.get(clientDefaultLanguage);
+        if (config == null && plugin.getServerLanguageManager() != null) {
+            config = languageConfigs.get(plugin.getServerLanguageManager().getServerLanguage());
+        }
         if (config == null && !languageConfigs.isEmpty()) {
             config = languageConfigs.values().iterator().next();
         }
@@ -324,14 +331,14 @@ public class LanguageManager {
     }
 
     /**
-     * 获取玩家手动设置的偏好 (如 "zh_CN", "en_US" 或 "auto")
+     * 获取玩家手动设置的偏好
      */
     public String getPlayerPreference(UUID uuid) {
         return playerPreferences.getOrDefault(uuid, PREF_AUTO);
     }
 
     /**
-     * 设置玩家的语言偏好 (传入 "auto" 或具体语言代码)
+     * 设置玩家的语言偏好
      */
     public void setPlayerPreference(UUID uuid, String rawCode) {
         if (rawCode == null || rawCode.equalsIgnoreCase(PREF_AUTO)) {
@@ -360,7 +367,6 @@ public class LanguageManager {
 
     /**
      * 获取所有已载入的语言信息列表
-     * @return List of Map containing "code", "canonical", "name"
      */
     public List<Map<String, String>> getAvailableLanguages() {
         List<Map<String, String>> list = new ArrayList<>();
@@ -375,9 +381,9 @@ public class LanguageManager {
     }
 
     /**
-     * 获取服务端默认语言规范代码 (如 "zh_CN")
+     * 获取玩家默认语言规范代码
      */
-    public String getServerDefaultCanonical() {
-        return getCanonicalCode(serverDefaultLanguage);
+    public String getClientDefaultCanonical() {
+        return getCanonicalCode(clientDefaultLanguage);
     }
 }

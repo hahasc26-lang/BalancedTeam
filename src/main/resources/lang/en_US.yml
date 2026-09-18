@@ -39,7 +39,13 @@ lang_help:
   - "&e/teamlang list &7- View all supported languages on the server"
   - "&e/teamlang <code/name> &7- Manually switch language (e.g. &f/teamlang zh_CN&7)"
   - "&e/teamlang auto &7- Revert to client auto-detection mode"
-  - "&e/teamlang reload &7- Reload all language packs (Admin only)"
+lang_not_initialized: "&cLanguage manager is not initialized!"
+lang_usage_set: "&cUsage: /teamlang set <language code|auto>"
+usage_info: "&cUsage: /team info <TeamName>"
+team_list_empty: "&7[BalancedTeam] No teams currently found on the server."
+team_list_header: "&8====== &bBalancedTeam Team List &7({PAGE}/{TOTAL}) &8======"
+team_list_item: "&7- &e{TEAM} &8| &7Leader: &f{LEADER} &8| &7Members: &a{MEMBERS}&7/&c{MAX} &8| &7FF: {FF} &8| &7Allies: &e{ALLIES} &8| &7Enemies: &c{ENEMIES}"
+team_list_footer: "&7Type &e/team list {NEXT_PAGE} &7to view the next page."
 
 # -------------------------------------------------------------------
 # Team Creation & Disbanding
