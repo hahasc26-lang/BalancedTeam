@@ -62,6 +62,11 @@ mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
 
 ## Commands
 
+<details>
+<summary><b>Click to expand / collapse Command List</b></summary>
+
+<br>
+
 **`/team`** (aliases: `/t` `/clan` `/bt`)
 
 | Command | Description | Permission / Role |
@@ -119,9 +124,16 @@ mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
 | `/teammsg <message>` | Send a quick message to your team channel | `balancedteam.use` |
 | `/teammsg` | Toggle team chat lock mode (all chats route to team) | `balancedteam.use` |
 
+</details>
+
 ---
 
 ## Permissions
+
+<details>
+<summary><b>Click to expand / collapse Permissions List</b></summary>
+
+<br>
 
 | Permission | Default | Description |
 |------------|---------|-------------|
@@ -129,9 +141,16 @@ mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
 | `balancedteam.admin` | OP | Admin commands and language reload |
 | `balancedteam.admin.spy` | OP | Monitor team chats |
 
+</details>
+
 ---
 
 ## PlaceholderAPI Placeholders
+
+<details>
+<summary><b>Click to expand / collapse Placeholders & Configuration Examples</b></summary>
+
+<br>
 
 Native [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) expansion with `%balancedteam_<placeholder>%`:
 
@@ -190,6 +209,8 @@ lines:
   - '&7Members: &a%balancedteam_online%&7/&f%balancedteam_members%'
   - '&7Allies: &b%balancedteam_allies%&7/&f%balancedteam_max_allies%'
 ```
+
+</details>
 
 ---
 
@@ -250,6 +271,11 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
 
 ## 指令
 
+<details>
+<summary><b>点击展开 / 折叠完整指令列表</b></summary>
+
+<br>
+
 **`/team`**（别名：`/t` `/clan` `/bt`）
 
 | 指令 | 说明 | 权限 / 角色要求 |
@@ -307,9 +333,16 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
 | `/teammsg <消息>` | 快速向队伍频道发送一条消息 | `balancedteam.use` |
 | `/teammsg` | 切换队伍聊天锁定模式（聊天栏消息自动定向至队伍） | `balancedteam.use` |
 
+</details>
+
 ---
 
 ## 权限
+
+<details>
+<summary><b>点击展开 / 折叠权限节点列表</b></summary>
+
+<br>
 
 | 权限 | 默认 | 说明 |
 |------|------|------|
@@ -317,9 +350,16 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
 | `balancedteam.admin` | OP | 管理员指令与语言重载 |
 | `balancedteam.admin.spy` | OP | 监听团队聊天 |
 
+</details>
+
 ---
 
 ## PlaceholderAPI 占位符变量
+
+<details>
+<summary><b>点击展开 / 折叠占位符变量列表与配置示例</b></summary>
+
+<br>
 
 插件原生集成 [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/)，前缀为 `%balancedteam_<变量名>%`：
 
@@ -378,6 +418,8 @@ lines:
   - '&7人数: &a%balancedteam_online%&7/&f%balancedteam_members%'
   - '&7同盟: &b%balancedteam_allies%&7/&f%balancedteam_max_allies%'
 ```
+
+</details>
 
 ---
 
