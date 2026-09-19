@@ -62,6 +62,15 @@ The Notification Center centralizes all incoming requests into a single, clean m
 1. **Pending Invitations**: Invitations received from other teams allowing one-click **Accept** or **Deny**.
 2. **Pending Applications**: Applications submitted by unaligned players wanting to join your team (Officers/Leaders only).
 3. **Pending Alliance Requests**: Alliance pact offers sent by foreign teams.
+4. **Pending Truce / Peace Requests (White Banner)**: Peace proposals sent by hostile enemy teams. Displays the initiating team, remaining request time, and post-war protection duration. Left-click to **Accept** (establishes peace & starts post-war protection) or Right-click to **Deny**.
+
+---
+
+## Enemy Management & Diplomacy (`EnemyManageGui`)
+
+In addition to listing declared enemy factions:
+- **Propose Truce (White Banner)**: Allows Leaders and Officers to send a formal truce proposal to an enemy team with a single click.
+- **Post-War Protection Indicator (Shield)**: If the two teams recently concluded a truce agreement, the enemy card automatically transforms to display a **Shield** icon with a localized countdown badge showing the remaining post-war protection time. During this time, war cannot be re-declared.
 
 ---
 

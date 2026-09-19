@@ -175,6 +175,24 @@ public class PluginLogger {
                 "[Database] {0} gültige Teambewerbungen in den Speicher geladen.",
                 "[Database] Se cargaron {0} solicitudes de equipo válidas en memoria."
         ),
+        DB_LOADED_TRUCE_REQUESTS(
+                "[Database] 已加载 {0} 条有效求和申请到内存。",
+                "[Database] 已載入 {0} 條有效求和申請到記憶體。",
+                "[Database] Loaded {0} valid truce request(s) into memory.",
+                "[Database] {0} 件の有効な停戦申請をメモリに読み込みました。",
+                "[Database] Загружено {0} действующих запросов о перемирии в память.",
+                "[Database] {0} gültige Waffenstillstandsanfragen in den Speicher geladen.",
+                "[Database] Se cargaron {0} solicitudes de tregua válidas en memoria."
+        ),
+        DB_LOADED_POST_WAR_PROTECTIONS(
+                "[Database] 已加载 {0} 条战后保护记录到内存。",
+                "[Database] 已載入 {0} 條戰後保護記錄到記憶體。",
+                "[Database] Loaded {0} post-war protection record(s) into memory.",
+                "[Database] {0} 件の戦後保護記録をメモリに読み込みました。",
+                "[Database] Загружено {0} записей послевоенной защиты в память.",
+                "[Database] {0} Nachkriegsschutz-Einträge in den Speicher geladen.",
+                "[Database] Se cargaron {0} registros de protección de posguerra en memoria."
+        ),
         DB_PRELOAD_TEAMS_SUCCESS(
                 "[Database] 已成功将全服 {0} 个团队数据预热至内存缓存！",
                 "[Database] 已成功將全服 {0} 個團隊數據預熱至記憶體快取！",

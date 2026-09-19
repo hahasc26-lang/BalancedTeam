@@ -85,6 +85,7 @@ team_apply_target_in_team: "&c申请人 &e{PLAYER} &c已经加入了其他团队
 team_apply_rejected: "&e已拒绝玩家 &f{PLAYER} &e的入队申请。"
 team_apply_rejected_notify: "&c你向团队 &e{TEAM} &c发送的入队申请已被管理员拒绝。"
 team_apply_accepted_notify: "&a🎉 恭喜！你向团队 &e{TEAM} &a发送的入队申请已被批准！你已成功加入团队。"
+team_applicant_on_cooldown: "&c申请人 &e{PLAYER} &c处于退队冷却中，还剩 &e{TIME} &c秒！"
 
 # -------------------------------------------------------------------
 # 退出与踢出
@@ -122,8 +123,14 @@ team_ff_status: "&7当前团队友伤状态: {STATUS}"
 team_ff_toggle_on: "&c团队友伤已开启！队员之间可以互相攻击。"
 team_ff_toggle_off: "&a团队友伤已关闭！队员之间无法互相伤害。"
 team_ff_toggle_disabled: "&c服务器管理员已锁定队友伤害功能，队伍成员间伤害强制开启，禁止修改！"
+team_ff_system_disabled: "&c服务器管理员已全局关闭友伤保护机制，所有队伍与盟友伤害均正常生效！"
 team_ff_protected: "&c友伤保护：你无法攻击同队成员 &e{PLAYER}&c！"
 ally_ff_protected: "&c同盟保护：你无法攻击盟友成员 &e{PLAYER}&c！"
+team_crystal_ff_protected: "&c友伤保护：你的末影水晶爆炸无法伤害同队成员 &e{PLAYER}&c！"
+ally_crystal_ff_protected: "&c同盟保护：你的末影水晶爆炸无法伤害盟友成员 &e{PLAYER}&c！"
+team_crystal_protected: "&c水晶保护：你无法破坏同队成员 &e{PLAYER}&c 放置的末影水晶！"
+ally_crystal_protected: "&c同盟保护：你无法破坏盟友成员 &e{PLAYER}&c 放置的末影水晶！"
+team_post_war_protected: "&e战后保护：你与团队 &f{TEAM} &e正处于停战保护期 (剩余 {TIME} 秒)，禁止对成员 &f{PLAYER} &e造成伤害！"
 
 # -------------------------------------------------------------------
 # 同盟机制 (双向同意)
@@ -161,6 +168,33 @@ enemy_add_broadcast: "&c团队 &e{TEAM1} &c向团队 &e{TEAM2} &c宣战！"
 enemy_declared_notify: "&c⚔ 团队 &e{TEAM} &c已向你的团队宣战！已进入敌对状态。"
 enemy_remove_success: "&a已取消对团队 &e{TEAM} &a的敌对标记！"
 enemy_not_enemy: "&c你的团队并没有将 &e{TEAM} &c设为敌对！"
+enemy_post_war_protected: "&c两队正处于战后保护期 (剩余 {TIME} 秒)，保护期内禁止再次向 &e{TEAM} &c宣战！"
+enemy_cannot_unilateral_remove: "&c敌对关系无法单方面解除！需双方达成停战协议，请使用 &e/team truce request {TEAM} &c发送求和申请。"
+
+# -------------------------------------------------------------------
+# 停战求和与战后保护机制 (双向同意)
+# -------------------------------------------------------------------
+usage_truce: "&c使用方法: /team truce <request|accept|deny|cancel|list> [队伍名]"
+truce_specify_target: "&c请输入目标敌对队伍名称！"
+truce_unknown_sub: "&c未知停战指令，支持: request, accept, deny, cancel, list"
+truce_not_enemy: "&c你的团队与 &e{TEAM} &c并未处于敌对关系，无需停战求和！"
+truce_cant_self: "&c你不能向自己的团队发送求和申请！"
+truce_request_sent: "&a已向团队 &e{TEAM} &a发送停战求和申请！等待对方队长或管理员同意..."
+truce_request_received: "&e⚔ 收到来自敌对团队 &f{TEAM} &e的停战求和申请！输入 &a/team truce accept {TEAM} &e同意停战并开启战后保护。"
+truce_already_requested: "&c你已向团队 &e{TEAM} &c发送过求和申请了，请等待对方回应或使用 &e/team truce cancel {TEAM} &c撤销！"
+truce_no_pending_request: "&c未找到来自团队 &e{TEAM} &c的有效求和申请或申请已过期！"
+truce_denied: "&e已拒绝来自团队 &f{TEAM} &e的停战求和申请。"
+truce_denied_notify: "&c团队 &e{TEAM} &c拒绝了你方的停战求和申请，战火继续！"
+truce_cancel_success: "&a已撤销对团队 &e{TEAM} &a的停战求和申请。"
+truce_cancel_no_request: "&c你的团队并未向 &e{TEAM} &c发送过求和申请。"
+truce_established: "&a【停战协议】你的团队与 &e{TEAM} &a已达成停战协议，敌对关系正式解除！"
+truce_established_broadcast: "&a🕊 团队 &e{TEAM1} &a与团队 &e{TEAM2} &a达成停战协议，敌对关系正式解除！"
+truce_protection_started: "&e🛡 两队已进入战后保护期 (持续 {TIME} 秒)，期间双方成员互免一切伤害！"
+truce_list_header: "&b======= &e停战求和与保护状态 &b======="
+truce_list_empty: "&7当前没有待处理的求和申请或生效中的战后保护。"
+truce_list_request_item: "&7- 收到求和申请: 来自团队 &f{TEAM} &8(剩余 {TIME} 秒) &a[/team truce accept {TEAM}]"
+truce_list_sent_item: "&7- 发出求和申请: 发往团队 &f{TEAM} &8(剩余 {TIME} 秒) &c[/team truce cancel {TEAM}]"
+truce_list_protection_item: "&7- 战后保护生效中: 与团队 &f{TEAM} &8(剩余保护 {TIME} 秒)"
 
 # -------------------------------------------------------------------
 # 聊天与监听系统
@@ -234,7 +268,8 @@ help:
     - "&e/team chat [消息] &7- 发送团队聊天或切换聊天模式"
     - "&e/team ff [on/off] &7- 查看或切换团队友伤"
     - "&e/team ally add/accept/remove <队伍> &7- 同盟管理 (需双方同意)"
-    - "&e/team enemy add/remove <队伍> &7- 敌对管理"
+    - "&e/team enemy add <队伍> &7- 敌对管理 (宣战)"
+    - "&e/team truce <request|accept|deny|cancel|list> [队伍] &7- 停战求和与战后保护 (需双方同意)"
     - "&e/team info [队伍名] &7- 查看团队详细信息"
     - "&b========================================"
 
@@ -538,9 +573,19 @@ gui:
       - ""
       - "&a▶ 左键点击: 批准入队"
       - "&c▶ 右键点击: 拒绝申请"
+    # 停战求和申请
+    truce_item_name: "&f🕊 停战求和申请: &e{TEAM}"
+    truce_item_lore:
+      - "&7发起队伍: &e{TEAM}"
+      - "&7有效时间剩余: &e{REMAINING} &7秒"
+      - "&7停战后将进入 &a{PROTECTION}秒 &7战后保护期"
+      - "&7保护期内双方免除一切互相伤害"
+      - ""
+      - "&a▶ 左键点击: 同意求和 (停战 & 开启战后保护)"
+      - "&c▶ 右键点击: 拒绝求和"
     no_request_name: "&7(暂无待处理通知)"
     no_request_lore:
-      - "&7目前没有任何待处理的入队邀请或同盟申请。"
+      - "&7目前没有任何待处理的入队邀请、同盟申请或求和申请。"
     back_button: "&c« 返回"
     prev_page: "&a« 上一页 ({PAGE})"
     next_page: "&a下一页 ({PAGE}) »"

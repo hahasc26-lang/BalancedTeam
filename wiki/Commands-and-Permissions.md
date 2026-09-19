@@ -26,14 +26,20 @@ This page provides an exhaustive reference for all player and administrator comm
 | `/team demote` | `<player>` | Demotes an Officer to Member (prompts `ConfirmGui`). | Leader |
 | `/team desc` | `<text...>` | Sets or updates your team's description/announcement. | Leader / Officer |
 | `/team ff` | *(None)* | Toggles friendly fire damage protection on or off. | Leader / Officer |
-| `/team ally` | `<teamName>` | Sends a formal alliance request to another team. | Leader / Officer |
-| `/team unally` | `<teamName>` | Breaks an active alliance with another team. | Leader / Officer |
-| `/team enemy` | `<teamName>` | Marks another team as an enemy / declares war. | Leader / Officer |
-| `/team peace` | `<teamName>` | Removes enemy status and restores neutral relations. | Leader / Officer |
+| `/team ally` | `<add\|accept\|remove> <teamName>` | Sends, accepts, or breaks a formal alliance pact. | Leader / Officer |
+| `/team enemy` | `<add\|remove> <teamName>` | Marks another team as an enemy or removes enemy status. | Leader / Officer |
+| `/team truce` | `<teamName>` | Proposes a truce/peace agreement to an enemy team. | Leader / Officer |
+| `/team truce accept` | `<teamName>` | Accepts an incoming truce request & starts post-war protection. | Leader / Officer |
+| `/team truce deny` | `<teamName>` | Rejects an incoming truce request from an enemy team. | Leader / Officer |
+| `/team truce cancel` | `<teamName>` | Cancels a pending truce request sent by your team. | Leader / Officer |
+| `/team truce list` | *(None)* | Lists all pending incoming and outgoing truce proposals. | Leader / Officer |
+| `/team peace` | `<args...>` | Direct alias for `/team truce` commands. | Leader / Officer |
 | `/team apply` | `<teamName>` | Submits an application to join an existing team. | None (Must not be in a team) |
-| `/team accept` | `<target>` | Accepts an incoming invitation or alliance request. | Leader / Officer |
-| `/team deny` | `<target>` | Rejects an incoming invitation or alliance request. | Leader / Officer |
-| `/team lang` | `[code|auto|list]` | View or change your personal client language preference. | Any |
+| `/team accept` | `<target>` | Accepts an incoming member invite or alliance request. | Leader / Officer |
+| `/team deny` | `<target>` | Rejects an incoming member invite or alliance request. | Leader / Officer |
+| `/team chat` | `[message]` | Sends a message to team chat or toggles chat lock mode. | Team Members |
+| `/team members` | `[page]` | Displays member list, online statuses, and roles in chat. | Any |
+| `/team lang` | `[code\|auto\|list]` | View or change your personal client language preference. | Any |
 
 ---
 

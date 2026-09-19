@@ -8,6 +8,7 @@ import com.balancedteam.model.Team;
 import com.balancedteam.util.MessageUtil;
 import com.balancedteam.util.PermissionUtil;
 import com.balancedteam.util.SoundUtil;
+import com.balancedteam.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -80,7 +81,8 @@ public class TeamSelectGui {
             int slot = i - startIndex;
 
             boolean isAlly = plugin.getRelationManager().isAlly(myTeam.getId(), targetTeam.getId());
-            boolean isEnemy = plugin.getRelationManager().isEnemy(myTeam.getId(), targetTeam.getId());
+            boolean isDeclaredEnemy = plugin.getRelationManager().isDeclaredEnemy(myTeam.getId(), targetTeam.getId());
+            boolean isAnyEnemy = plugin.getRelationManager().isEnemy(myTeam.getId(), targetTeam.getId());
             boolean hasPendingRequest = plugin.getRelationManager().hasPendingAllyRequest(myTeam.getId(), targetTeam.getId());
 
             OfflinePlayer leader = Bukkit.getOfflinePlayer(targetTeam.getLeaderUuid());
@@ -106,7 +108,7 @@ public class TeamSelectGui {
                         m.put("TEAM", targetTeam.getName());
                         MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_already_allied", m));
                     });
-                } else if (isEnemy) {
+                } else if (isAnyEnemy) {
                     // 是敌对队伍，不可结盟
                     String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_NAME, itemMap);
                     List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_LORE, itemMap);
@@ -153,7 +155,7 @@ public class TeamSelectGui {
                 }
             } else {
                 // ==================== 宣战模式 ====================
-                if (isEnemy) {
+                if (isDeclaredEnemy) {
                     // 已经是敌对团队
                     String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_NAME, itemMap);
                     List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.TEAM_SELECT_ITEM_IS_ENEMY_LORE, itemMap);
@@ -173,7 +175,25 @@ public class TeamSelectGui {
                         SoundUtil.playError(player);
                         MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_cant_enemy_ally"));
                     });
-                } else if (plugin.getRelationManager().getEnemies(myTeam.getId()).size() >= plugin.getConfigManager().getMaxEnemies()) {
+                } else if (plugin.getRelationManager().isUnderPostWarProtection(myTeam.getId(), targetTeam.getId())) {
+                    // 战后保护期内
+                    long remaining = plugin.getRelationManager().getPostWarProtectionRemainingSeconds(myTeam.getId(), targetTeam.getId());
+                    String formattedRem = TimeUtil.formatDuration(player, remaining);
+                    Map<String, String> protMap = new HashMap<>(itemMap);
+                    protMap.put("TIME", formattedRem);
+                    String name = MessageUtil.color("&e🛡 战后保护中: &f" + targetTeam.getName());
+                    List<String> lore = Arrays.asList(
+                            MessageUtil.color("&7两队目前处于停战保护期中"),
+                            MessageUtil.color("&7剩余保护时间: &e" + formattedRem),
+                            "",
+                            MessageUtil.color("&c✖ 战后保护期内禁止重新宣战")
+                    );
+                    item = new ItemBuilder(Material.SHIELD).name(name).lore(lore).build();
+                    holder.setClickHandler(slot, e -> {
+                        SoundUtil.playError(player);
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_post_war_protected", protMap));
+                    });
+                } else if (plugin.getRelationManager().getDeclaredEnemies(myTeam.getId()).size() >= plugin.getConfigManager().getMaxEnemies()) {
                     // 敌对数量已达上限
                     Map<String, String> maxMap = new HashMap<>(itemMap);
                     maxMap.put("MAX_ENEMY", String.valueOf(plugin.getConfigManager().getMaxEnemies()));
@@ -320,6 +340,7 @@ public class TeamSelectGui {
 
         Map<String, String> map = new HashMap<>();
         map.put("TEAM", targetTeam.getName());
+        map.put("TIMEOUT", TimeUtil.formatDuration(player, timeout));
         MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "ally_request_sent", map));
         SoundUtil.playSuccess(player);
 
@@ -327,6 +348,7 @@ public class TeamSelectGui {
         if (targetLeader != null && targetLeader.isOnline()) {
             Map<String, String> reqMap = new HashMap<>();
             reqMap.put("TEAM", myTeam.getName());
+            reqMap.put("TIMEOUT", TimeUtil.formatDuration(targetLeader, timeout));
             MessageUtil.sendMessage(targetLeader, plugin.getConfigManager().getMessage(targetLeader, "ally_request_received", reqMap));
             SoundUtil.playDing(targetLeader);
         }
@@ -367,7 +389,17 @@ public class TeamSelectGui {
             return;
         }
 
-        if (plugin.getRelationManager().isEnemy(myTeam.getId(), targetTeam.getId())) {
+        if (plugin.getRelationManager().isUnderPostWarProtection(myTeam.getId(), targetTeam.getId())) {
+            long remaining = plugin.getRelationManager().getPostWarProtectionRemainingSeconds(myTeam.getId(), targetTeam.getId());
+            Map<String, String> map = new HashMap<>();
+            map.put("TEAM", targetTeam.getName());
+            map.put("TIME", TimeUtil.formatDuration(player, remaining));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_post_war_protected", map));
+            SoundUtil.playError(player);
+            return;
+        }
+
+        if (plugin.getRelationManager().isDeclaredEnemy(myTeam.getId(), targetTeam.getId())) {
             Map<String, String> map = new HashMap<>();
             map.put("TEAM", targetTeam.getName());
             MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_already_enemy", map));
@@ -375,7 +407,7 @@ public class TeamSelectGui {
             return;
         }
 
-        if (plugin.getRelationManager().getEnemies(myTeam.getId()).size() >= plugin.getConfigManager().getMaxEnemies()) {
+        if (plugin.getRelationManager().getDeclaredEnemies(myTeam.getId()).size() >= plugin.getConfigManager().getMaxEnemies()) {
             Map<String, String> map = new HashMap<>();
             map.put("MAX", String.valueOf(plugin.getConfigManager().getMaxEnemies()));
             MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_max_reached", map));

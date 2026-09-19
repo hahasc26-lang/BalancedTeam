@@ -6,10 +6,16 @@
 
 ## Key Localization Features
 
+- **Architectural Separation**: Decoupled into two independent engines:
+  - `ServerLanguageManager`: Exclusively manages server-side environment and console logging across 7 built-in languages, backed by `PluginLogger`.
+  - `ClientLanguageManager`: Manages player-facing localization, language packs (`lang/*.yml`), client auto-detection, and `/teamlang` switching.
 - **Automatic Client Locale Detection**: Reads each player's Minecraft client language setting via `Player.getLocale()` when they connect.
 - **Smart Prefix Fuzzy Matching**: Intelligently maps regional variations (e.g. `en_GB`, `en_CA` $\to$ `en_US`; `zh_HK`, `zh_MO` $\to$ `zh_TW`/`zh_CN`).
 - **Relative Path & Code Configuration**: `config.yml` accepts language codes (e.g. `en_US`, `zh_CN`), file names (e.g. `en_US.yml`), or relative paths (e.g. `lang/en_US.yml`, `lang/zh_CN.yml`).
-- **Automatic Server Console Log Localization**: Server console output logs (startup banner, database initialization, table verification, data preloading, PlaceholderAPI hooking, reload, player join locale detection, and safe shutdown) automatically switch to match the configured language in `config.yml` without exposing manual log configurations.
+- **Server Console Log Localization (7 Languages)**: Server console output logs (startup banner, database lifecycle, reload, player join locale detection, and safe shutdown) automatically switch to match `server_messages_language` in `config.yml`, supporting Simplified Chinese, Traditional Chinese, English, Japanese, Russian, German, and Spanish.
+- **Timezone & Adaptive Duration Formatting**:
+  - `TimeUtil` respects the server's configured `timezone` (e.g. `GMT+8`, `UTC`, `America/New_York`) for all timestamp formatting (`formatDate`).
+  - `TimeUtil.formatDuration` uses an intelligent ladder algorithm to display multi-unit durations (days, hours, minutes, seconds) without redundant zero-units, dynamically adapting units and spacing to the player's active client language.
 - **High-Performance Memory Caching**: All language files in `plugins/BalancedTeam/lang/*.yml` are fully pre-cached in memory on startup, ensuring $O(1)$ lookup time and zero disk I/O during gameplay.
 - **Auto-Completion for Missing Keys**: If a custom language pack lacks newly introduced keys, the plugin automatically completes missing entries from the default pack and saves them without breaking existing translations.
 - **Configurable Time Units**: Supports custom day, hour, minute, and second duration labels configured via `time_unit` in language files.
@@ -45,13 +51,27 @@ When sending a message or opening a GUI for a player, the localization engine ev
 
 ---
 
-## Built-In Language Packs
+## Built-In Language Support
+
+### Player Client Language Packs (`lang/*.yml`)
 
 | Language Code | File Name | Display Name |
 | :--- | :--- | :--- |
 | `zh_CN` | `lang/zh_CN.yml` | 简体中文 (Simplified Chinese) |
 | `zh_TW` | `lang/zh_TW.yml` | 繁體中文 (Traditional Chinese) |
 | `en_US` | `lang/en_US.yml` | English (US) |
+
+### Server Console Logging Languages (`server_messages_language`)
+
+| Language Code | Language Name | Coverage |
+| :--- | :--- | :--- |
+| `zh_CN` | 简体中文 (Simplified Chinese) | All 30 console log points |
+| `zh_TW` | 繁體中文 (Traditional Chinese) | All 30 console log points |
+| `en_US` | English (US) | All 30 console log points |
+| `ja_JP` | 日本語 (Japanese) | All 30 console log points |
+| `ru_RU` | Русский (Russian) | All 30 console log points |
+| `de_DE` | Deutsch (German) | All 30 console log points |
+| `es_ES` | Español (Spanish) | All 30 console log points |
 
 ---
 

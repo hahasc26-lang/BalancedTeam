@@ -11,6 +11,7 @@ import com.balancedteam.model.TeamRole;
 import com.balancedteam.util.MessageUtil;
 import com.balancedteam.util.PermissionUtil;
 import com.balancedteam.util.SoundUtil;
+import com.balancedteam.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -35,7 +36,8 @@ public class NotificationGui {
     private enum NotificationType {
         TEAM_INVITE,
         ALLY_REQUEST,
-        JOIN_APPLICATION
+        JOIN_APPLICATION,
+        TRUCE_REQUEST
     }
 
     private static class NotificationEntry {
@@ -66,6 +68,11 @@ public class NotificationGui {
                 ? plugin.getApplicationManager().getValidApplications(myTeam.getId())
                 : Collections.emptyList();
 
+        // 4. 收集待处理的停战求和申请 (队长与管理员可见)
+        List<Integer> truceRequesterIds = (myTeam != null && isOfficerOrLeader)
+                ? plugin.getRelationManager().getPendingTruceRequestsTo(myTeam.getId())
+                : Collections.emptyList();
+
         List<NotificationEntry> entries = new ArrayList<>();
         for (InviteManager.Invite invite : invites) {
             entries.add(new NotificationEntry(NotificationType.TEAM_INVITE, invite));
@@ -75,6 +82,9 @@ public class NotificationGui {
         }
         for (ApplicationManager.Application app : applications) {
             entries.add(new NotificationEntry(NotificationType.JOIN_APPLICATION, app));
+        }
+        for (Integer reqId : truceRequesterIds) {
+            entries.add(new NotificationEntry(NotificationType.TRUCE_REQUEST, reqId));
         }
 
         int totalItems = entries.size();
@@ -114,7 +124,7 @@ public class NotificationGui {
                 itemMap.put("INVITER", inviterName);
                 itemMap.put("COUNT", String.valueOf(targetTeam.getMemberCount()));
                 itemMap.put("MAX", String.valueOf(plugin.getConfigManager().getMaxMembers()));
-                itemMap.put("REMAINING", String.valueOf(invite.getRemainingSeconds()));
+                itemMap.put("REMAINING", TimeUtil.formatDuration(player, invite.getRemainingSeconds()));
 
                 String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_INVITE_ITEM_NAME, itemMap);
                 List<String> itemLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.NOTIFICATION_INVITE_ITEM_LORE, itemMap);
@@ -142,6 +152,15 @@ public class NotificationGui {
                             SoundUtil.playError(player);
                             MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_already_in_team"));
                             holder.refresh(player);
+                            return;
+                        }
+
+                        long cd = plugin.getTeamManager().getLeaveTeamCooldownRemaining(player.getUniqueId());
+                        if (cd > 0) {
+                            SoundUtil.playError(player);
+                            Map<String, String> cdMap = new HashMap<>();
+                            cdMap.put("TIME", TimeUtil.formatDuration(player, cd));
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "cooldown", cdMap));
                             return;
                         }
 
@@ -288,7 +307,7 @@ public class NotificationGui {
                 itemMap.put("PLAYER", app.getPlayerName());
                 itemMap.put("COUNT", String.valueOf(myTeam.getMemberCount()));
                 itemMap.put("MAX", String.valueOf(plugin.getConfigManager().getMaxMembers()));
-                itemMap.put("REMAINING", String.valueOf(app.getRemainingSeconds()));
+                itemMap.put("REMAINING", TimeUtil.formatDuration(player, app.getRemainingSeconds()));
 
                 String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_APPLICATION_ITEM_NAME, itemMap);
                 List<String> itemLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.NOTIFICATION_APPLICATION_ITEM_LORE, itemMap);
@@ -338,6 +357,16 @@ public class NotificationGui {
                             return;
                         }
 
+                        long appCd = plugin.getTeamManager().getLeaveTeamCooldownRemaining(app.getPlayerUuid());
+                        if (appCd > 0) {
+                            SoundUtil.playError(player);
+                            Map<String, String> cdMap = new HashMap<>();
+                            cdMap.put("TIME", TimeUtil.formatDuration(player, appCd));
+                            cdMap.put("PLAYER", app.getPlayerName());
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_applicant_on_cooldown", cdMap));
+                            return;
+                        }
+
                         if (!plugin.getApplicationManager().consumeApplication(currentTeam.getId(), app.getPlayerUuid())) {
                             SoundUtil.playError(player);
                             holder.refresh(player);
@@ -374,14 +403,115 @@ public class NotificationGui {
                         });
                     }
                 });
+            } else if (entry.type == NotificationType.TRUCE_REQUEST) {
+                int requesterId = (Integer) entry.data;
+                Team requesterTeam = plugin.getTeamManager().getTeamById(requesterId);
+                if (requesterTeam == null || myTeam == null) continue;
+
+                long remainingSecs = plugin.getRelationManager().getTruceRequestRemainingSeconds(requesterId, myTeam.getId());
+                int protectionSeconds = plugin.getConfigManager().getPostWarProtectionSeconds();
+
+                Map<String, String> itemMap = new HashMap<>();
+                itemMap.put("TEAM", requesterTeam.getName());
+                itemMap.put("REMAINING", TimeUtil.formatDuration(player, remainingSecs));
+                itemMap.put("PROTECTION", TimeUtil.formatDuration(player, protectionSeconds));
+
+                String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_TRUCE_ITEM_NAME, itemMap);
+                List<String> itemLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.NOTIFICATION_TRUCE_ITEM_LORE, itemMap);
+
+                ItemStack item = new ItemBuilder(Material.WHITE_BANNER)
+                        .name(itemName)
+                        .lore(itemLore)
+                        .build();
+                inv.setItem(slot, item);
+
+                if (isOfficerOrLeader) {
+                    final Team currentTeam = myTeam;
+                    final Team finalRequesterTeam = requesterTeam;
+                    holder.setClickHandler(slot, e -> {
+                        if (e.isRightClick()) {
+                            // 右键拒绝
+                            plugin.getRelationManager().denyTruceRequest(finalRequesterTeam.getId(), currentTeam.getId());
+                            SoundUtil.playDing(player);
+
+                            Map<String, String> map = new HashMap<>();
+                            map.put("TEAM", finalRequesterTeam.getName());
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_denied", map));
+
+                            Map<String, String> notifyMap = new HashMap<>();
+                            notifyMap.put("TEAM", currentTeam.getName());
+                            for (UUID u : finalRequesterTeam.getMembers().keySet()) {
+                                Player p = Bukkit.getPlayer(u);
+                                if (p != null && p.isOnline()) {
+                                    MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_denied_notify", notifyMap));
+                                }
+                            }
+                            holder.refresh(player);
+                        } else {
+                            // 左键同意求和
+                            plugin.getRelationManager().acceptTruceRequest(finalRequesterTeam.getId(), currentTeam.getId()).thenAccept(success -> {
+                                if (success) {
+                                    SoundUtil.playSuccess(player);
+                                    Map<String, String> bcMap = new HashMap<>();
+                                    bcMap.put("TEAM1", finalRequesterTeam.getName());
+                                    bcMap.put("TEAM2", currentTeam.getName());
+
+                                    Map<String, String> protMap = new HashMap<>();
+                                    protMap.put("TIME", String.valueOf(protectionSeconds));
+
+                                    // 全服广播停战
+                                    for (Player p : Bukkit.getOnlinePlayers()) {
+                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_established_broadcast", bcMap));
+                                    }
+
+                                    // 向双方队员发送通知与保护提示
+                                    Map<String, String> toReqMap = new HashMap<>();
+                                    toReqMap.put("TEAM", currentTeam.getName());
+                                    for (UUID u : finalRequesterTeam.getMembers().keySet()) {
+                                        Player p = Bukkit.getPlayer(u);
+                                        if (p != null && p.isOnline()) {
+                                            SoundUtil.playSuccess(p);
+                                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_established", toReqMap));
+                                            if (protectionSeconds > 0) {
+                                                Map<String, String> protMap = new HashMap<>();
+                                                protMap.put("TIME", TimeUtil.formatDuration(p, protectionSeconds));
+                                                MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_protection_started", protMap));
+                                            }
+                                        }
+                                    }
+
+                                    Map<String, String> toCurMap = new HashMap<>();
+                                    toCurMap.put("TEAM", finalRequesterTeam.getName());
+                                    for (UUID u : currentTeam.getMembers().keySet()) {
+                                        Player p = Bukkit.getPlayer(u);
+                                        if (p != null && p.isOnline()) {
+                                            SoundUtil.playSuccess(p);
+                                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_established", toCurMap));
+                                            if (protectionSeconds > 0) {
+                                                Map<String, String> protMap = new HashMap<>();
+                                                protMap.put("TIME", TimeUtil.formatDuration(p, protectionSeconds));
+                                                MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_protection_started", protMap));
+                                            }
+                                        }
+                                    }
+
+                                    holder.refresh(player);
+                                } else {
+                                    SoundUtil.playError(player);
+                                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "database_error"));
+                                }
+                            });
+                        }
+                    });
+                }
             }
         }
 
-        // 若无通知，显示占位提示（槽位 16）
+        // 若无通知，显示占位提示（槽位 22）
         if (entries.isEmpty()) {
             String emptyName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.NOTIFICATION_NO_REQUEST_NAME);
             List<String> emptyLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.NOTIFICATION_NO_REQUEST_LORE, Collections.emptyMap());
-            PagedGuiHelper.setupEmptyPlaceholder(inv, 16, Material.PAPER, emptyName, emptyLore);
+            PagedGuiHelper.setupEmptyPlaceholder(inv, 22, Material.PAPER, emptyName, emptyLore);
         }
 
         // ---- 底部控制栏（槽位 36-44）----

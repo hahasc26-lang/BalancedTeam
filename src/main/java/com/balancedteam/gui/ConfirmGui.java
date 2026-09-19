@@ -89,17 +89,9 @@ public class ConfirmGui {
                 return;
             }
         } else if (mode == Mode.LEAVE) {
-            // 退出：必须不是队长、且不在冷却中
+            // 退出：必须不是队长
             if (member.getRole() == TeamRole.LEADER) {
                 MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_leave_leader_cant_leave"));
-                SoundUtil.playError(player);
-                return;
-            }
-            long cd = plugin.getTeamManager().getLeaveTeamCooldownRemaining(player.getUniqueId());
-            if (cd > 0) {
-                Map<String, String> map = new HashMap<>();
-                map.put("TIME", String.valueOf(cd));
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "cooldown", map));
                 SoundUtil.playError(player);
                 return;
             }
@@ -320,14 +312,6 @@ public class ConfirmGui {
                     SoundUtil.playError(player);
                     return;
                 }
-                long currentCd = plugin.getTeamManager().getLeaveTeamCooldownRemaining(player.getUniqueId());
-                if (currentCd > 0) {
-                    Map<String, String> map = new HashMap<>();
-                    map.put("TIME", String.valueOf(currentCd));
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "cooldown", map));
-                    SoundUtil.playError(player);
-                    return;
-                }
                 // 执行退出
                 plugin.getTeamManager().removeMember(currentTeam, player.getUniqueId()).thenAccept(success -> {
                     if (success) {
@@ -455,6 +439,11 @@ public class ConfirmGui {
                     SoundUtil.playError(player);
                     return;
                 }
+                if (currentTarget.isOfficer()) {
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_already_officer"));
+                    SoundUtil.playError(player);
+                    return;
+                }
 
                 OfflinePlayer op = Bukkit.getOfflinePlayer(targetUuid);
                 String targetPlayerName = op.getName() != null ? op.getName() : "未知";
@@ -496,6 +485,11 @@ public class ConfirmGui {
                 TeamMember currentTarget = currentTeam.getMember(targetUuid);
                 if (currentTarget == null) {
                     MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_player_not_in_your_team"));
+                    SoundUtil.playError(player);
+                    return;
+                }
+                if (currentTarget.getRole() == TeamRole.MEMBER) {
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_member_already_member"));
                     SoundUtil.playError(player);
                     return;
                 }

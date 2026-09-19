@@ -10,6 +10,7 @@ import com.balancedteam.database.dao.InviteDao;
 import com.balancedteam.database.dao.MemberDao;
 import com.balancedteam.database.dao.RelationDao;
 import com.balancedteam.database.dao.TeamDao;
+import com.balancedteam.listener.CrystalListener;
 import com.balancedteam.listener.DamageListener;
 import com.balancedteam.listener.GuiListener;
 import com.balancedteam.listener.PlayerListener;
@@ -45,6 +46,7 @@ public class BalancedTeamPlugin extends JavaPlugin {
     private InviteDao inviteDao;
     private AllyRequestDao allyRequestDao;
     private com.balancedteam.database.dao.ApplicationDao applicationDao;
+    private com.balancedteam.database.dao.TruceDao truceDao;
 
     private TeamManager teamManager;
     private RelationManager relationManager;
@@ -52,6 +54,7 @@ public class BalancedTeamPlugin extends JavaPlugin {
     private com.balancedteam.manager.ApplicationManager applicationManager;
     private ChatManager chatManager;
     private ChatInputManager chatInputManager;
+    private CrystalListener crystalListener;
 
     @Override
     public void onEnable() {
@@ -85,10 +88,11 @@ public class BalancedTeamPlugin extends JavaPlugin {
         this.inviteDao = new InviteDao(databaseManager);
         this.allyRequestDao = new AllyRequestDao(databaseManager);
         this.applicationDao = new com.balancedteam.database.dao.ApplicationDao(databaseManager);
+        this.truceDao = new com.balancedteam.database.dao.TruceDao(databaseManager);
 
         this.inviteManager = new InviteManager(inviteDao);
         this.applicationManager = new com.balancedteam.manager.ApplicationManager(applicationDao);
-        this.relationManager = new RelationManager(this, relationDao, allyRequestDao);
+        this.relationManager = new RelationManager(this, relationDao, allyRequestDao, truceDao);
         this.chatManager = new ChatManager(this);
         this.chatInputManager = new ChatInputManager(this);
         this.teamManager = new TeamManager(this, teamDao, memberDao);
@@ -103,6 +107,17 @@ public class BalancedTeamPlugin extends JavaPlugin {
             relationManager.initRequests(requests);
             int count = requests.values().stream().mapToInt(map -> map.size()).sum();
             com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.DB_LOADED_ALLY_REQUESTS, count);
+        });
+
+        truceDao.loadAllValidTruceRequests(System.currentTimeMillis()).thenAccept(requests -> {
+            relationManager.initTruceRequests(requests);
+            int count = requests.values().stream().mapToInt(map -> map.size()).sum();
+            com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.DB_LOADED_TRUCE_REQUESTS, count);
+        });
+
+        truceDao.loadAllValidProtections(System.currentTimeMillis()).thenAccept(protections -> {
+            relationManager.initProtections(protections);
+            com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.DB_LOADED_POST_WAR_PROTECTIONS, protections.size());
         });
 
         inviteDao.loadAllValidInvites(System.currentTimeMillis()).thenAccept(invites -> {
@@ -122,6 +137,8 @@ public class BalancedTeamPlugin extends JavaPlugin {
         });
 
         // 5. 注册事件监听器
+        this.crystalListener = new CrystalListener(this);
+        getServer().getPluginManager().registerEvents(this.crystalListener, this);
         getServer().getPluginManager().registerEvents(new DamageListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getPluginManager().registerEvents(new GuiListener(this), this);
@@ -169,6 +186,9 @@ public class BalancedTeamPlugin extends JavaPlugin {
     public void onDisable() {
         com.balancedteam.util.PluginLogger.info(com.balancedteam.util.PluginLogger.LogKey.PLUGIN_DISABLING);
         PAPIUtil.unregisterExpansion();
+        if (crystalListener != null) {
+            crystalListener.clear();
+        }
         if (clientLanguageManager != null) {
             clientLanguageManager.saveUserPreferences();
         }
@@ -220,5 +240,13 @@ public class BalancedTeamPlugin extends JavaPlugin {
 
     public ChatInputManager getChatInputManager() {
         return chatInputManager;
+    }
+
+    public CrystalListener getCrystalListener() {
+        return crystalListener;
+    }
+
+    public com.balancedteam.database.dao.TruceDao getTruceDao() {
+        return truceDao;
     }
 }

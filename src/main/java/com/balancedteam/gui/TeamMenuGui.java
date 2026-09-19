@@ -9,6 +9,7 @@ import com.balancedteam.model.TeamMember;
 import com.balancedteam.util.MessageUtil;
 import com.balancedteam.util.PermissionUtil;
 import com.balancedteam.util.SoundUtil;
+import com.balancedteam.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -91,7 +92,7 @@ public class TeamMenuGui {
 
         // 3. 邀请新成员 (槽位 14)
         Map<String, String> inviteMap = new HashMap<>();
-        inviteMap.put("TIMEOUT", String.valueOf(plugin.getConfigManager().getInviteTimeout()));
+        inviteMap.put("TIMEOUT", TimeUtil.formatDuration(player, plugin.getConfigManager().getInviteTimeout()));
         String inviteName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_INVITE_ITEM_NAME, inviteMap);
         List<String> inviteLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.MENU_INVITE_ITEM_LORE,
                 inviteMap);
@@ -127,10 +128,12 @@ public class TeamMenuGui {
                 : plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_STATUS_OFF);
 
         Map<String, String> ffMap = new HashMap<>();
-        ffMap.put("COOLDOWN", String.valueOf(plugin.getConfigManager().getFriendlyFireCooldown()));
+        ffMap.put("COOLDOWN", TimeUtil.formatDuration(player, plugin.getConfigManager().getFriendlyFireCooldown()));
 
         String ffTip;
-        if (!plugin.getConfigManager().isAllowFriendlyFireToggle()) {
+        if (!plugin.getConfigManager().isFriendlyFireProtectionEnabled()) {
+            ffTip = plugin.getConfigManager().getRawMessage(player, "team_ff_system_disabled");
+        } else if (!plugin.getConfigManager().isAllowFriendlyFireToggle()) {
             ffTip = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_DISABLED_TIP, ffMap);
         } else if (isLeader) {
             ffTip = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_LEADER_TIP, ffMap);
@@ -154,6 +157,12 @@ public class TeamMenuGui {
                 .build();
         inv.setItem(16, ffItem);
         holder.setClickHandler(16, e -> {
+            if (!plugin.getConfigManager().isFriendlyFireProtectionEnabled()) {
+                MessageUtil.sendMessage(player,
+                        plugin.getConfigManager().getMessage(player, "team_ff_system_disabled"));
+                SoundUtil.playError(player);
+                return;
+            }
             if (!plugin.getConfigManager().isAllowFriendlyFireToggle()) {
                 MessageUtil.sendMessage(player,
                         plugin.getConfigManager().getMessage(player, "team_ff_toggle_disabled"));
@@ -166,7 +175,7 @@ public class TeamMenuGui {
             long cd = plugin.getTeamManager().getFriendlyFireCooldownRemaining(player.getUniqueId());
             if (cd > 0) {
                 Map<String, String> map = new HashMap<>();
-                map.put("TIME", String.valueOf(cd));
+                map.put("TIME", TimeUtil.formatDuration(player, cd));
                 MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "cooldown", map));
                 SoundUtil.playError(player);
                 return;
@@ -207,7 +216,9 @@ public class TeamMenuGui {
         int pendingInviteCount = plugin.getInviteManager().getValidInviteCount(player.getUniqueId());
         int pendingAppCount = isOfficerOrLeader ? plugin.getApplicationManager().getValidApplicationCount(team.getId())
                 : 0;
-        int totalPending = (isLeader ? pendingAllyCount : 0) + pendingInviteCount + pendingAppCount;
+        int pendingTruceCount = isOfficerOrLeader ? plugin.getRelationManager().getPendingTruceRequestsTo(team.getId()).size()
+                : 0;
+        int totalPending = (isLeader ? pendingAllyCount : 0) + pendingInviteCount + pendingAppCount + pendingTruceCount;
         Map<String, String> notifMap = new HashMap<>();
         notifMap.put("PENDING", String.valueOf(totalPending));
         Material notifMaterial = totalPending > 0 ? Material.BELL : Material.PAPER;

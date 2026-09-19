@@ -159,6 +159,10 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
             case "enemy":
                 if (checkPlayerOnly(sender)) handleEnemy((Player) sender, args);
                 break;
+            case "truce":
+            case "peace":
+                if (checkPlayerOnly(sender)) handleTruce((Player) sender, args);
+                break;
             default:
                 MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "unknown_command"));
                 break;
@@ -246,6 +250,14 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 
         if (plugin.getTeamManager().isPlayerInTeam(player.getUniqueId())) {
             MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_already_in_team"));
+            return;
+        }
+
+        long cd = plugin.getTeamManager().getLeaveTeamCooldownRemaining(player.getUniqueId());
+        if (cd > 0) {
+            Map<String, String> map = new HashMap<>();
+            map.put("TIME", TimeUtil.formatDuration(player, cd));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "cooldown", map));
             return;
         }
 
@@ -339,10 +351,13 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         Map<String, String> map = new HashMap<>();
         map.put("PLAYER", target.getName());
         map.put("TEAM", team.getName());
-        map.put("TIMEOUT", String.valueOf(timeout));
+        map.put("TIMEOUT", TimeUtil.formatDuration(player, timeout));
 
         MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_invite_sent", map));
-        MessageUtil.sendMessage(target, plugin.getConfigManager().getMessage(target, "team_invite_received", map));
+
+        Map<String, String> targetMap = new HashMap<>(map);
+        targetMap.put("TIMEOUT", TimeUtil.formatDuration(target, timeout));
+        MessageUtil.sendMessage(target, plugin.getConfigManager().getMessage(target, "team_invite_received", targetMap));
     }
 
     private void handleAccept(Player player, String[] args) {
@@ -353,6 +368,14 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 
         if (plugin.getTeamManager().isPlayerInTeam(player.getUniqueId())) {
             MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_already_in_team"));
+            return;
+        }
+
+        long cd = plugin.getTeamManager().getLeaveTeamCooldownRemaining(player.getUniqueId());
+        if (cd > 0) {
+            Map<String, String> map = new HashMap<>();
+            map.put("TIME", TimeUtil.formatDuration(player, cd));
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "cooldown", map));
             return;
         }
 
@@ -614,6 +637,11 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (!plugin.getConfigManager().isFriendlyFireProtectionEnabled()) {
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_ff_system_disabled"));
+            return;
+        }
+
         if (!plugin.getConfigManager().isAllowFriendlyFireToggle()) {
             MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_ff_toggle_disabled"));
             return;
@@ -627,7 +655,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         long cd = plugin.getTeamManager().getFriendlyFireCooldownRemaining(player.getUniqueId());
         if (cd > 0) {
             Map<String, String> map = new HashMap<>();
-            map.put("TIME", String.valueOf(cd));
+            map.put("TIME", TimeUtil.formatDuration(player, cd));
             MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "cooldown", map));
             return;
         }
@@ -830,14 +858,23 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                 return;
             }
 
-            if (plugin.getRelationManager().isEnemy(myTeam.getId(), targetTeam.getId())) {
+            if (plugin.getRelationManager().isUnderPostWarProtection(myTeam.getId(), targetTeam.getId())) {
+                long remaining = plugin.getRelationManager().getPostWarProtectionRemainingSeconds(myTeam.getId(), targetTeam.getId());
+                Map<String, String> map = new HashMap<>();
+                map.put("TEAM", targetTeam.getName());
+                map.put("TIME", TimeUtil.formatDuration(player, remaining));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_post_war_protected", map));
+                return;
+            }
+
+            if (plugin.getRelationManager().isDeclaredEnemy(myTeam.getId(), targetTeam.getId())) {
                 Map<String, String> map = new HashMap<>();
                 map.put("TEAM", targetTeam.getName());
                 MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_already_enemy", map));
                 return;
             }
 
-            if (plugin.getRelationManager().getEnemies(myTeam.getId()).size() >= plugin.getConfigManager()
+            if (plugin.getRelationManager().getDeclaredEnemies(myTeam.getId()).size() >= plugin.getConfigManager()
                     .getMaxEnemies()) {
                 Map<String, String> map = new HashMap<>();
                 map.put("MAX", String.valueOf(plugin.getConfigManager().getMaxEnemies()));
@@ -850,24 +887,263 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                     Map<String, String> map = new HashMap<>();
                     map.put("TEAM", targetTeam.getName());
                     MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_add_success", map));
+
+                    // 向目标团队在线成员广播宣战提示
+                    for (UUID u : targetTeam.getMembers().keySet()) {
+                        Player p = Bukkit.getPlayer(u);
+                        if (p != null && p.isOnline()) {
+                            SoundUtil.playWarning(p);
+                            Map<String, String> enemyNotify = new HashMap<>();
+                            enemyNotify.put("TEAM", myTeam.getName());
+                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "enemy_declared_notify", enemyNotify));
+                        }
+                    }
                 }
             });
         } else if (action.equals("remove")) {
-            if (!plugin.getRelationManager().isEnemy(myTeam.getId(), targetTeam.getId())) {
-                Map<String, String> map = new HashMap<>();
-                map.put("TEAM", targetTeam.getName());
-                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_not_enemy", map));
+            Map<String, String> map = new HashMap<>();
+            map.put("TEAM", targetTeam.getName());
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_cannot_unilateral_remove", map));
+        }
+    }
+
+    private void handleTruce(Player player, String[] args) {
+        Team myTeam = plugin.getTeamManager().getTeamByPlayer(player.getUniqueId());
+        if (myTeam == null) {
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_in_team"));
+            return;
+        }
+
+        if (args.length < 2) {
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "usage_truce"));
+            return;
+        }
+
+        String action = args[1].toLowerCase();
+
+        // 1. 查看停战求和与保护状态列表
+        if (action.equals("list")) {
+            List<Integer> receivedIds = plugin.getRelationManager().getPendingTruceRequestsTo(myTeam.getId());
+            List<Integer> sentIds = plugin.getRelationManager().getPendingTruceRequestsFrom(myTeam.getId());
+            Map<Integer, Long> protections = plugin.getRelationManager().getActivePostWarProtectionsFor(myTeam.getId());
+
+            if (receivedIds.isEmpty() && sentIds.isEmpty() && protections.isEmpty()) {
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_list_empty"));
                 return;
             }
 
-            plugin.getRelationManager().removeEnemy(myTeam.getId(), targetTeam.getId()).thenAccept(success -> {
-                if (success) {
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_list_header"));
+
+            for (Integer reqId : receivedIds) {
+                Team t = plugin.getTeamManager().getTeamById(reqId);
+                if (t != null) {
+                    long rem = plugin.getRelationManager().getTruceRequestRemainingSeconds(reqId, myTeam.getId());
+                    Map<String, String> map = new HashMap<>();
+                    map.put("TEAM", t.getName());
+                    map.put("TIME", TimeUtil.formatDuration(player, rem));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_list_request_item", map));
+                }
+            }
+
+            for (Integer sentId : sentIds) {
+                Team t = plugin.getTeamManager().getTeamById(sentId);
+                if (t != null) {
+                    long rem = plugin.getRelationManager().getTruceRequestRemainingSeconds(myTeam.getId(), sentId);
+                    Map<String, String> map = new HashMap<>();
+                    map.put("TEAM", t.getName());
+                    map.put("TIME", TimeUtil.formatDuration(player, rem));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_list_sent_item", map));
+                }
+            }
+
+            for (Map.Entry<Integer, Long> entry : protections.entrySet()) {
+                Team t = plugin.getTeamManager().getTeamById(entry.getKey());
+                String tName = (t != null) ? t.getName() : ("#" + entry.getKey());
+                Map<String, String> map = new HashMap<>();
+                map.put("TEAM", tName);
+                map.put("TIME", TimeUtil.formatDuration(player, entry.getValue()));
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_list_protection_item", map));
+            }
+            return;
+        }
+
+        // 管理员/队长权限校验
+        if (!PermissionUtil.isOfficerOrLeader(player, myTeam)) {
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "permission_denied_officer"));
+            return;
+        }
+
+        if (args.length < 3) {
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_specify_target"));
+            return;
+        }
+
+        String targetTeamName = args[2];
+        Team targetTeam = plugin.getTeamManager().getTeamByName(targetTeamName);
+        if (targetTeam == null) {
+            Map<String, String> map = new HashMap<>();
+            map.put("TEAM", targetTeamName);
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_not_found", map));
+            return;
+        }
+
+        if (myTeam.getId() == targetTeam.getId()) {
+            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_cant_self"));
+            return;
+        }
+
+        switch (action) {
+            case "request":
+            case "send": {
+                if (!plugin.getRelationManager().isEnemy(myTeam.getId(), targetTeam.getId())) {
                     Map<String, String> map = new HashMap<>();
                     map.put("TEAM", targetTeam.getName());
-                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_remove_success", map));
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_not_enemy", map));
+                    return;
                 }
-            });
+
+                // 若对方已向我方发送求和申请，直接达成停战协议
+                if (plugin.getRelationManager().hasPendingTruceRequest(targetTeam.getId(), myTeam.getId())) {
+                    executeAcceptTruce(player, myTeam, targetTeam);
+                    return;
+                }
+
+                if (plugin.getRelationManager().hasPendingTruceRequest(myTeam.getId(), targetTeam.getId())) {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("TEAM", targetTeam.getName());
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_already_requested", map));
+                    return;
+                }
+
+                plugin.getRelationManager().sendTruceRequest(myTeam.getId(), targetTeam.getId()).thenAccept(success -> {
+                    if (success) {
+                        SoundUtil.playSuccess(player);
+                        Map<String, String> map = new HashMap<>();
+                        map.put("TEAM", targetTeam.getName());
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_request_sent", map));
+
+                        Map<String, String> notifyMap = new HashMap<>();
+                        notifyMap.put("TEAM", myTeam.getName());
+                        for (UUID u : targetTeam.getMembers().keySet()) {
+                            Player p = Bukkit.getPlayer(u);
+                            if (p != null && p.isOnline()) {
+                                SoundUtil.playDing(p);
+                                MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_request_received", notifyMap));
+                            }
+                        }
+                    } else {
+                        SoundUtil.playError(player);
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "database_error"));
+                    }
+                });
+                break;
+            }
+            case "accept": {
+                if (!plugin.getRelationManager().hasPendingTruceRequest(targetTeam.getId(), myTeam.getId())) {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("TEAM", targetTeam.getName());
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_no_pending_request", map));
+                    return;
+                }
+                executeAcceptTruce(player, myTeam, targetTeam);
+                break;
+            }
+            case "deny":
+            case "reject": {
+                if (!plugin.getRelationManager().hasPendingTruceRequest(targetTeam.getId(), myTeam.getId())) {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("TEAM", targetTeam.getName());
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_no_pending_request", map));
+                    return;
+                }
+                plugin.getRelationManager().denyTruceRequest(targetTeam.getId(), myTeam.getId());
+                SoundUtil.playDing(player);
+
+                Map<String, String> map = new HashMap<>();
+                map.put("TEAM", targetTeam.getName());
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_denied", map));
+
+                Map<String, String> notifyMap = new HashMap<>();
+                notifyMap.put("TEAM", myTeam.getName());
+                for (UUID u : targetTeam.getMembers().keySet()) {
+                    Player p = Bukkit.getPlayer(u);
+                    if (p != null && p.isOnline()) {
+                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_denied_notify", notifyMap));
+                    }
+                }
+                break;
+            }
+            case "cancel": {
+                if (!plugin.getRelationManager().hasPendingTruceRequest(myTeam.getId(), targetTeam.getId())) {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("TEAM", targetTeam.getName());
+                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_cancel_no_request", map));
+                    return;
+                }
+                plugin.getRelationManager().cancelTruceRequest(myTeam.getId(), targetTeam.getId());
+                SoundUtil.playDing(player);
+
+                Map<String, String> map = new HashMap<>();
+                map.put("TEAM", targetTeam.getName());
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_cancel_success", map));
+                break;
+            }
+            default:
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_unknown_sub"));
+                break;
         }
+    }
+
+    private void executeAcceptTruce(Player player, Team myTeam, Team targetTeam) {
+        int protectionSeconds = plugin.getConfigManager().getPostWarProtectionSeconds();
+        plugin.getRelationManager().acceptTruceRequest(targetTeam.getId(), myTeam.getId()).thenAccept(success -> {
+            if (success) {
+                SoundUtil.playSuccess(player);
+                Map<String, String> bcMap = new HashMap<>();
+                bcMap.put("TEAM1", targetTeam.getName());
+                bcMap.put("TEAM2", myTeam.getName());
+
+                // 全服广播
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_established_broadcast", bcMap));
+                }
+
+                // 通知发起方团队成员
+                Map<String, String> toTargetMap = new HashMap<>();
+                toTargetMap.put("TEAM", myTeam.getName());
+                for (UUID u : targetTeam.getMembers().keySet()) {
+                    Player p = Bukkit.getPlayer(u);
+                    if (p != null && p.isOnline()) {
+                        SoundUtil.playSuccess(p);
+                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_established", toTargetMap));
+                        if (protectionSeconds > 0) {
+                            Map<String, String> protMap = new HashMap<>();
+                            protMap.put("TIME", TimeUtil.formatDuration(p, protectionSeconds));
+                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_protection_started", protMap));
+                        }
+                    }
+                }
+
+                // 通知我方团队成员
+                Map<String, String> toMyMap = new HashMap<>();
+                toMyMap.put("TEAM", targetTeam.getName());
+                for (UUID u : myTeam.getMembers().keySet()) {
+                    Player p = Bukkit.getPlayer(u);
+                    if (p != null && p.isOnline()) {
+                        SoundUtil.playSuccess(p);
+                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_established", toMyMap));
+                        if (protectionSeconds > 0) {
+                            Map<String, String> protMap = new HashMap<>();
+                            protMap.put("TIME", TimeUtil.formatDuration(p, protectionSeconds));
+                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_protection_started", protMap));
+                        }
+                    }
+                }
+            } else {
+                SoundUtil.playError(player);
+                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "database_error"));
+            }
+        });
     }
 
     private void handleInfo(CommandSender sender, String[] args) {
@@ -924,7 +1200,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             list.addAll(Arrays.asList("help", "list", "menu", "gui", "members", "create", "disband", "invite", "accept",
                     "reject", "leave", "kick", "promote", "demote", "transfer", "chat", "msg", "ff", "ally", "enemy",
-                    "info", "lang"));
+                    "truce", "peace", "info", "lang"));
             return filter(list, args[0]);
         }
 
@@ -962,6 +1238,9 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                     return filter(Arrays.asList("add", "accept", "remove"), args[1]);
                 case "enemy":
                     return filter(Arrays.asList("add", "remove"), args[1]);
+                case "truce":
+                case "peace":
+                    return filter(Arrays.asList("request", "accept", "deny", "cancel", "list"), args[1]);
                 case "accept":
                 case "reject":
                 case "info":
@@ -974,6 +1253,35 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
             String sub = args[0].toLowerCase();
             if ("ally".equals(sub) || "enemy".equals(sub)) {
                 return filter(plugin.getTeamManager().getAllTeams().stream().map(t -> t.getName())
+                        .collect(Collectors.toList()), args[2]);
+            }
+            if ("truce".equals(sub) || "peace".equals(sub)) {
+                String action = args[1].toLowerCase();
+                if (sender instanceof Player) {
+                    Team myTeam = plugin.getTeamManager().getTeamByPlayer(((Player) sender).getUniqueId());
+                    if (myTeam != null) {
+                        if ("request".equals(action) || "send".equals(action)) {
+                            return filter(plugin.getRelationManager().getEnemies(myTeam.getId()).stream()
+                                    .map(id -> plugin.getTeamManager().getTeamById(id))
+                                    .filter(Objects::nonNull)
+                                    .map(Team::getName)
+                                    .collect(Collectors.toList()), args[2]);
+                        } else if ("accept".equals(action) || "deny".equals(action) || "reject".equals(action)) {
+                            return filter(plugin.getRelationManager().getPendingTruceRequestsTo(myTeam.getId()).stream()
+                                    .map(id -> plugin.getTeamManager().getTeamById(id))
+                                    .filter(Objects::nonNull)
+                                    .map(Team::getName)
+                                    .collect(Collectors.toList()), args[2]);
+                        } else if ("cancel".equals(action)) {
+                            return filter(plugin.getRelationManager().getPendingTruceRequestsFrom(myTeam.getId()).stream()
+                                    .map(id -> plugin.getTeamManager().getTeamById(id))
+                                    .filter(Objects::nonNull)
+                                    .map(Team::getName)
+                                    .collect(Collectors.toList()), args[2]);
+                        }
+                    }
+                }
+                return filter(plugin.getTeamManager().getAllTeams().stream().map(Team::getName)
                         .collect(Collectors.toList()), args[2]);
             }
         }

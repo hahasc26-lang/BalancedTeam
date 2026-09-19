@@ -38,6 +38,10 @@ database:
 # Date & Time Display Format (Follows standard Java SimpleDateFormat pattern, e.g., yyyy-MM-dd HH:mm:ss)
 date_format: "yyyy-MM-dd HH:mm:ss"
 
+# Server / Display Timezone (e.g. "default", "GMT+8", "Asia/Shanghai", "UTC", "America/New_York")
+# Set to "default" to automatically follow the operating system / JVM server timezone.
+timezone: "default"
+
 # Game Balance & Anti-Abuse Configuration
 balance:
   # Maximum number of members allowed per team (prevents massive monopolistic factions)
@@ -46,12 +50,16 @@ balance:
   max_allies: 3
   # Maximum number of marked enemy teams allowed per team
   max_enemies: 10
+  # Master toggle for friendly fire and alliance damage protection mechanism (true = enabled, false = completely disable all friendly fire protection across the server)
+  enable_friendly_fire_protection: true
   # Whether players/leaders are allowed to toggle team friendly fire (true = toggleable, false = locked to enabled)
   allow_friendly_fire_toggle: true
   # Default friendly fire status when a new team is created (false = cannot hurt teammates, true = can hurt teammates)
   friendly_fire_default: false
   # Whether damage protection applies between allied teams (false = allies cannot hurt each other, true = allies can hurt each other)
   ally_friendly_fire: false
+  # Whether to prevent players from breaking/detonating crystals placed by teammates or allies when friendly fire is disabled (false = allow detonating in combat, but explosion damage is protected)
+  prevent_friendly_crystal_break: false
   # Cooldown in seconds for toggling friendly fire (prevents rapid toggling to evade accidental hits during PvP)
   friendly_fire_cooldown_seconds: 30
   # Cooldown in seconds after leaving/changing a team before joining or creating another team (prevents backstabbing during combat)
@@ -66,6 +74,10 @@ balance:
   invite_timeout_seconds: 3600
   # Alliance request expiration timeout in seconds
   ally_request_timeout_seconds: 3600
+  # Peace (truce) request expiration timeout in seconds (both teams must agree to end hostility)
+  truce_request_timeout_seconds: 300
+  # Post-war truce protection duration in seconds (prevents mutual PvP damage and re-declaring war between newly reconciled teams)
+  post_war_protection_seconds: 1800
 
 # Team Chat Configuration
 chat:

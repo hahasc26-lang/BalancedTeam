@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * 时间格式化工具类
@@ -12,6 +13,7 @@ import java.util.Date;
 public class TimeUtil {
     private static final String DEFAULT_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private static volatile String currentPattern = DEFAULT_PATTERN;
+    private static volatile TimeZone currentTimeZone = TimeZone.getDefault();
 
     private static final String DEFAULT_UNIT_DAY = "d";
     private static final String DEFAULT_UNIT_HOUR = "h";
@@ -24,6 +26,24 @@ public class TimeUtil {
     private static volatile String unitMinute = DEFAULT_UNIT_MINUTE;
     private static volatile String unitSecond = DEFAULT_UNIT_SECOND;
     private static volatile String textUnknown = DEFAULT_TEXT_UNKNOWN;
+
+    /**
+     * 设置自定义时间格式与时区
+     * @param pattern SimpleDateFormat 格式模板
+     * @param timezoneId 时区ID (如 "default", "GMT+8", "Asia/Shanghai", "UTC")
+     */
+    public static void setDateFormat(String pattern, String timezoneId) {
+        setDateFormat(pattern);
+        if (timezoneId == null || timezoneId.trim().isEmpty() || "default".equalsIgnoreCase(timezoneId.trim())) {
+            currentTimeZone = TimeZone.getDefault();
+        } else {
+            try {
+                currentTimeZone = TimeZone.getTimeZone(timezoneId.trim());
+            } catch (Exception e) {
+                currentTimeZone = TimeZone.getDefault();
+            }
+        }
+    }
 
     /**
      * 设置自定义时间格式
@@ -43,6 +63,13 @@ public class TimeUtil {
     }
 
     /**
+     * 获取当前生效的时区
+     */
+    public static TimeZone getCurrentTimeZone() {
+        return currentTimeZone;
+    }
+
+    /**
      * 设置全局默认的时间单位表达
      */
     public static void setTimeUnits(String day, String hour, String minute, String second, String unknown) {
@@ -56,9 +83,17 @@ public class TimeUtil {
     public static String formatDate(Date date) {
         if (date == null) return textUnknown;
         try {
-            return new SimpleDateFormat(currentPattern).format(date);
+            SimpleDateFormat sdf = new SimpleDateFormat(currentPattern);
+            if (currentTimeZone != null) {
+                sdf.setTimeZone(currentTimeZone);
+            }
+            return sdf.format(date);
         } catch (Exception e) {
-            return new SimpleDateFormat(DEFAULT_PATTERN).format(date);
+            SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_PATTERN);
+            if (currentTimeZone != null) {
+                sdf.setTimeZone(currentTimeZone);
+            }
+            return sdf.format(date);
         }
     }
 
@@ -108,6 +143,7 @@ public class TimeUtil {
 
     /**
      * 指定各个时间单位的持续时间格式化
+     * 优化非零单位组合，避免出现 "1小时0分0秒"、"30分0秒" 等臃肿显示
      * @param seconds 秒数
      * @param d 天单位
      * @param h 时单位
@@ -116,7 +152,7 @@ public class TimeUtil {
      * @return 格式化后的字符串
      */
     public static String formatDuration(long seconds, String d, String h, String m, String s) {
-        if (seconds < 0) seconds = 0;
+        if (seconds <= 0) return "0" + s;
         if (seconds < 60) {
             return seconds + s;
         }
@@ -125,12 +161,28 @@ public class TimeUtil {
         long minutes = (seconds % 3600) / 60;
         long remainingSeconds = seconds % 60;
 
+        // 判断是否为英文等拉丁字符单位 (如 d, h, min, sec)，若为拉丁字符则在单位间增加空格更易阅读
+        boolean needSpace = d != null && !d.isEmpty() && d.charAt(0) < 128;
+        String sep = needSpace ? " " : "";
+
+        StringBuilder sb = new StringBuilder();
         if (days > 0) {
-            return days + d + hours + h + minutes + m + remainingSeconds + s;
+            sb.append(days).append(d);
+            if (hours > 0) sb.append(sep).append(hours).append(h);
+            if (minutes > 0) sb.append(sep).append(minutes).append(m);
+            if (remainingSeconds > 0) sb.append(sep).append(remainingSeconds).append(s);
+            return sb.toString().trim();
         }
         if (hours > 0) {
-            return hours + h + minutes + m + remainingSeconds + s;
+            sb.append(hours).append(h);
+            if (minutes > 0) sb.append(sep).append(minutes).append(m);
+            if (remainingSeconds > 0) sb.append(sep).append(remainingSeconds).append(s);
+            return sb.toString().trim();
         }
-        return minutes + m + remainingSeconds + s;
+        sb.append(minutes).append(m);
+        if (remainingSeconds > 0) {
+            sb.append(sep).append(remainingSeconds).append(s);
+        }
+        return sb.toString().trim();
     }
 }

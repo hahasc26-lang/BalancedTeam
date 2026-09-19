@@ -85,6 +85,7 @@ team_apply_target_in_team: "&cApplicant &e{PLAYER} &chas already joined another 
 team_apply_rejected: "&eRejected join application from player &f{PLAYER}&e."
 team_apply_rejected_notify: "&cYour application to join team &e{TEAM} &cwas rejected by the team management."
 team_apply_accepted_notify: "&a🎉 Congratulations! Your application to team &e{TEAM} &awas accepted! You have joined the team."
+team_applicant_on_cooldown: "&cApplicant &e{PLAYER} &cis currently on team leave cooldown with &e{TIME}s &cremaining!"
 
 # -------------------------------------------------------------------
 # Leaving & Kicking & Promoting
@@ -122,8 +123,14 @@ team_ff_status: "&7Current team friendly fire status: {STATUS}"
 team_ff_toggle_on: "&cTeam friendly fire enabled! Members can now damage each other."
 team_ff_toggle_off: "&aTeam friendly fire disabled! Members cannot damage each other."
 team_ff_toggle_disabled: "&cServer administrator has locked friendly fire to ON. Toggling is disabled!"
+team_ff_system_disabled: "&cServer administrator has globally disabled the friendly fire protection system. All damage is active!"
 team_ff_protected: "&cFriendly Fire Protection: You cannot damage teammate &e{PLAYER}&c!"
 ally_ff_protected: "&cAlliance Protection: You cannot damage ally &e{PLAYER}&c!"
+team_crystal_ff_protected: "&cFriendly Fire: Your End Crystal explosion cannot damage teammate &e{PLAYER}&c!"
+ally_crystal_ff_protected: "&cAlliance Protection: Your End Crystal explosion cannot damage ally &e{PLAYER}&c!"
+team_crystal_protected: "&cCrystal Protection: You cannot break End Crystal placed by teammate &e{PLAYER}&c!"
+ally_crystal_protected: "&cAlliance Protection: You cannot break End Crystal placed by ally &e{PLAYER}&c!"
+team_post_war_protected: "&ePost-War Protection: Both teams are under post-war protection ({TIME}s left), damage to {TEAM}'s member {PLAYER} is blocked!"
 
 # -------------------------------------------------------------------
 # Alliance System
@@ -161,6 +168,33 @@ enemy_add_broadcast: "&cTeam &e{TEAM1} &chas declared war on Team &e{TEAM2}&c!"
 enemy_declared_notify: "&c⚔ Team &e{TEAM} &chas declared war on your team! Entered hostile state."
 enemy_remove_success: "&aRemoved hostility against team &e{TEAM}&a!"
 enemy_not_enemy: "&cYour team has not marked &e{TEAM} &cas an enemy!"
+enemy_post_war_protected: "&cBoth teams are in post-war protection ({TIME}s left). Declaring war on &e{TEAM} &cis forbidden during protection!"
+enemy_cannot_unilateral_remove: "&cHostility cannot be removed unilaterally! Both teams must agree to end hostility. Use &e/team truce request {TEAM}&c."
+
+# -------------------------------------------------------------------
+# Truce System & Post-War Protection (Mutual Agreement)
+# -------------------------------------------------------------------
+usage_truce: "&cUsage: /team truce <request|accept|deny|cancel|list> [TeamName]"
+truce_specify_target: "&cPlease specify the target enemy team name!"
+truce_unknown_sub: "&cUnknown truce sub-command. Supported: request, accept, deny, cancel, list"
+truce_not_enemy: "&cYour team is not at war with &e{TEAM}&c!"
+truce_cant_self: "&cYou cannot send a truce request to your own team!"
+truce_request_sent: "&aTruce request sent to team &e{TEAM}&a! Awaiting their leader or officer's response..."
+truce_request_received: "&e⚔ Received a truce request from enemy team &f{TEAM}&e! Type &a/team truce accept {TEAM} &eto accept peace."
+truce_already_requested: "&cYour team already has a pending truce request with &e{TEAM}&c! Use &e/team truce cancel {TEAM} &cto cancel."
+truce_no_pending_request: "&cNo valid truce request from team &e{TEAM} &cor it has expired!"
+truce_denied: "&eDeclined the truce request from team &f{TEAM}&e."
+truce_denied_notify: "&cTeam &e{TEAM} &chas rejected your truce request. War continues!"
+truce_cancel_success: "&aCancelled the truce request sent to team &e{TEAM}&a."
+truce_cancel_no_request: "&cYour team has not sent a truce request to &e{TEAM}&c."
+truce_established: "&a[Peace Agreement] Your team and team &e{TEAM} &ahave agreed to peace! Hostility removed."
+truce_established_broadcast: "&a🕊 Team &e{TEAM1} &aand team &e{TEAM2} &ahave established peace! War ended."
+truce_protection_started: "&e🛡 Both teams have entered post-war protection for {TIME} seconds! All mutual damage is blocked."
+truce_list_header: "&b======= &eTruce Requests & Protection Status &b======="
+truce_list_empty: "&7No pending truce requests or active post-war protections."
+truce_list_request_item: "&7- Received truce request: From team &f{TEAM} &8({TIME}s left) &a[/team truce accept {TEAM}]"
+truce_list_sent_item: "&7- Sent truce request: To team &f{TEAM} &8({TIME}s left) &c[/team truce cancel {TEAM}]"
+truce_list_protection_item: "&7- Post-war protection active: With team &f{TEAM} &8({TIME}s remaining)"
 
 # -------------------------------------------------------------------
 # Chat & Spy System
@@ -234,7 +268,8 @@ help:
     - "&e/team chat [msg] &7- Send team chat or toggle chat mode"
     - "&e/team ff [on/off] &7- View or toggle friendly fire"
     - "&e/team ally add/accept/remove <team> &7- Manage alliances (Mutual consent)"
-    - "&e/team enemy add/remove <team> &7- Manage enemy relations"
+    - "&e/team enemy add <team> &7- Declare war / mark enemy"
+    - "&e/team truce <request|accept|deny|cancel|list> [team] &7- Truce & post-war protection (Mutual consent)"
     - "&e/team info [team] &7- View detailed team information"
     - "&b========================================"
 
@@ -538,9 +573,19 @@ gui:
       - ""
       - "&a▶ Left-Click: Accept and Add to Team"
       - "&c▶ Right-Click: Decline Application"
+    # Truce Request
+    truce_item_name: "&f🕊 Truce Request: &e{TEAM}"
+    truce_item_lore:
+      - "&7Requesting Team: &e{TEAM}"
+      - "&7Expires in: &e{REMAINING} &7seconds"
+      - "&7Ceasefire activates &a{PROTECTION}s &7post-war protection"
+      - "&7Blocks all mutual damage during protection"
+      - ""
+      - "&a▶ Left-Click: Accept Truce (End War & Start Protection)"
+      - "&c▶ Right-Click: Decline Truce"
     no_request_name: "&7(No Pending Notifications)"
     no_request_lore:
-      - "&7There are currently no pending team invites or alliance requests."
+      - "&7There are currently no pending team invites, alliance requests, or truce requests."
     back_button: "&c« Back"
     prev_page: "&a« Prev Page ({PAGE})"
     next_page: "&aNext Page ({PAGE}) »"

@@ -85,6 +85,7 @@ team_apply_target_in_team: "&c申請人 &e{PLAYER} &c已經加入了其他團隊
 team_apply_rejected: "&e已拒絕玩家 &f{PLAYER} &e的入隊申請。"
 team_apply_rejected_notify: "&c你向團隊 &e{TEAM} &c發送的入隊申請已被管理員拒絕。"
 team_apply_accepted_notify: "&a🎉 恭喜！你向團隊 &e{TEAM} &a發送的入隊申請已被批准！你已成功加入團隊。"
+team_applicant_on_cooldown: "&c申請人 &e{PLAYER} &c處於退隊冷卻中，還剩 &e{TIME} &c秒！"
 
 # -------------------------------------------------------------------
 # 退出與踢出
@@ -122,8 +123,14 @@ team_ff_status: "&7當前團隊友傷狀態: {STATUS}"
 team_ff_toggle_on: "&c團隊友傷已開啟！隊員之間可以互相攻擊。"
 team_ff_toggle_off: "&a團隊友傷已關閉！隊員之間無法互相傷害。"
 team_ff_toggle_disabled: "&c伺服器管理員已鎖定隊友傷害功能，隊伍成員間傷害強制開啟，禁止修改！"
+team_ff_system_disabled: "&c伺服器管理員已全域關閉友傷保護機制，所有隊伍與盟友傷害均正常生效！"
 team_ff_protected: "&c友傷保護：你無法攻擊同隊成員 &e{PLAYER}&c！"
 ally_ff_protected: "&c同盟保護：你無法攻擊盟友成員 &e{PLAYER}&c！"
+team_crystal_ff_protected: "&c友傷保護：你的末影水晶爆炸無法傷害同隊成員 &e{PLAYER}&c！"
+ally_crystal_ff_protected: "&c同盟保護：你的末影水晶爆炸無法傷害盟友成員 &e{PLAYER}&c！"
+team_crystal_protected: "&c水晶保護：你無法破壞同隊成員 &e{PLAYER}&c 放置的末影水晶！"
+ally_crystal_protected: "&c同盟保護：你無法破壞盟友成員 &e{PLAYER}&c 放置的末影水晶！"
+team_post_war_protected: "&e戰後保護：你與團隊 &f{TEAM} &e正處於停戰保護期 (剩餘 {TIME} 秒)，禁止對成員 &f{PLAYER} &e造成傷害！"
 
 # -------------------------------------------------------------------
 # 同盟機制 (雙向同意)
@@ -156,11 +163,38 @@ enemy_add_self: "&c你不能將自己的團隊設為敵對！"
 enemy_cant_enemy_ally: "&c該團隊是你的盟友，請先解除同盟關係再設為敵對！"
 enemy_already_enemy: "&c你的團隊已經與 &e{TEAM} &c處於敵對狀態了！"
 enemy_max_reached: "&c敵對隊伍數量已達到上限 ({MAX})！"
-enemy_add_success: "&c【宣戰】 你的團隊已將團隊 &e{TEAM} &c設為敵對！"
+enemy_add_success: "&c【宣戰】 你的團隊已將團隊 &e{TEAM} &c設为敵對！"
 enemy_add_broadcast: "&c團隊 &e{TEAM1} &c向團隊 &e{TEAM2} &c宣戰！"
 enemy_declared_notify: "&c⚔ 團隊 &e{TEAM} &c已向你的團隊宣戰！已進入敵對狀態。"
 enemy_remove_success: "&a已取消對團隊 &e{TEAM} &a的敵對標記！"
 enemy_not_enemy: "&c你的團隊並沒有將 &e{TEAM} &c設為敵對！"
+enemy_post_war_protected: "&c兩隊正處於戰後保護期 (剩餘 {TIME} 秒)，保護期內禁止再次向 &e{TEAM} &c宣戰！"
+enemy_cannot_unilateral_remove: "&c敵對關係無法單方面解除！需雙方達成停戰協議，請使用 &e/team truce request {TEAM} &c發送求和申請。"
+
+# -------------------------------------------------------------------
+# 停戰求和與戰後保護機制 (雙向同意)
+# -------------------------------------------------------------------
+usage_truce: "&c使用方法: /team truce <request|accept|deny|cancel|list> [隊伍名]"
+truce_specify_target: "&c請輸入目標敵對隊伍名稱！"
+truce_unknown_sub: "&c未知停戰指令，支持: request, accept, deny, cancel, list"
+truce_not_enemy: "&c你的團隊與 &e{TEAM} &c並未處於敵對關係，無需停戰求和！"
+truce_cant_self: "&c你不能向自己的團隊發送求和申請！"
+truce_request_sent: "&a已向團隊 &e{TEAM} &a發送停戰求和申請！等待對方隊長或管理員同意..."
+truce_request_received: "&e⚔ 收到來自敵對團隊 &f{TEAM} &e的停戰求和申請！輸入 &a/team truce accept {TEAM} &e同意停戰並開啟戰後保護。"
+truce_already_requested: "&c你已向團隊 &e{TEAM} &c發送過求和申請了，請等待對方回應或使用 &e/team truce cancel {TEAM} &c撤銷！"
+truce_no_pending_request: "&c未找到來自團隊 &e{TEAM} &c的有效求和申請或申請已過期！"
+truce_denied: "&e已拒絕來自團隊 &f{TEAM} &e的停戰求和申請。"
+truce_denied_notify: "&c團隊 &e{TEAM} &c拒絕了你方的停戰求和申請，戰火繼續！"
+truce_cancel_success: "&a已撤銷對團隊 &e{TEAM} &a的停戰求和申請。"
+truce_cancel_no_request: "&c你的團隊並未向 &e{TEAM} &c發送過求和申請。"
+truce_established: "&a【停戰協議】你的團隊與 &e{TEAM} &a已達成停戰協議，敵對關係正式解除！"
+truce_established_broadcast: "&a🕊 團隊 &e{TEAM1} &a與團隊 &e{TEAM2} &a達成停戰協議，敵對關係正式解除！"
+truce_protection_started: "&e🛡 兩隊已進入戰後保護期 (持續 {TIME} 秒)，期間雙方成員互免一切傷害！"
+truce_list_header: "&b======= &e停戰求和與保護狀態 &b======="
+truce_list_empty: "&7當前沒有待處理的求和申請或生效中的戰後保護。"
+truce_list_request_item: "&7- 收到求和申請: 來自團隊 &f{TEAM} &8(剩餘 {TIME} 秒) &a[/team truce accept {TEAM}]"
+truce_list_sent_item: "&7- 發出求和申請: 發往團隊 &f{TEAM} &8(剩餘 {TIME} 秒) &c[/team truce cancel {TEAM}]"
+truce_list_protection_item: "&7- 戰後保護生效中: 與團隊 &f{TEAM} &8(剩餘保護 {TIME} 秒)"
 
 # -------------------------------------------------------------------
 # 聊天與監聽系統
@@ -234,7 +268,8 @@ help:
     - "&e/team chat [訊息] &7- 發送團隊聊天或切換聊天模式"
     - "&e/team ff [on/off] &7- 查看或切換團隊友傷"
     - "&e/team ally add/accept/remove <隊伍> &7- 同盟管理 (需雙方同意)"
-    - "&e/team enemy add/remove <隊伍> &7- 敵對管理"
+    - "&e/team enemy add <隊伍> &7- 敵對管理 (宣戰)"
+    - "&e/team truce <request|accept|deny|cancel|list> [隊伍] &7- 停戰求和與戰後保護 (需雙方同意)"
     - "&e/team info [隊伍名] &7- 查看團隊詳細資訊"
     - "&b========================================"
 
@@ -538,9 +573,19 @@ gui:
       - ""
       - "&a▶ 左鍵點擊: 批准入隊"
       - "&c▶ 右鍵點擊: 拒絕申請"
+    # 停戰求和申請
+    truce_item_name: "&f🕊 停戰求和申請: &e{TEAM}"
+    truce_item_lore:
+      - "&7發起隊伍: &e{TEAM}"
+      - "&7有效時間剩餘: &e{REMAINING} &7秒"
+      - "&7停戰後將進入 &a{PROTECTION}秒 &7戰後保護期"
+      - "&7保護期內雙方免除一切互相傷害"
+      - ""
+      - "&a▶ 左鍵點擊: 同意求和 (停戰 & 開啟戰後保護)"
+      - "&c▶ 右鍵點擊: 拒絕求和"
     no_request_name: "&7(暫無待處理通知)"
     no_request_lore:
-      - "&7目前沒有任何待處理的入隊邀請或同盟申請。"
+      - "&7目前沒有任何待處理的入隊邀請、同盟申請或求和申請。"
     back_button: "&c« 返回"
     prev_page: "&a« 上一頁 ({PAGE})"
     next_page: "&a下一頁 ({PAGE}) »"

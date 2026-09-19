@@ -64,31 +64,60 @@ mvn clean package -Pfatjar # Fat-Jar (for legacy servers)
 
 **`/team`** (aliases: `/t` `/clan` `/bt`)
 
-| Command | Description |
-|---------|-------------|
-| `/team` | Open team menu |
-| `/team create <name>` | Create a team |
-| `/team invite/kick/leave` | Member management |
-| `/team promote/demote/transfer` | Role management |
-| `/team ally/unally/enemy/peace` | Diplomacy |
-| `/team apply/accept/deny` | Applications & invitations |
-| `/team ff` | Toggle friendly fire |
-| `/team info/list` | View info |
-| `/team lang` | Language settings |
+| Command | Description | Permission / Role |
+|---------|-------------|-------------------|
+| `/team` (or `/team menu`) | Open interactive GUI dashboard | Everyone |
+| `/team create <name>` | Create a new team | Everyone (No team) |
+| `/team disband` | Disband your team (requires confirmation) | Leader |
+| `/team invite <player>` | Invite a player to join | Leader / Officer |
+| `/team kick <player>` | Kick a member from your team | Leader / Officer |
+| `/team leave` | Leave current team (subject to cooldown) | Member / Officer |
+| `/team promote <player>` | Promote a member to officer | Leader |
+| `/team demote <player>` | Demote an officer to member | Leader |
+| `/team transfer <player>` | Transfer team leadership | Leader |
+| `/team apply <team>` | Apply to join a team | Everyone (No team) |
+| `/team accept <target>` | Accept incoming member invite or alliance request | Leader / Officer |
+| `/team deny <target>` | Reject incoming member invite or alliance request | Leader / Officer |
+| `/team ally <add\|accept\|remove> <team>` | Send, accept, or break formal team alliance | Leader / Officer |
+| `/team enemy <add\|remove> <team>` | Declare hostility or remove enemy status | Leader / Officer |
+| `/team truce <team>` | Send truce/peace request to an enemy team | Leader / Officer |
+| `/team truce accept <team>` | Accept truce request & enter post-war protection | Leader / Officer |
+| `/team truce deny <team>` | Reject incoming truce request | Leader / Officer |
+| `/team truce cancel <team>` | Cancel outgoing truce request | Leader / Officer |
+| `/team truce list` | View active incoming and outgoing truce requests | Leader / Officer |
+| `/team ff` | Toggle friendly fire protection (subject to cooldown) | Leader / Officer |
+| `/team chat [message]` | Send team chat message or toggle chat lock mode | Team Members |
+| `/team info [team]` | View details of your team or another team | Everyone |
+| `/team members [page]` | View member list and roles | Everyone |
+| `/team list [page]` | Browse server team list GUI or chat | Everyone |
+| `/team lang [code\|auto\|list]` | View or change personal client language preference | Everyone |
 
 **`/teamlang`** (aliases: `/tlang` `/btlang` `/clanlang`)
 
-| Command | Description |
-|---------|-------------|
-| `/teamlang` | View current language status and help |
-| `/teamlang list` | View all supported language packs |
-| `/teamlang <code>` | Manually switch language (e.g. `/teamlang en_US`) |
-| `/teamlang auto` | Reset to client auto-detection mode |
-| `/teamlang reload` | Reload all language files (Admin only) |
+| Command | Description | Permission |
+|---------|-------------|------------|
+| `/teamlang` | View current language code, detection mode, and help | `balancedteam.use` |
+| `/teamlang list` | View all supported language packs loaded on server | `balancedteam.use` |
+| `/teamlang <code>` | Manually switch to specific language (e.g. `en_US`, `zh_CN`) | `balancedteam.use` |
+| `/teamlang auto` | Reset to automatic Minecraft client locale detection | `balancedteam.use` |
+| `/teamlang reload` | Hot-reload all language configuration files | `balancedteam.admin` |
 
-**`/teamadmin`** (alias: `/ta`) — Force disband, kick, spy on chat, reload configs
+**`/teamadmin`** (aliases: `/ta` `/btadmin`)
 
-**`/teammsg`** (aliases: `/tc` `/tm`) — Send or lock team chat
+| Command | Description | Permission |
+|---------|-------------|------------|
+| `/teamadmin disband <team>` | Force disband any team immediately | `balancedteam.admin` |
+| `/teamadmin kick <player>` | Force remove a player from their team | `balancedteam.admin` |
+| `/teamadmin spy` | Toggle admin spy mode to monitor all team chats | `balancedteam.admin.spy` |
+| `/teamadmin reload` | Hot-reload `config.yml` and all language files | `balancedteam.admin` |
+| `/teamadmin help` | Display administrator command help | `balancedteam.admin` |
+
+**`/teammsg`** (aliases: `/tc` `/tm` `/teamchat`)
+
+| Command | Description | Permission |
+|---------|-------------|------------|
+| `/teammsg <message>` | Send a quick message to your team channel | `balancedteam.use` |
+| `/teammsg` | Toggle team chat lock mode (all chats route to team) | `balancedteam.use` |
 
 ---
 
@@ -223,31 +252,60 @@ mvn clean package -Pfatjar # Fat-Jar（兼容旧版服务端）
 
 **`/team`**（别名：`/t` `/clan` `/bt`）
 
-| 指令 | 说明 |
-|------|------|
-| `/team` | 打开团队菜单 |
-| `/team create <队名>` | 创建团队 |
-| `/team invite/kick/leave` | 成员管理 |
-| `/team promote/demote/transfer` | 职位管理 |
-| `/team ally/unally/enemy/peace` | 外交操作 |
-| `/team apply/accept/deny` | 申请与邀请 |
-| `/team ff` | 切换友伤 |
-| `/team info/list` | 查看信息 |
-| `/team lang` | 语言设置与切换 |
+| 指令 | 说明 | 权限 / 角色要求 |
+|------|------|-----------------|
+| `/team`（或 `/team menu`） | 打开团队交互式 GUI 控制台 | 所有人 |
+| `/team create <队名>` | 创建新团队 | 所有人（无队伍） |
+| `/team disband` | 解散当前团队（二次确认保护） | 队长 |
+| `/team invite <玩家>` | 邀请在线玩家加入团队 | 队长 / 管理员 |
+| `/team kick <玩家>` | 踢出指定团队成员 | 队长 / 管理员 |
+| `/team leave` | 退出当前团队（受退队冷却保护） | 普通成员 / 管理员 |
+| `/team promote <玩家>` | 晋升普通成员为管理员 | 队长 |
+| `/team demote <玩家>` | 将管理员降级为普通成员 | 队长 |
+| `/team transfer <玩家>` | 将队长职位转让给其他成员 | 队长 |
+| `/team apply <队伍>` | 申请加入指定团队 | 所有人（无队伍） |
+| `/team accept <目标>` | 接受入队邀请或同盟申请 | 队长 / 管理员 |
+| `/team deny <目标>` | 拒绝入队邀请或同盟申请 | 队长 / 管理员 |
+| `/team ally <add\|accept\|remove> <队伍>` | 发起同盟申请、接受同盟或解除盟约 | 队长 / 管理员 |
+| `/team enemy <add\|remove> <队伍>` | 标记敌对宣战或撤销敌对关系 | 队长 / 管理员 |
+| `/team truce <队伍>` | 向敌对团队发起停战求和请求（别名 `/team peace`） | 队长 / 管理员 |
+| `/team truce accept <队伍>` | 接受停战请求并进入战后保护期 | 队长 / 管理员 |
+| `/team truce deny <队伍>` | 拒绝敌对团队的求和请求 | 队长 / 管理员 |
+| `/team truce cancel <队伍>` | 撤销己方发出的求和请求 | 队长 / 管理员 |
+| `/team truce list` | 查看等待中与收到的停战求和列表 | 队长 / 管理员 |
+| `/team ff` | 切换队伍友伤开关（受切换冷却保护） | 队长 / 管理员 |
+| `/team chat [消息]` | 发送队伍聊天或切换聊天锁定模式 | 团队成员 |
+| `/team info [队伍]` | 查看自己或指定团队的详细信息 | 所有人 |
+| `/team members [页码]` | 查看团队成员及职务列表 | 所有人 |
+| `/team list [页码]` | 查看全服团队列表 GUI 或聊天栏列表 | 所有人 |
+| `/team lang [代码\|auto\|list]` | 查看或切换玩家个人客户端多语言偏好 | 所有人 |
 
 **`/teamlang`**（别名：`/tlang` `/btlang` `/clanlang`）
 
-| 指令 | 说明 |
-|------|------|
-| `/teamlang` | 查看当前语言状态与帮助 |
-| `/teamlang list` | 查看服务器支持的所有语言包列表 |
-| `/teamlang <代码>` | 手动切换指定语言（如 `/teamlang en_US`） |
-| `/teamlang auto` | 恢复为跟随客户端自动检测语言 |
-| `/teamlang reload` | 重载所有语言包（限管理员） |
+| 指令 | 说明 | 权限 |
+|------|------|------|
+| `/teamlang` | 查看当前生效语言、检测模式与帮助 | `balancedteam.use` |
+| `/teamlang list` | 查看服务器加载支持的全部语言包列表 | `balancedteam.use` |
+| `/teamlang <代码>` | 手动切换为指定语言（如 `en_US`、`zh_CN`） | `balancedteam.use` |
+| `/teamlang auto` | 恢复跟随 Minecraft 客户端自动检测匹配 | `balancedteam.use` |
+| `/teamlang reload` | 热重载所有语言配置文件 | `balancedteam.admin` |
 
-**`/teamadmin`**（别名：`/ta`）— 强制解散、踢人、监听聊天、重载配置
+**`/teamadmin`**（别名：`/ta` `/btadmin`）
 
-**`/teammsg`**（别名：`/tc` `/tm`）— 发送或锁定团队聊天
+| 指令 | 说明 | 权限 |
+|------|------|------|
+| `/teamadmin disband <队伍>` | 强制解散指定团队 | `balancedteam.admin` |
+| `/teamadmin kick <玩家>` | 强制将指定玩家移出团队 | `balancedteam.admin` |
+| `/teamadmin spy` | 开启/关闭管理监听模式（实时监看全服队伍聊天） | `balancedteam.admin.spy` |
+| `/teamadmin reload` | 热重载 `config.yml` 与所有语言文件 | `balancedteam.admin` |
+| `/teamadmin help` | 查看管理员维护指令帮助 | `balancedteam.admin` |
+
+**`/teammsg`**（别名：`/tc` `/tm` `/teamchat`）
+
+| 指令 | 说明 | 权限 |
+|------|------|------|
+| `/teammsg <消息>` | 快速向队伍频道发送一条消息 | `balancedteam.use` |
+| `/teammsg` | 切换队伍聊天锁定模式（聊天栏消息自动定向至队伍） | `balancedteam.use` |
 
 ---
 

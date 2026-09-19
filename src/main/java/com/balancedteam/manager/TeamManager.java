@@ -108,6 +108,9 @@ public class TeamManager {
         if (isPlayerInTeam(leader.getUniqueId())) {
             return CompletableFuture.completedFuture(null);
         }
+        if (getLeaveTeamCooldownRemaining(leader.getUniqueId()) > 0) {
+            return CompletableFuture.completedFuture(null);
+        }
         if (getTeamByName(name) != null) {
             return CompletableFuture.completedFuture(null);
         }
@@ -179,15 +182,25 @@ public class TeamManager {
     public CompletableFuture<Void> disbandTeam(Team team) {
         if (team == null) return CompletableFuture.completedFuture(null);
 
+        // 记录退队冷却时间 (防背叛/跳槽反水)
+        long cooldown = plugin.getConfigManager().getLeaveTeamCooldown();
+        long expireTime = System.currentTimeMillis() + (cooldown * 1000L);
+
         // 通知队员并清理内存
         for (UUID uuid : team.getMembers().keySet()) {
             playerTeamMap.remove(uuid);
+            if (cooldown > 0) {
+                leaveTeamCooldowns.put(uuid, expireTime);
+            }
             Player p = Bukkit.getPlayer(uuid);
             if (p != null && p.isOnline()) {
                 Map<String, String> map = new HashMap<>();
                 map.put("TEAM", team.getName());
                 MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "team_disband_broadcast", map));
             }
+        }
+        if (team.getLeaderUuid() != null && cooldown > 0) {
+            leaveTeamCooldowns.put(team.getLeaderUuid(), expireTime);
         }
 
         teamsById.remove(team.getId());
@@ -235,6 +248,10 @@ public class TeamManager {
      */
     public CompletableFuture<Boolean> addMember(Team team, UUID playerUuid, TeamRole role) {
         if (team == null || isPlayerInTeam(playerUuid)) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        if (getLeaveTeamCooldownRemaining(playerUuid) > 0) {
             return CompletableFuture.completedFuture(false);
         }
 

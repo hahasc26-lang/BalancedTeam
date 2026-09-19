@@ -8,6 +8,7 @@ import com.balancedteam.model.Team;
 import com.balancedteam.util.MessageUtil;
 import com.balancedteam.util.PermissionUtil;
 import com.balancedteam.util.SoundUtil;
+import com.balancedteam.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -35,7 +36,7 @@ public class EnemyManageGui {
             return;
         }
 
-        boolean isLeader = PermissionUtil.isLeader(player, team);
+        boolean isOfficerOrLeader = PermissionUtil.isOfficerOrLeader(player, team);
 
         // 获取敌对 ID 列表并分页
         List<Integer> enemyIds = plugin.getRelationManager().getEnemies(team.getId());
@@ -70,10 +71,44 @@ public class EnemyManageGui {
             itemMap.put("TEAM", enemyTeam.getName());
             itemMap.put("COUNT", String.valueOf(enemyTeam.getMemberCount()));
 
+            boolean declaredByUs = plugin.getRelationManager().isDeclaredEnemy(team.getId(), enemyTeam.getId());
+            boolean hasIncomingTruce = plugin.getRelationManager().hasPendingTruceRequest(enemyTeam.getId(), team.getId());
+            boolean hasOutgoingTruce = plugin.getRelationManager().hasPendingTruceRequest(team.getId(), enemyTeam.getId());
+
             String itemName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_ITEM_NAME, itemMap);
-            List<String> itemLore = isLeader
-                    ? plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ENEMY_MANAGE_ITEM_LORE_LEADER, itemMap)
-                    : plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ENEMY_MANAGE_ITEM_LORE, itemMap);
+            List<String> itemLore = new ArrayList<>(plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ENEMY_MANAGE_ITEM_LORE, itemMap));
+
+            if (hasIncomingTruce) {
+                long rem = plugin.getRelationManager().getTruceRequestRemainingSeconds(enemyTeam.getId(), team.getId());
+                itemLore.add("");
+                itemLore.add(MessageUtil.color("&f🕊 &a对方已向我方发送停战求和申请！"));
+                itemLore.add(MessageUtil.color("&7剩余考虑时间: &e" + rem + " &7秒"));
+                if (isOfficerOrLeader) {
+                    itemLore.add(MessageUtil.color("&a▶ 左键点击: 同意停战 (开启战后保护)"));
+                    itemLore.add(MessageUtil.color("&c▶ 右键点击: 拒绝求和"));
+                }
+            } else if (hasOutgoingTruce) {
+                long rem = plugin.getRelationManager().getTruceRequestRemainingSeconds(team.getId(), enemyTeam.getId());
+                itemLore.add("");
+                itemLore.add(MessageUtil.color("&e⌛ 我方已发起停战求和 (等待对方同意)"));
+                itemLore.add(MessageUtil.color("&7有效时间剩余: &e" + rem + " &7秒"));
+                if (isOfficerOrLeader) {
+                    itemLore.add(MessageUtil.color("&c▶ 点击撤销求和申请"));
+                }
+            } else if (declaredByUs) {
+                itemLore.add("");
+                itemLore.add(MessageUtil.color("&c⚔ 双方处于交战状态 (需双方同意方可解除)"));
+                if (isOfficerOrLeader) {
+                    itemLore.add(MessageUtil.color("&f▶ 点击发起停战求和申请"));
+                }
+            } else {
+                itemLore.add("");
+                itemLore.add(MessageUtil.color("&c⚠ 对方单方面向我方宣战"));
+                if (isOfficerOrLeader) {
+                    itemLore.add(MessageUtil.color("&e▶ 左键点击: 向对方宣战 (迎战)"));
+                    itemLore.add(MessageUtil.color("&f▶ 右键点击: 发起停战求和申请"));
+                }
+            }
 
             ItemStack item = new ItemBuilder(Material.PLAYER_HEAD)
                     .skullOwner(enemyTeam.getLeaderUuid())
@@ -82,19 +117,119 @@ public class EnemyManageGui {
                     .build();
             inv.setItem(slot, item);
 
-            // 队长点击可移除敌对标记
-            if (isLeader) {
+            // 管理员/队长点击交互
+            if (isOfficerOrLeader) {
                 final Team finalEnemyTeam = enemyTeam;
+                final boolean wasDeclaredByUs = declaredByUs;
+                final boolean finalHasIncomingTruce = hasIncomingTruce;
+                final boolean finalHasOutgoingTruce = hasOutgoingTruce;
                 holder.setClickHandler(slot, e -> {
-                    plugin.getRelationManager().removeEnemy(team.getId(), finalEnemyTeam.getId()).thenAccept(success -> {
-                        if (success) {
-                            SoundUtil.playSuccess(player);
-                            Map<String, String> msgMap = new HashMap<>();
-                            msgMap.put("TEAM", finalEnemyTeam.getName());
-                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "enemy_remove_success", msgMap));
+                    if (finalHasIncomingTruce) {
+                        if (e.isRightClick()) {
+                            // 拒绝求和
+                            plugin.getRelationManager().denyTruceRequest(finalEnemyTeam.getId(), team.getId());
+                            SoundUtil.playDing(player);
+                            Map<String, String> map = new HashMap<>();
+                            map.put("TEAM", finalEnemyTeam.getName());
+                            MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_denied", map));
+
+                            Map<String, String> notifyMap = new HashMap<>();
+                            notifyMap.put("TEAM", team.getName());
+                            for (UUID u : finalEnemyTeam.getMembers().keySet()) {
+                                Player p = Bukkit.getPlayer(u);
+                                if (p != null && p.isOnline()) {
+                                    MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_denied_notify", notifyMap));
+                                }
+                            }
                             holder.refresh(player);
+                        } else {
+                            // 同意求和
+                            int protectionSeconds = plugin.getConfigManager().getPostWarProtectionSeconds();
+                            plugin.getRelationManager().acceptTruceRequest(finalEnemyTeam.getId(), team.getId()).thenAccept(success -> {
+                                if (success) {
+                                    SoundUtil.playSuccess(player);
+                                    Map<String, String> bcMap = new HashMap<>();
+                                    bcMap.put("TEAM1", finalEnemyTeam.getName());
+                                    bcMap.put("TEAM2", team.getName());
+
+                                    for (Player p : Bukkit.getOnlinePlayers()) {
+                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_established_broadcast", bcMap));
+                                    }
+
+                                    Map<String, String> toEnemyMap = new HashMap<>();
+                                    toEnemyMap.put("TEAM", team.getName());
+                                    for (UUID u : finalEnemyTeam.getMembers().keySet()) {
+                                        Player p = Bukkit.getPlayer(u);
+                                        if (p != null && p.isOnline()) {
+                                            SoundUtil.playSuccess(p);
+                                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_established", toEnemyMap));
+                                            if (protectionSeconds > 0) {
+                                                Map<String, String> protMap = new HashMap<>();
+                                                protMap.put("TIME", TimeUtil.formatDuration(p, protectionSeconds));
+                                                MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_protection_started", protMap));
+                                            }
+                                        }
+                                    }
+
+                                    Map<String, String> toOurMap = new HashMap<>();
+                                    toOurMap.put("TEAM", finalEnemyTeam.getName());
+                                    for (UUID u : team.getMembers().keySet()) {
+                                        Player p = Bukkit.getPlayer(u);
+                                        if (p != null && p.isOnline()) {
+                                            SoundUtil.playSuccess(p);
+                                            MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_established", toOurMap));
+                                            if (protectionSeconds > 0) {
+                                                Map<String, String> protMap = new HashMap<>();
+                                                protMap.put("TIME", TimeUtil.formatDuration(p, protectionSeconds));
+                                                MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_protection_started", protMap));
+                                            }
+                                        }
+                                    }
+
+                                    holder.refresh(player);
+                                } else {
+                                    SoundUtil.playError(player);
+                                    MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "database_error"));
+                                }
+                            });
                         }
-                    });
+                    } else if (finalHasOutgoingTruce) {
+                        // 撤销求和申请
+                        plugin.getRelationManager().cancelTruceRequest(team.getId(), finalEnemyTeam.getId());
+                        SoundUtil.playDing(player);
+                        Map<String, String> cancelMap = new HashMap<>();
+                        cancelMap.put("TEAM", finalEnemyTeam.getName());
+                        MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_cancel_success", cancelMap));
+                        holder.refresh(player);
+                    } else if (wasDeclaredByUs || e.isRightClick()) {
+                        // 发起求和申请
+                        plugin.getRelationManager().sendTruceRequest(team.getId(), finalEnemyTeam.getId()).thenAccept(success -> {
+                            if (success) {
+                                SoundUtil.playSuccess(player);
+                                Map<String, String> map = new HashMap<>();
+                                map.put("TEAM", finalEnemyTeam.getName());
+                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "truce_request_sent", map));
+
+                                Map<String, String> notifyMap = new HashMap<>();
+                                notifyMap.put("TEAM", team.getName());
+                                for (UUID u : finalEnemyTeam.getMembers().keySet()) {
+                                    Player p = Bukkit.getPlayer(u);
+                                    if (p != null && p.isOnline()) {
+                                        SoundUtil.playDing(p);
+                                        MessageUtil.sendMessage(p, plugin.getConfigManager().getMessage(p, "truce_request_received", notifyMap));
+                                    }
+                                }
+                                holder.refresh(player);
+                            } else {
+                                SoundUtil.playError(player);
+                                MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "database_error"));
+                            }
+                        });
+                    } else {
+                        // 迎战宣战
+                        TeamSelectGui.executeEnemyAdd(plugin, player, team, finalEnemyTeam);
+                        holder.refresh(player);
+                    }
                 });
             }
         }
@@ -135,6 +270,31 @@ public class EnemyManageGui {
         // 返回按钮（槽位 49）
         String backName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_BACK_BUTTON);
         PagedGuiHelper.setupBackButton(holder, inv, 49, player, backName, () -> TeamMenuGui.open(plugin, player));
+
+        // 战后保护状态指示（槽位 40）
+        Map<Integer, Long> activeProtections = plugin.getRelationManager().getActivePostWarProtectionsFor(team.getId());
+        if (!activeProtections.isEmpty()) {
+            Map<String, String> countMap = new HashMap<>();
+            countMap.put("COUNT", String.valueOf(activeProtections.size()));
+            String badgeName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_PROTECTION_NAME, countMap);
+
+            List<String> protLore = new ArrayList<>(plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ENEMY_MANAGE_PROTECTION_HEADER, countMap));
+            for (Map.Entry<Integer, Long> entry : activeProtections.entrySet()) {
+                Team otherTeam = plugin.getTeamManager().getTeamById(entry.getKey());
+                String otherName = (otherTeam != null) ? otherTeam.getName() : ("#" + entry.getKey());
+                Map<String, String> itemMap = new HashMap<>();
+                itemMap.put("TEAM", otherName);
+                itemMap.put("TIME", TimeUtil.formatDuration(player, entry.getValue()));
+                protLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_PROTECTION_ITEM, itemMap));
+            }
+            protLore.addAll(plugin.getConfigManager().getMessageList(player, GuiConfigKeys.ENEMY_MANAGE_PROTECTION_FOOTER, countMap));
+
+            ItemStack protItem = new ItemBuilder(Material.SHIELD)
+                    .name(badgeName)
+                    .lore(protLore)
+                    .build();
+            inv.setItem(40, protItem);
+        }
 
         // 下一页（槽位 35）
         if (currentPage < totalPages) {

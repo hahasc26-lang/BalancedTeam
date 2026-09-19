@@ -89,6 +89,26 @@ public class DatabaseMigrator {
                     ") " + charset;
             stmt.executeUpdate(createApplicationsTable);
 
+            // 7. 求和申请表 bt_truce_requests
+            String createTruceRequestsTable = "CREATE TABLE IF NOT EXISTS `" + prefix + "truce_requests` (" +
+                    "`id` INTEGER PRIMARY KEY " + autoIncrement + ", " +
+                    "`from_team_id` INTEGER NOT NULL, " +
+                    "`to_team_id` INTEGER NOT NULL, " +
+                    "`expire_time` BIGINT NOT NULL, " +
+                    "`created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                    ") " + charset;
+            stmt.executeUpdate(createTruceRequestsTable);
+
+            // 8. 战后保护表 bt_post_war_protections
+            String createProtectionsTable = "CREATE TABLE IF NOT EXISTS `" + prefix + "post_war_protections` (" +
+                    "`id` INTEGER PRIMARY KEY " + autoIncrement + ", " +
+                    "`team_id_1` INTEGER NOT NULL, " +
+                    "`team_id_2` INTEGER NOT NULL, " +
+                    "`expire_time` BIGINT NOT NULL, " +
+                    "`created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                    ") " + charset;
+            stmt.executeUpdate(createProtectionsTable);
+
             // 创建索引加速查询
             try {
                 stmt.executeUpdate("CREATE INDEX IF NOT EXISTS `idx_members_team_id` ON `" + prefix + "members` (`team_id`);");
@@ -104,6 +124,11 @@ public class DatabaseMigrator {
                 stmt.executeUpdate("CREATE INDEX IF NOT EXISTS `idx_app_team` ON `" + prefix + "team_applications` (`team_id`);");
                 stmt.executeUpdate("CREATE INDEX IF NOT EXISTS `idx_app_player` ON `" + prefix + "team_applications` (`player_uuid`);");
                 stmt.executeUpdate("CREATE INDEX IF NOT EXISTS `idx_app_expire` ON `" + prefix + "team_applications` (`expire_time`);");
+                stmt.executeUpdate("CREATE INDEX IF NOT EXISTS `idx_truce_req_to` ON `" + prefix + "truce_requests` (`to_team_id`);");
+                stmt.executeUpdate("CREATE INDEX IF NOT EXISTS `idx_truce_req_from` ON `" + prefix + "truce_requests` (`from_team_id`);");
+                stmt.executeUpdate("CREATE INDEX IF NOT EXISTS `idx_truce_req_expire` ON `" + prefix + "truce_requests` (`expire_time`);");
+                stmt.executeUpdate("CREATE INDEX IF NOT EXISTS `idx_truce_prot_teams` ON `" + prefix + "post_war_protections` (`team_id_1`, `team_id_2`);");
+                stmt.executeUpdate("CREATE INDEX IF NOT EXISTS `idx_truce_prot_expire` ON `" + prefix + "post_war_protections` (`expire_time`);");
             } catch (SQLException ignored) {
                 // 部分 SQLite/MySQL 索引语法兼容容错
             }

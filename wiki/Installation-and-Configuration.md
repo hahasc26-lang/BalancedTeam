@@ -40,11 +40,20 @@ Below is the complete reference for all configuration options available in `conf
 # Supports asynchronous MySQL / SQLite data storage with high-concurrency optimization.
 # ===================================================================
 
-# Server Default Language Setting
-# Supports language codes (e.g. en_US, zh_CN, zh_TW), file names (e.g. en_US.yml), or relative paths (e.g. lang/en_US.yml, lang/zh_CN.yml).
-# Built-in languages: zh_CN (Simplified Chinese), zh_TW (Traditional Chinese), en_US (English).
-# Note: Changing this language path will also automatically switch server console output logs (startup banner, database, lifecycle, etc.) to the corresponding language.
+# Server Default Language Setting (for player clients)
+# Supports language codes (e.g. en_US, zh_CN, zh_TW), file names (e.g. en_US.yml), or relative paths (e.g. lang/en_US.yml).
+# Built-in client languages: zh_CN (Simplified Chinese), zh_TW (Traditional Chinese), en_US (English).
 language: "en_US"
+
+# Server Console Logging Language Setting
+# Independent from client language; controls console startup banners, database lifecycle, reload logs, etc.
+# Built-in server languages: zh_CN, zh_TW, en_US, ja_JP (Japanese), ru_RU (Russian), de_DE (German), es_ES (Spanish).
+server_messages_language: "en_US"
+
+# Server Timezone Configuration
+# Configures the timezone used across all server date/time formatting (TimeUtil.formatDate).
+# Accepts standard timezone identifiers (e.g. "GMT+8", "Asia/Shanghai", "UTC", "America/New_York", "Europe/London").
+timezone: "GMT+8"
 
 # Database Configuration
 database:
@@ -78,6 +87,9 @@ date_format: "yyyy-MM-dd HH:mm:ss"
 
 # Game Balance & Anti-Abuse Configuration
 balance:
+  # Global master switch for friendly fire and alliance damage protection
+  enable_friendly_fire_protection: true
+
   # Maximum number of members allowed per team (prevents massive monopolistic factions)
   max_members: 10
   
@@ -117,8 +129,17 @@ balance:
   # Alliance request expiration timeout in seconds
   ally_request_timeout_seconds: 3600
 
+  # Truce / peace proposal expiration timeout in seconds
+  truce_request_timeout_seconds: 1800
+
+  # Post-war protection duration in seconds (after a truce is signed, both teams cannot declare war or harm each other)
+  post_war_protection_seconds: 1800
+
 # Team Chat Configuration
 chat:
+  # Global team chat system toggle (false = disables all team chat features and /tc commands)
+  enable_chat: true
+
   # Team chat format: {TEAM}, {ROLE}, {PLAYER}, {MESSAGE} (PlaceholderAPI is also supported)
   format: "&8[&b{TEAM}&8] &7[{ROLE}&7] &f{PLAYER}&7: &b{MESSAGE}"
   
@@ -127,6 +148,9 @@ chat:
   
   # Whether the quick shortcut command /tc <message> is enabled
   enable_tc_command: true
+
+  # Whether to print team chat messages to the server console for administrative logging
+  console_listen_team_chat: true
 ```
 
 ---

@@ -2,6 +2,7 @@ package com.balancedteam.manager;
 
 import com.balancedteam.database.dao.AllyRequestDao;
 import com.balancedteam.database.dao.RelationDao;
+import com.balancedteam.database.dao.TruceDao;
 import com.balancedteam.model.RelationStatus;
 import com.balancedteam.model.RelationType;
 import com.balancedteam.model.TeamRelation;
@@ -13,13 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * 团队外交（同盟/敌对/结盟申请）管理器（内存+数据库双层持久化）
+ * 团队外交（同盟/敌对/结盟申请/停战求和/战后保护）管理器（内存+数据库双层持久化）
  */
 public class RelationManager {
 
     private final com.balancedteam.BalancedTeamPlugin plugin;
     private final RelationDao relationDao;
     private final AllyRequestDao allyRequestDao;
+    private final TruceDao truceDao;
 
     // 所有关系映射：Id -> TeamRelation
     private final Map<Integer, TeamRelation> relationsById = new ConcurrentHashMap<>();
@@ -27,14 +29,25 @@ public class RelationManager {
     // 内存暂存盟友申请超时记录: TargetTeamId -> (RequesterTeamId -> ExpireTimestamp)
     private final Map<Integer, Map<Integer, Long>> pendingAllyRequests = new ConcurrentHashMap<>();
 
-    public RelationManager(com.balancedteam.BalancedTeamPlugin plugin, RelationDao relationDao, AllyRequestDao allyRequestDao) {
+    // 内存暂存求和申请超时记录: TargetTeamId -> (RequesterTeamId -> ExpireTimestamp)
+    private final Map<Integer, Map<Integer, Long>> pendingTruceRequests = new ConcurrentHashMap<>();
+
+    // 战后保护记录映射: "minTeamId:maxTeamId" -> ExpireTimestamp
+    private final Map<String, Long> postWarProtections = new ConcurrentHashMap<>();
+
+    public RelationManager(com.balancedteam.BalancedTeamPlugin plugin, RelationDao relationDao, AllyRequestDao allyRequestDao, TruceDao truceDao) {
         this.plugin = plugin;
         this.relationDao = relationDao;
         this.allyRequestDao = allyRequestDao;
+        this.truceDao = truceDao;
+    }
+
+    public RelationManager(com.balancedteam.BalancedTeamPlugin plugin, RelationDao relationDao, AllyRequestDao allyRequestDao) {
+        this(plugin, relationDao, allyRequestDao, null);
     }
 
     public RelationManager(RelationDao relationDao, AllyRequestDao allyRequestDao) {
-        this(com.balancedteam.BalancedTeamPlugin.getInstance(), relationDao, allyRequestDao);
+        this(com.balancedteam.BalancedTeamPlugin.getInstance(), relationDao, allyRequestDao, null);
     }
 
     public void init(List<TeamRelation> loadedRelations) {
@@ -52,12 +65,38 @@ public class RelationManager {
         cleanExpired(System.currentTimeMillis());
     }
 
+    public void initTruceRequests(Map<Integer, Map<Integer, Long>> loadedRequests) {
+        pendingTruceRequests.clear();
+        for (Map.Entry<Integer, Map<Integer, Long>> entry : loadedRequests.entrySet()) {
+            pendingTruceRequests.put(entry.getKey(), new ConcurrentHashMap<>(entry.getValue()));
+        }
+        cleanExpiredTruceRequests(System.currentTimeMillis());
+    }
+
+    public void initProtections(Map<String, Long> loadedProtections) {
+        postWarProtections.clear();
+        postWarProtections.putAll(loadedProtections);
+        cleanExpiredProtections(System.currentTimeMillis());
+    }
+
     /**
      * 清理过期同盟申请
      */
     public void cleanExpired(long now) {
         if (allyRequestDao != null) {
             allyRequestDao.cleanExpiredRequests(now);
+        }
+    }
+
+    public void cleanExpiredTruceRequests(long now) {
+        if (truceDao != null) {
+            truceDao.cleanExpiredTruceRequests(now);
+        }
+    }
+
+    public void cleanExpiredProtections(long now) {
+        if (truceDao != null) {
+            truceDao.cleanExpiredProtections(now);
         }
     }
 
@@ -182,16 +221,17 @@ public class RelationManager {
     }
 
     /**
-     * 添加敌对关系 (单向/双方，具备宿敌上限与同盟互斥校验)
+     * 添加敌对关系 (单向/双方，具备宿敌上限与同盟互斥校验，战后保护期内禁止宣战)
      */
     public CompletableFuture<Boolean> addEnemy(int teamId1, int teamId2) {
-        if (isEnemy(teamId1, teamId2) || isAlly(teamId1, teamId2)) {
+        if (isDeclaredEnemy(teamId1, teamId2) || isAlly(teamId1, teamId2) || isUnderPostWarProtection(teamId1, teamId2)) {
             return CompletableFuture.completedFuture(false);
         }
 
         if (plugin != null && plugin.getConfigManager() != null) {
             int maxEnemies = plugin.getConfigManager().getMaxEnemies();
-            if (getEnemies(teamId1).size() >= maxEnemies || getEnemies(teamId2).size() >= maxEnemies) {
+            // 宣战上限仅限制宣战发起方(teamId1)标记的敌对数量，不应因目标队伍(teamId2)仇家过多而阻止宣战
+            if (getDeclaredEnemies(teamId1).size() >= maxEnemies) {
                 return CompletableFuture.completedFuture(false);
             }
         }
@@ -214,11 +254,13 @@ public class RelationManager {
     }
 
     /**
-     * 移除敌对关系
+     * 移除敌对关系 (仅允许宣战发起方撤销自己标记的敌对关系)
      */
-    public CompletableFuture<Boolean> removeEnemy(int teamId1, int teamId2) {
+    public CompletableFuture<Boolean> removeEnemy(int initiatorTeamId, int targetTeamId) {
         Optional<TeamRelation> opt = relationsById.values().stream()
-                .filter(r -> r.getRelationType() == RelationType.ENEMY && r.involves(teamId1) && r.involves(teamId2))
+                .filter(r -> r.getRelationType() == RelationType.ENEMY
+                        && r.getTeamId1() == initiatorTeamId
+                        && r.getTeamId2() == targetTeamId)
                 .findFirst();
 
         if (opt.isPresent()) {
@@ -232,7 +274,7 @@ public class RelationManager {
     }
 
     /**
-     * 当团队解散时清理所有外交关系与结盟申请
+     * 当团队解散时清理所有外交关系与结盟申请、求和申请及战后保护
      */
     public void onTeamDisbanded(int teamId) {
         relationsById.values().removeIf(r -> r.involves(teamId));
@@ -244,6 +286,20 @@ public class RelationManager {
         if (allyRequestDao != null) {
             allyRequestDao.deleteRequestsByTeam(teamId);
         }
+
+        // 清理该队伍的求和申请
+        pendingTruceRequests.remove(teamId);
+        for (Map<Integer, Long> map : pendingTruceRequests.values()) {
+            map.remove(teamId);
+        }
+        if (truceDao != null) {
+            truceDao.deleteTruceRequestsByTeam(teamId);
+            truceDao.deleteProtectionsByTeam(teamId);
+        }
+
+        // 清理内存中的战后保护
+        String idStr = String.valueOf(teamId);
+        postWarProtections.keySet().removeIf(key -> key.startsWith(idStr + ":") || key.endsWith(":" + idStr));
     }
 
     /**
@@ -265,6 +321,27 @@ public class RelationManager {
         if (teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2) return false;
         return relationsById.values().stream()
                 .anyMatch(r -> r.getRelationType() == RelationType.ENEMY && r.involves(teamId1) && r.involves(teamId2));
+    }
+
+    /**
+     * 判断某队伍是否主动将另一队伍标记为敌对（单向宣战发起方检查）
+     */
+    public boolean isDeclaredEnemy(int initiatorTeamId, int targetTeamId) {
+        if (initiatorTeamId <= 0 || targetTeamId <= 0 || initiatorTeamId == targetTeamId) return false;
+        return relationsById.values().stream()
+                .anyMatch(r -> r.getRelationType() == RelationType.ENEMY
+                        && r.getTeamId1() == initiatorTeamId
+                        && r.getTeamId2() == targetTeamId);
+    }
+
+    /**
+     * 获取指定团队主动宣战标记的所有敌对团队 ID 列表
+     */
+    public List<Integer> getDeclaredEnemies(int teamId) {
+        return relationsById.values().stream()
+                .filter(r -> r.getRelationType() == RelationType.ENEMY && r.getTeamId1() == teamId)
+                .map(TeamRelation::getTeamId2)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -312,5 +389,294 @@ public class RelationManager {
             pendingAllyRequests.remove(targetTeamId);
         }
         return new ArrayList<>(map.keySet());
+    }
+
+    // =========================================================================
+    // 战后保护机制 (Post-War Protection)
+    // =========================================================================
+
+    private String getProtectionKey(int teamId1, int teamId2) {
+        return Math.min(teamId1, teamId2) + ":" + Math.max(teamId1, teamId2);
+    }
+
+    /**
+     * 开启两队之间的战后保护
+     */
+    public void startPostWarProtection(int teamId1, int teamId2, long durationSeconds) {
+        if (teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2 || durationSeconds <= 0) return;
+        long expireTime = System.currentTimeMillis() + (durationSeconds * 1000L);
+        postWarProtections.put(getProtectionKey(teamId1, teamId2), expireTime);
+        if (truceDao != null) {
+            truceDao.saveProtection(teamId1, teamId2, expireTime);
+        }
+    }
+
+    /**
+     * 判断两队当前是否处于战后保护期
+     */
+    public boolean isUnderPostWarProtection(int teamId1, int teamId2) {
+        if (teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2) return false;
+        String key = getProtectionKey(teamId1, teamId2);
+        Long expireTime = postWarProtections.get(key);
+        if (expireTime == null) return false;
+        long now = System.currentTimeMillis();
+        if (expireTime <= now) {
+            postWarProtections.remove(key);
+            if (truceDao != null) {
+                truceDao.deleteProtection(teamId1, teamId2);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 获取两队之间战后保护剩余秒数（若无保护或已过期返回 0）
+     */
+    public long getPostWarProtectionRemainingSeconds(int teamId1, int teamId2) {
+        if (teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2) return 0;
+        String key = getProtectionKey(teamId1, teamId2);
+        Long expireTime = postWarProtections.get(key);
+        if (expireTime == null) return 0;
+        long now = System.currentTimeMillis();
+        if (expireTime <= now) {
+            postWarProtections.remove(key);
+            if (truceDao != null) {
+                truceDao.deleteProtection(teamId1, teamId2);
+            }
+            return 0;
+        }
+        return (expireTime - now + 999L) / 1000L;
+    }
+
+    /**
+     * 手动清除战后保护
+     */
+    public void deletePostWarProtection(int teamId1, int teamId2) {
+        postWarProtections.remove(getProtectionKey(teamId1, teamId2));
+        if (truceDao != null) {
+            truceDao.deleteProtection(teamId1, teamId2);
+        }
+    }
+
+    // =========================================================================
+    // 求和机制 (Truce Request & Peace Agreement)
+    // =========================================================================
+
+    /**
+     * 检查是否已有生效中的求和申请
+     */
+    public boolean hasPendingTruceRequest(int fromTeamId, int toTeamId) {
+        Map<Integer, Long> map = pendingTruceRequests.get(toTeamId);
+        if (map == null) return false;
+        Long expireTime = map.get(fromTeamId);
+        if (expireTime == null) return false;
+        if (expireTime <= System.currentTimeMillis()) {
+            map.remove(fromTeamId);
+            if (truceDao != null) {
+                truceDao.deleteTruceRequest(fromTeamId, toTeamId);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 获取求和申请剩余秒数
+     */
+    public long getTruceRequestRemainingSeconds(int fromTeamId, int toTeamId) {
+        Map<Integer, Long> map = pendingTruceRequests.get(toTeamId);
+        if (map == null) return 0;
+        Long expireTime = map.get(fromTeamId);
+        if (expireTime == null) return 0;
+        long now = System.currentTimeMillis();
+        if (expireTime <= now) {
+            map.remove(fromTeamId);
+            if (truceDao != null) {
+                truceDao.deleteTruceRequest(fromTeamId, toTeamId);
+            }
+            return 0;
+        }
+        return (expireTime - now + 999L) / 1000L;
+    }
+
+    /**
+     * 发送求和申请（双方必须当前为敌对状态，且未有生效中的求和申请）
+     */
+    public CompletableFuture<Boolean> sendTruceRequest(int fromTeamId, int toTeamId) {
+        if (!isEnemy(fromTeamId, toTeamId)) {
+            return CompletableFuture.completedFuture(false);
+        }
+        if (hasPendingTruceRequest(fromTeamId, toTeamId)) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        int timeout = (plugin != null && plugin.getConfigManager() != null)
+                ? plugin.getConfigManager().getTruceRequestTimeout() : 300;
+        long expireTime = System.currentTimeMillis() + (timeout * 1000L);
+
+        pendingTruceRequests.computeIfAbsent(toTeamId, k -> new ConcurrentHashMap<>()).put(fromTeamId, expireTime);
+
+        if (truceDao != null) {
+            return truceDao.saveTruceRequest(fromTeamId, toTeamId, expireTime).thenApply(v -> true);
+        }
+        return CompletableFuture.completedFuture(true);
+    }
+
+    /**
+     * 撤销求和申请
+     */
+    public void cancelTruceRequest(int fromTeamId, int toTeamId) {
+        Map<Integer, Long> map = pendingTruceRequests.get(toTeamId);
+        if (map != null) {
+            map.remove(fromTeamId);
+            if (map.isEmpty()) {
+                pendingTruceRequests.remove(toTeamId);
+            }
+        }
+        if (truceDao != null) {
+            truceDao.deleteTruceRequest(fromTeamId, toTeamId);
+        }
+    }
+
+    /**
+     * 拒绝求和申请
+     */
+    public void denyTruceRequest(int requesterTeamId, int acceptingTeamId) {
+        cancelTruceRequest(requesterTeamId, acceptingTeamId);
+    }
+
+    /**
+     * 接受求和申请（双方达成停战协议）：
+     * 1. 清理双方所有的求和申请
+     * 2. 删除两队之间的全部敌对关系（无论单向还是互设）
+     * 3. 自动开启战后保护机制
+     */
+    public CompletableFuture<Boolean> acceptTruceRequest(int requesterTeamId, int acceptingTeamId) {
+        cancelTruceRequest(requesterTeamId, acceptingTeamId);
+        cancelTruceRequest(acceptingTeamId, requesterTeamId);
+
+        return removeAllEnemyRelations(requesterTeamId, acceptingTeamId).thenApply(success -> {
+            if (success) {
+                int protectionSeconds = (plugin != null && plugin.getConfigManager() != null)
+                        ? plugin.getConfigManager().getPostWarProtectionSeconds() : 1800;
+                if (protectionSeconds > 0) {
+                    startPostWarProtection(requesterTeamId, acceptingTeamId, protectionSeconds);
+                }
+                return true;
+            }
+            return false;
+        });
+    }
+
+    /**
+     * 删除两队之间的全部敌对关系（不论是 A->B 还是 B->A）
+     */
+    public CompletableFuture<Boolean> removeAllEnemyRelations(int teamId1, int teamId2) {
+        List<TeamRelation> toDelete = relationsById.values().stream()
+                .filter(r -> r.getRelationType() == RelationType.ENEMY && r.involves(teamId1) && r.involves(teamId2))
+                .collect(Collectors.toList());
+
+        if (toDelete.isEmpty()) {
+            return CompletableFuture.completedFuture(true);
+        }
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for (TeamRelation rel : toDelete) {
+            futures.add(relationDao.deleteRelation(rel.getId()).thenRun(() -> {
+                relationsById.remove(rel.getId());
+            }));
+        }
+
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(v -> true);
+    }
+
+    /**
+     * 获取所有向指定队伍发送有效求和申请的团队 ID 列表
+     */
+    public List<Integer> getPendingTruceRequestsTo(int targetTeamId) {
+        Map<Integer, Long> map = pendingTruceRequests.get(targetTeamId);
+        if (map == null || map.isEmpty()) return Collections.emptyList();
+        long now = System.currentTimeMillis();
+        List<Integer> expiredIds = new ArrayList<>();
+        for (Map.Entry<Integer, Long> entry : map.entrySet()) {
+            if (entry.getValue() <= now) {
+                expiredIds.add(entry.getKey());
+            }
+        }
+        for (Integer expId : expiredIds) {
+            map.remove(expId);
+            if (truceDao != null) {
+                truceDao.deleteTruceRequest(expId, targetTeamId);
+            }
+        }
+        if (map.isEmpty()) {
+            pendingTruceRequests.remove(targetTeamId);
+        }
+        return new ArrayList<>(map.keySet());
+    }
+
+    /**
+     * 获取指定队伍对外发送的所有有效求和申请的目标团队 ID 列表
+     */
+    public List<Integer> getPendingTruceRequestsFrom(int fromTeamId) {
+        List<Integer> targetIds = new ArrayList<>();
+        long now = System.currentTimeMillis();
+        for (Map.Entry<Integer, Map<Integer, Long>> entry : pendingTruceRequests.entrySet()) {
+            int toTeamId = entry.getKey();
+            Map<Integer, Long> map = entry.getValue();
+            Long exp = map.get(fromTeamId);
+            if (exp != null) {
+                if (exp > now) {
+                    targetIds.add(toTeamId);
+                } else {
+                    map.remove(fromTeamId);
+                    if (truceDao != null) {
+                        truceDao.deleteTruceRequest(fromTeamId, toTeamId);
+                    }
+                }
+            }
+        }
+        return targetIds;
+    }
+
+    /**
+     * 获取指定团队参与的所有有效战后保护（返回: 对方团队 ID -> 剩余秒数）
+     */
+    public Map<Integer, Long> getActivePostWarProtectionsFor(int teamId) {
+        Map<Integer, Long> result = new HashMap<>();
+        long now = System.currentTimeMillis();
+        List<String> expiredKeys = new ArrayList<>();
+        for (Map.Entry<String, Long> entry : postWarProtections.entrySet()) {
+            String key = entry.getKey();
+            Long exp = entry.getValue();
+            if (exp <= now) {
+                expiredKeys.add(key);
+                continue;
+            }
+            String[] parts = key.split(":");
+            if (parts.length == 2) {
+                try {
+                    int t1 = Integer.parseInt(parts[0]);
+                    int t2 = Integer.parseInt(parts[1]);
+                    if (t1 == teamId) {
+                        result.put(t2, (exp - now + 999L) / 1000L);
+                    } else if (t2 == teamId) {
+                        result.put(t1, (exp - now + 999L) / 1000L);
+                    }
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        for (String expKey : expiredKeys) {
+            postWarProtections.remove(expKey);
+            String[] parts = expKey.split(":");
+            if (parts.length == 2 && truceDao != null) {
+                try {
+                    truceDao.deleteProtection(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        return result;
     }
 }

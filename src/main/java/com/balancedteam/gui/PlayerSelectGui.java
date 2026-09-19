@@ -10,6 +10,7 @@ import com.balancedteam.model.TeamMember;
 import com.balancedteam.util.MessageUtil;
 import com.balancedteam.util.PermissionUtil;
 import com.balancedteam.util.SoundUtil;
+import com.balancedteam.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -94,7 +95,7 @@ public class PlayerSelectGui {
                 // 已发送邀请
                 InviteManager.Invite invite = plugin.getInviteManager().getInvite(target.getUniqueId(), team.getId());
                 long remaining = invite != null ? invite.getRemainingSeconds() : 0;
-                itemMap.put("REMAINING", String.valueOf(remaining));
+                itemMap.put("REMAINING", TimeUtil.formatDuration(player, remaining));
 
                 String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.PLAYER_SELECT_ITEM_ALREADY_INVITED_NAME, itemMap);
                 List<String> lore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.PLAYER_SELECT_ITEM_ALREADY_INVITED_LORE, itemMap);
@@ -162,10 +163,13 @@ public class PlayerSelectGui {
                     Map<String, String> sendMap = new HashMap<>();
                     sendMap.put("PLAYER", target.getName());
                     sendMap.put("TEAM", team.getName());
-                    sendMap.put("TIMEOUT", String.valueOf(timeout));
+                    sendMap.put("TIMEOUT", TimeUtil.formatDuration(player, timeout));
 
                     MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_invite_sent", sendMap));
-                    MessageUtil.sendMessage(target, plugin.getConfigManager().getMessage(target, "team_invite_received", sendMap));
+
+                    Map<String, String> targetMap = new HashMap<>(sendMap);
+                    targetMap.put("TIMEOUT", TimeUtil.formatDuration(target, timeout));
+                    MessageUtil.sendMessage(target, plugin.getConfigManager().getMessage(target, "team_invite_received", targetMap));
                     SoundUtil.playSuccess(player);
                     SoundUtil.playDing(target);
 
@@ -274,10 +278,13 @@ public class PlayerSelectGui {
         Map<String, String> map = new HashMap<>();
         map.put("PLAYER", target.getName());
         map.put("TEAM", team.getName());
-        map.put("TIMEOUT", String.valueOf(timeout));
+        map.put("TIMEOUT", TimeUtil.formatDuration(player, timeout));
 
         MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "team_invite_sent", map));
-        MessageUtil.sendMessage(target, plugin.getConfigManager().getMessage(target, "team_invite_received", map));
+
+        Map<String, String> targetMap = new HashMap<>(map);
+        targetMap.put("TIMEOUT", TimeUtil.formatDuration(target, timeout));
+        MessageUtil.sendMessage(target, plugin.getConfigManager().getMessage(target, "team_invite_received", targetMap));
         SoundUtil.playSuccess(player);
         SoundUtil.playDing(target);
     }

@@ -40,7 +40,7 @@ public class ConfigManager {
         }
 
         // 3. 同步时间格式与单位到 TimeUtil
-        com.balancedteam.util.TimeUtil.setDateFormat(getDateFormat());
+        com.balancedteam.util.TimeUtil.setDateFormat(getDateFormat(), getTimezone());
         syncTimeUnits();
     }
 
@@ -333,8 +333,29 @@ public class ConfigManager {
         return config.getInt("balance.ally_request_timeout_seconds", 3600);
     }
 
+    public int getTruceRequestTimeout() {
+        return config.getInt("balance.truce_request_timeout_seconds", 300);
+    }
+
+    public int getPostWarProtectionSeconds() {
+        return config.getInt("balance.post_war_protection_seconds", 1800);
+    }
+
     public String getDateFormat() {
         return config.getString("date_format", "yyyy-MM-dd HH:mm:ss");
+    }
+
+    public String getTimezone() {
+        return config.getString("timezone", "default");
+    }
+
+    /**
+     * 全局友伤与同盟保护机制总开关
+     * true = 开启保护机制 (队伍友伤与同盟保护正常按规则生效)
+     * false = 全局关闭保护机制 (允许玩家互相伤害，插件不拦截任何队伍/同盟伤害)
+     */
+    public boolean isFriendlyFireProtectionEnabled() {
+        return config.getBoolean("balance.enable_friendly_fire_protection", true);
     }
 
     public boolean isAllowFriendlyFireToggle() {
@@ -342,10 +363,20 @@ public class ConfigManager {
     }
 
     /**
+     * 是否阻止玩家破坏/引爆同队或同盟成员放置的末影水晶 (友伤关闭时生效)
+     */
+    public boolean isPreventFriendlyCrystalBreak() {
+        return config.getBoolean("balance.prevent_friendly_crystal_break", false);
+    }
+
+    /**
      * 判断指定队伍的友伤是否实际处于开启状态
-     * 如果管理员禁止切换友伤，则队伍成员间伤害强制开启 (返回 true)
+     * 如果全局关闭了保护机制，或者管理员禁止切换友伤，则队伍成员间伤害强制开启 (返回 true)
      */
     public boolean isFriendlyFireActive(com.balancedteam.model.Team team) {
+        if (!isFriendlyFireProtectionEnabled()) {
+            return true;
+        }
         if (!isAllowFriendlyFireToggle()) {
             return true;
         }

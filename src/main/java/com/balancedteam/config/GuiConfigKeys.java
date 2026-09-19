@@ -140,6 +140,10 @@ public final class GuiConfigKeys {
     public static final String ENEMY_MANAGE_BACK_BUTTON = "gui.enemy_manage.back_button";
     public static final String ENEMY_MANAGE_PREV_PAGE = "gui.enemy_manage.prev_page";
     public static final String ENEMY_MANAGE_NEXT_PAGE = "gui.enemy_manage.next_page";
+    public static final String ENEMY_MANAGE_PROTECTION_NAME = "gui.enemy_manage.protection_badge_name";
+    public static final String ENEMY_MANAGE_PROTECTION_HEADER = "gui.enemy_manage.protection_badge_header";
+    public static final String ENEMY_MANAGE_PROTECTION_ITEM = "gui.enemy_manage.protection_badge_item";
+    public static final String ENEMY_MANAGE_PROTECTION_FOOTER = "gui.enemy_manage.protection_badge_footer";
 
     // ==========================================
     // 7. 通知中心界面 (入队邀请与同盟申请)
@@ -152,6 +156,8 @@ public final class GuiConfigKeys {
     public static final String NOTIFICATION_REQUEST_ITEM_LORE_LEADER = "gui.notification.request_item_lore_leader";
     public static final String NOTIFICATION_APPLICATION_ITEM_NAME = "gui.notification.application_item_name";
     public static final String NOTIFICATION_APPLICATION_ITEM_LORE = "gui.notification.application_item_lore";
+    public static final String NOTIFICATION_TRUCE_ITEM_NAME = "gui.notification.truce_item_name";
+    public static final String NOTIFICATION_TRUCE_ITEM_LORE = "gui.notification.truce_item_lore";
     public static final String NOTIFICATION_NO_REQUEST_NAME = "gui.notification.no_request_name";
     public static final String NOTIFICATION_NO_REQUEST_LORE = "gui.notification.no_request_lore";
     public static final String NOTIFICATION_BACK_BUTTON = "gui.notification.back_button";
