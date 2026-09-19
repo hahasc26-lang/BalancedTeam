@@ -6,7 +6,115 @@ All notable changes to this project are documented here.
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [1.2.0] - 2026-09-19
+## [1.2.1] - 2026-09-19
+
+### 重构 / Refactored
+
+- **多语言管理器架构拆分 (Language Architecture Decoupling)**：
+  - 将原先揉合在单一管理器中的逻辑彻底拆分为两个职责明确的独立管理器：
+    - `ServerLanguageManager`：专门负责管理服务端环境与控制台输出日志语言，读取 `config.yml` 中的 `server_messages_language`，直接为 `PluginLogger` 提供支持；
+    - `ClientLanguageManager`：专门负责管理客户端/玩家端的多语言系统，读取 `config.yml` 中的 `language`，负责语言包文件（`lang/*.yml`）的加载与补全、玩家偏好持久化（`data/user_languages.yml`）、客户端 Locale（`Player.getLocale()`）智能模糊匹配以及 `/teamlang` 系列指令；
+  - 彻底移除原历史类 `LanguageManager`，在 `BalancedTeamPlugin` 中提供 `getServerLanguageManager()` 与 `getClientLanguageManager()`，所有组件均无缝迁移。
+
+### 新增与补充 / Added & Supplemented
+
+- **时间格式化算法与服务端时区支持 (Timezone & Duration Formatting)**：
+  - `config.yml` 新增 `timezone` 配置项（默认 `GMT+8`），支持任意标准时区 ID（如 `Asia/Shanghai`、`UTC`、`America/New_York`、`Europe/London` 等）；
+  - `TimeUtil` 升级全面支持服务端配置时区，统一所有日期时间格式化（`formatDate`）的时区输出，彻底解决跨地区服务器客户端/服务端时差显示问题；
+  - `TimeUtil.formatDuration` 阶梯算法重构：
+    - 智能阶梯组合多单位展示（如 `1天 2小时 30分`），彻底告别原先 `0h 0m 25s` 的视觉冗余；
+    - 支持依据接收端玩家或控制台语言环境自适应输出中文/英文时间单位及优雅的字符间距；
+  - 全面排查并替换控制台、命令提示（技能冷却、退队冷却、友伤切换冷却、保护期剩余、邀请/同盟/求和超时）以及 GUI 物品 Lore 中的裸露秒数（如 `1800 秒`）为自适应阶梯时间。
+- **服务端日志支持多国语言扩展 (Server Language Expansion)**：
+  - 服务端语言支持由原先的 3 种（`zh_CN`、`zh_TW`、`en_US`）扩展至 7 种，新增支持：
+    - 日语（`ja_JP`）
+    - 俄语（`ru_RU`）
+    - 德语（`de_DE`）
+    - 西班牙语（`es_ES`）
+  - `ServerLanguageManager` 支持 `ja`、`ru`、`de`、`es` 等前缀模糊匹配；
+  - `PluginLogger` 中全部 30 项控制台日志均新增了上述 4 种语言的高质量本地化翻译；
+  - `config.yml` 中 `server_messages_language` 配置项注释同步更新列出 7 种内置语言。
+- **多语言新增键值 (New Language Keys)**：
+  - 三套语言文件（`zh_CN.yml`、`zh_TW.yml`、`en_US.yml`）新增国际化条目：
+    - `lang_not_initialized`：语言管理器未初始化提示；
+    - `lang_usage_set`：`/teamlang set` 指令使用说明；
+    - `usage_info`：`/team info` 帮助提示；
+    - `team_list_empty`：控制台全服团队列表为空时的提示；
+    - `team_list_header`：控制台团队列表分页表头（支持 `{PAGE}`、`{TOTAL}` 占位符）；
+    - `team_list_item`：控制台团队条目格式化输出（支持 `{TEAM}`、`{LEADER}`、`{MEMBERS}`、`{MAX}`、`{FF}`、`{ALLIES}`、`{ENEMIES}`）；
+    - `team_list_footer`：控制台团队列表翻页提示（支持 `{NEXT_PAGE}` 占位符）；
+    - `chat_input_timeout`：聊天栏输入会话超时自动取消提示；
+    - `chat_input_cancelled`：聊天栏输入主动取消提示；
+    - `chat_input_suggest_hover`：聊天栏快捷建议文本悬浮提示；
+    - `gui.list.empty_item_name` / `gui.list.empty_item_lore`：全服团队列表无团队时的占位符物品名称与 Lore；
+    - `gui.menu.ff_status_prefix`：团队控制面板友伤状态前缀文本。
+
+### 优化与修复 / Improved & Fixed
+
+- **清除命令类与队伍聊天中的硬编码中文字符串 (Eliminate Command & Chat Hardcoded Strings)**：
+  - 彻底清理了 `TeamCommand`（`sendConsoleTeamList`、`handleInfo`、`handleChat`、`handleFriendlyFire`、`handleAlly`、`handleEnemy`）与 `TeamLangCommand` 中残留的硬编码中文提示，全面改由多语言配置文件动态获取；
+  - 彻底清理了 `ChatInputManager` 聊天栏输入捕获（超时取消、取消输入、快速建议 hover 悬浮）中的硬编码中文；
+  - 彻底清理了 `TeamMenuGui`（友伤状态前缀）与 `TeamListGui`（团队列表为空占位符）中的硬编码中文；
+  - 队伍信息中的队长缺省名与友伤开关状态全面对接语言文件的 `time_unit.unknown` 与 `status.on` / `status.off`。
+- **队伍聊天与解散广播接收端动态多语言适配 (Recipient-Aware Chat & Broadcast Localization)**：
+  - `ChatManager`：团队聊天消息分发时，根据接收队员/管理员的个人语言偏好动态格式化职位名称 `{ROLE}`（中文显示队长/管理员，英文显示 Leader/Officer 等）；
+  - `TeamCommand`：修复了 `handleChat`（切换队伍聊天）、`handleFriendlyFire`、`handleAlly`、`handleEnemy` 未传入 `Player` 实例导致非中文客户端收到服务端默认语言提示的问题；
+  - `TeamManager`：修复了解散团队全服广播（`team_disband_broadcast`）未传入接收玩家实例的问题；
+  - `PlayerListener`：优化团队聊天模式检测，当玩家已不在队伍或全局聊天已关闭时自动退出模式并向玩家发送本地化提示。
+- **全量命令消息动态多语言适配 (Dynamic Sender-Aware Localization)**：
+  - 全面排查并修复 `TeamCommand`、`TeamAdminCommand`、`TeamMsgCommand` 中此前未传 `sender`/`player` 的 `getMessage(...)` 与 `getMessageList(...)` 调用，确保玩家执行任何指令时均能严格根据其自身的生效语言呈现，杜绝部分指令错误回退为全服默认语言的问题。
+- **版本号升级 `1.2.0` → `1.2.1`**：
+  - `pom.xml` 版本号升级为 `1.2.1`。
+
+---
+
+### Refactored (English)
+
+- **Language Architecture Decoupling**:
+  - Decoupled the previously monolithic language system into two single-responsibility managers:
+    - `ServerLanguageManager`: Exclusively manages server-side environment and console logging language, loads `server_messages_language` from `config.yml`, and backs `PluginLogger`;
+    - `ClientLanguageManager`: Exclusively manages player-facing localization, loads client default `language` from `config.yml`, manages language packs (`lang/*.yml`), player preferences persistence (`data/user_languages.yml`), client locale auto-detection (`Player.getLocale()`), fuzzy dialect matching, and `/teamlang` commands;
+  - Completely removed the legacy `LanguageManager` class; `BalancedTeamPlugin` now exposes `getServerLanguageManager()` and `getClientLanguageManager()`.
+
+### Added & Supplemented (English)
+
+- **Timezone & Duration Formatting**:
+  - Added `timezone` key in `config.yml` (default: `GMT+8`), supporting standard timezone IDs (e.g. `Asia/Shanghai`, `UTC`, `America/New_York`);
+  - `TimeUtil` now respects the server-configured timezone for all date formatting (`formatDate`), resolving discrepancies between client and server time displays;
+  - Re-engineered `TimeUtil.formatDuration` with adaptive multi-tier unit display (days, hours, minutes, seconds), eliminating redundant `0h 0m` outputs and dynamically localizing units and spacing to each player's client language;
+  - Standardized time displays across all console outputs, command feedback, and GUI lore items to localized duration strings rather than raw seconds.
+- **Server Console Logging Multilingual Expansion**:
+  - Expanded built-in server language support from 3 (`zh_CN`, `zh_TW`, `en_US`) to 7 languages, adding:
+    - Japanese (`ja_JP`)
+    - Russian (`ru_RU`)
+    - German (`de_DE`)
+    - Spanish (`es_ES`)
+  - Added prefix fuzzy matching in `ServerLanguageManager` for `ja`, `ru`, `de`, and `es`;
+  - Added high-quality translations for all 30 console log entries in `PluginLogger`;
+  - Updated `config.yml` comments under `server_messages_language` to enumerate all 7 built-in language codes.
+- **New Language Keys**:
+  - Added new message keys across all three language files (`zh_CN.yml`, `zh_TW.yml`, `en_US.yml`):
+    - `lang_not_initialized`: Shown when language manager is uninitialized;
+    - `lang_usage_set`: Usage instructions for `/teamlang set`;
+    - `usage_info`: Usage syntax for `/team info`;
+    - `team_list_empty`: Console message when no teams exist on the server;
+    - `team_list_header`: Paginated header for console team list with `{PAGE}` and `{TOTAL}`;
+    - `team_list_item`: Formatted entry for console team list with placeholders;
+    - `team_list_footer`: Pagination footer for console team list with `{NEXT_PAGE}`.
+
+### Improved & Fixed (English)
+
+- **Eliminated Command Hardcoded Strings**:
+  - Completely replaced hardcoded Chinese strings in `TeamCommand` (`sendConsoleTeamList`, `handleInfo`) and `TeamLangCommand` with dynamic language pack lookups;
+  - Fallback leader names and friendly-fire toggle statuses now resolve via `time_unit.unknown` and `status.on` / `status.off`.
+- **Dynamic Sender-Aware Localization**:
+  - Fixed `getMessage(...)` and `getMessageList(...)` invocations across `TeamCommand`, `TeamAdminCommand`, and `TeamMsgCommand` that were missing the `sender`/`player` argument, ensuring all command responses strictly follow each player's active language preference rather than falling back to the server default.
+- **Version Bump `1.2.0` → `1.2.1`**:
+  - `pom.xml` version bumped to `1.2.1`.
+
+---
+
+## [1.2.0] - 2026-09-12
 
 ### 新增 / Added
 
@@ -26,25 +134,21 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - **GUI 交互无缝集成 (Seamless GUI Integration)**：
     - 消息与通知中心（`NotificationGui`）：新增白色旗帜（White Banner）卡片展示停战求和通知，实时展示求和发起方、剩余响应时间与停战保护时长，支持左键一键同意、右键拒绝；
     - 敌对管理界面（`EnemyManageGui`）：支持一键向敌对队伍发起停战请求；若队伍处于战后保护期内，敌方卡片自动显示盾牌图标及动态保护倒计时 Badge。
-- **时间格式化算法与服务端时区支持 (Timezone & Duration Formatting)**：
-  - `config.yml` 新增 `timezone` 配置项（默认 `GMT+8`），支持任意标准时区 ID（如 `Asia/Shanghai`、`UTC`、`America/New_York`、`Europe/London` 等）；
-  - `TimeUtil` 升级全面支持服务端配置时区，统一所有日期时间格式化（`formatDate`）的时区输出，杜绝跨地区服务器时差显示问题；
-  - `TimeUtil.formatDuration` 阶梯算法重构：
-    - 智能阶梯组合多单位展示（如 `1天 2小时 30分`），彻底告别原先 `0h 0m 25s` 的视觉冗余；
-    - 支持依据接收端玩家或控制台语言环境自适应输出中文/英文时间单位及优雅的字符间距；
-  - 全面排查并替换控制台、命令提示（技能冷却、退队冷却、友伤切换冷却、保护期剩余、邀请/同盟/求和超时）以及 GUI 物品 Lore 中的裸露秒数（如 `1800 秒`）为自适应阶梯时间。
-- **多语言系统架构彻底拆分 (Language Architecture Decoupling)**：
-  - 将原先单一的语言管理器彻底解耦为两个职责单一的独立管理器：
-    - `ServerLanguageManager`：专职管理服务端环境与控制台日志，读取 `server_messages_language`，为 `PluginLogger` 提供支持；
-    - `ClientLanguageManager`：专职管理客户端/玩家端多语言，读取 `language`，负责语言包文件加载、自动补全缺失键值、玩家偏好持久化（`data/user_languages.yml`）、Locale 智能模糊匹配与 `/teamlang` 系列指令；
-  - 彻底移除原历史类 `LanguageManager`，在 `BalancedTeamPlugin` 中提供 `getServerLanguageManager()` 与 `getClientLanguageManager()`；
-  - **服务端日志扩展至 7 种语言**：新增日语（`ja_JP`）、俄语（`ru_RU`）、德语（`de_DE`）、西班牙语（`es_ES`），`PluginLogger` 全部 30 项控制台日志均新增专业翻译；
-  - **清除所有命令类与 GUI 中的硬编码中文字符串**：全面对接三套语言包，修复队伍聊天、解散广播等在接收端未根据玩家个人语言偏好动态呈现的问题。
-- **队伍聊天系统控制与终端监控 (Team Chat Controls & Console Spy)**：
-  - `config.yml` 的 `chat` 节点新增 `enable_chat` 布尔配置项（默认 `true`），可一键关闭全服队伍聊天；
-  - 新增 `enable_tc_command` 配置项读取（默认 `true`），可单独关闭 `/tc`、`/tm` 快捷聊天指令；
-  - 新增 `console_listen_team_chat` 配置项（默认 `true`），服务器控制台可实时监控并留存全服队伍聊天记录；
-  - 新增配套多语言键：`chat_disabled`、`chat_tc_disabled`。
+- **队伍聊天全局开关 `enable_chat` (Global Chat Toggle)**：
+  - `config.yml` 的 `chat` 节点新增 `enable_chat` 布尔配置项（默认 `true`），管理员将其设为 `false` 后，所有队伍聊天入口（`/team chat`、`/tc`、聊天锁定模式）均立即失效；
+  - `ConfigManager` 新增 `isChatEnabled()` 方法统一读取该配置项；
+  - `ChatManager.sendTeamChat()` 入口增加全局开关守卫，作为消息分发的最终屏障；
+  - `PlayerListener`（聊天锁定模式监听）、`TeamCommand.handleChat()`（`/team chat` 子指令）、`TeamMsgCommand.onCommand()`（`/tc` 系列指令）均同步添加 `isChatEnabled()` 前置检测；玩家处于聊天锁定模式时若全局聊天被关闭，会被自动清出该模式。
+- **快捷聊天指令独立开关 `enable_tc_command` (TC Command Toggle)**：
+  - `config.yml` 的 `chat` 节点已有 `enable_tc_command` 配置项，现于 `ConfigManager` 新增 `isTcCommandEnabled()` 方法统一读取；
+  - `TeamMsgCommand.onCommand()` 在指令入口处先行检测该开关，`enable_tc_command: false` 时禁止玩家使用 `/tc`、`/tm`、`/teammsg` 等快捷聊天指令，并向玩家返回提示消息。
+- **终端监听队伍聊天 `console_listen_team_chat` (Console Spy)**：
+  - `ConfigManager` 新增 `isConsoleListenTeamChat()` 方法读取 `chat.console_listen_team_chat`（默认 `true`）；
+  - `ChatManager.sendTeamChat()` 在完成队内消息分发与管理员监听分发后，若该开关开启，将使用与队内相同的格式字符串在服务器控制台打印完整的聊天行，方便服务器后台留存记录。
+- **多语言新消息键 (New Language Keys)**：
+  - 三套语言文件（`zh_CN.yml`、`zh_TW.yml`、`en_US.yml`）新增：
+    - `chat_disabled`：全局聊天功能已被管理员关闭时的提示；
+    - `chat_tc_disabled`：`/tc` 快捷指令已被管理员禁用时的提示。
 
 ### 变更与修复 / Changed & Fixed
 
@@ -53,9 +157,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - 强化团队人数（`max_members`）、同盟数（`max_allies`）与敌对数（`max_enemies`）的并发同步锁边界防护；
   - 优化 `DamageListener` 与 `CrystalListener` 在复杂伤害源（水晶连锁爆炸、发射器火药、药水云）下的队友与盟友拦截准确率。
 - **`ConfigManager` 方法补全与文档完善**：
-  - 修复 `getChatFormat()` 与 `getSpyFormat()` 的缺省值与占位符规范，补充标准 Javadoc 文档。
-- **版本号统一升级至 `1.2.0`**：
-  - `pom.xml` 与发布工件版本号统一为 `1.2.0`。
+  - `getChatFormat()` 默认值修复：补回误删的 `{TEAM}` 占位符，使其与 `config.yml` 中的 `chat.format` 默认值完全对齐；
+  - `getSpyFormat()` 默认值统一：将硬编码默认值中的 `Spy` 改回 `SPY`，与 `config.yml` 保持一致；
+  - 两个方法的 Javadoc 改写为标准 HTML 列表格式，补全 `@return` 描述，枚举全部支持的占位符（`{TEAM}`、`{ROLE}`、`{PLAYER}`、`{MESSAGE}`）。
+- **版本号升级 `1.1.7` → `1.2.0`**：
+  - `pom.xml` 版本号由 `1.1.7` 升级至 `1.2.0`，反映本次功能性新增的语义化版本变更。
 
 ---
 
@@ -76,17 +182,21 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - **GUI Integration**:
     - Notification Center (`NotificationGui`): White Banner cards display truce requests with time remaining and protection duration, supporting one-click accept (left-click) or deny (right-click);
     - Enemy Management GUI (`EnemyManageGui`): Send peace requests with one click; active post-war protection displays a shield icon and live countdown badge.
-- **Timezone & Duration Formatting**:
-  - Added `timezone` key in `config.yml` (default: `GMT+8`), supporting standard timezone IDs (e.g. `Asia/Shanghai`, `UTC`, `America/New_York`);
-  - `TimeUtil` now respects the server-configured timezone for all date formatting (`formatDate`);
-  - Re-engineered `TimeUtil.formatDuration` with adaptive multi-tier unit display (days, hours, minutes, seconds), eliminating redundant `0h 0m` outputs and dynamically localizing units to each player's client language;
-  - Replaced raw seconds across all console outputs, command feedback, and GUI lore items with localized duration strings.
-- **Language Architecture Decoupling & Server Language Expansion**:
-  - Decoupled language management into `ServerLanguageManager` (server environment & console logs) and `ClientLanguageManager` (player-facing localization & client auto-detection);
-  - Expanded built-in server console logging to 7 languages (`zh_CN`, `zh_TW`, `en_US`, `ja_JP`, `ru_RU`, `de_DE`, `es_ES`);
-  - Removed all legacy hardcoded Chinese strings in commands and GUIs; ensured chat messages and broadcasts resolve per-recipient language preferences.
-- **Team Chat Controls & Console Spy**:
-  - Added `chat.enable_chat` global toggle, `chat.enable_tc_command` toggle, and `chat.console_listen_team_chat` spy option.
+- **Global Chat Toggle `enable_chat`**:
+  - New boolean `enable_chat` key added under the `chat` node in `config.yml` (defaults to `true`). When set to `false`, all team chat entry points (`/team chat`, `/tc`, chat lock mode) are immediately disabled;
+  - `ConfigManager` now exposes `isChatEnabled()` as a unified reader for this option;
+  - `ChatManager.sendTeamChat()` enforces the global toggle as a final barrier before dispatching any message;
+  - `PlayerListener` (chat lock mode), `TeamCommand.handleChat()`, and `TeamMsgCommand.onCommand()` all add a `isChatEnabled()` pre-check; players currently in chat lock mode are automatically ejected when the feature is disabled.
+- **TC Command Independent Toggle `enable_tc_command`**:
+  - `ConfigManager` now exposes `isTcCommandEnabled()` to read `chat.enable_tc_command`;
+  - `TeamMsgCommand.onCommand()` checks this flag first; when disabled, `/tc`, `/tm`, and `/teammsg` are all blocked and a feedback message is sent to the player.
+- **Console Team Chat Spy `console_listen_team_chat`**:
+  - `ConfigManager` now exposes `isConsoleListenTeamChat()` to read `chat.console_listen_team_chat` (defaults to `true`);
+  - `ChatManager.sendTeamChat()` prints the fully formatted chat line to the server console after member and admin dispatch, using the same `chat.format` template, enabling server-side logging.
+- **New Language Keys**:
+  - All three language files (`zh_CN.yml`, `zh_TW.yml`, `en_US.yml`) gain:
+    - `chat_disabled`: Shown when a player attempts team chat while the feature is globally disabled;
+    - `chat_tc_disabled`: Shown when a player uses `/tc` while the shortcut command is disabled.
 
 ### Changed & Fixed (English)
 
@@ -94,8 +204,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Fixed PlaceholderAPI chat injection vulnerability;
   - Added synchronized double-checked locking for team size and relation limits;
   - Optimized `DamageListener` and `CrystalListener` precision across projectile, potion, and CPvP vectors.
-- **Version Bump `1.2.0`**:
-  - `pom.xml` version set to `1.2.0`.
+- **`ConfigManager` Method Fixes & Documentation**:
+  - `getChatFormat()` default value restored: re-added the missing `{TEAM}` placeholder to match the `chat.format` default in `config.yml`;
+  - `getSpyFormat()` default value corrected: `Spy` → `SPY` in hardcoded fallback, consistent with `config.yml`;
+  - Both methods' Javadoc rewritten to standard HTML list format with full `@return` descriptions and complete placeholder documentation.
+- **Version Bump `1.1.7` → `1.2.0`**:
+  - `pom.xml` version updated to `1.2.0` to reflect the semantic version increment for new feature additions.
 
 ---
 
