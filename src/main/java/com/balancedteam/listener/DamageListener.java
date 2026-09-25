@@ -218,7 +218,7 @@ public class DamageListener implements Listener {
                 // 优先使用新 API（Bukkit 1.20.5+），降级兼容旧版本
                 org.bukkit.potion.PotionType pt = null;
                 try {
-                    pt = event.getEntity().getPotionType();
+                    pt = event.getEntity().getBasePotionType();
                 } catch (Throwable ignored) {
                     @SuppressWarnings("deprecation")
                     org.bukkit.potion.PotionData basePotionData = event.getEntity().getBasePotionData();
