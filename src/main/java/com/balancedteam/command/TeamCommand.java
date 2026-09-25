@@ -11,6 +11,8 @@ import com.balancedteam.model.Team;
 import com.balancedteam.model.TeamMember;
 import com.balancedteam.model.TeamRole;
 import com.balancedteam.util.MessageUtil;
+import com.balancedteam.util.PermissionUtil;
+import com.balancedteam.util.SoundUtil;
 import com.balancedteam.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -1264,24 +1266,24 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
                             return filter(plugin.getRelationManager().getEnemies(myTeam.getId()).stream()
                                     .map(id -> plugin.getTeamManager().getTeamById(id))
                                     .filter(Objects::nonNull)
-                                    .map(Team::getName)
+                                    .map(t -> t.getName())
                                     .collect(Collectors.toList()), args[2]);
                         } else if ("accept".equals(action) || "deny".equals(action) || "reject".equals(action)) {
                             return filter(plugin.getRelationManager().getPendingTruceRequestsTo(myTeam.getId()).stream()
                                     .map(id -> plugin.getTeamManager().getTeamById(id))
                                     .filter(Objects::nonNull)
-                                    .map(Team::getName)
+                                    .map(t -> t.getName())
                                     .collect(Collectors.toList()), args[2]);
                         } else if ("cancel".equals(action)) {
                             return filter(plugin.getRelationManager().getPendingTruceRequestsFrom(myTeam.getId()).stream()
                                     .map(id -> plugin.getTeamManager().getTeamById(id))
                                     .filter(Objects::nonNull)
-                                    .map(Team::getName)
+                                    .map(t -> t.getName())
                                     .collect(Collectors.toList()), args[2]);
                         }
                     }
                 }
-                return filter(plugin.getTeamManager().getAllTeams().stream().map(Team::getName)
+                return filter(plugin.getTeamManager().getAllTeams().stream().map(t -> t.getName())
                         .collect(Collectors.toList()), args[2]);
             }
         }

@@ -340,7 +340,7 @@ public class RelationManager {
     public List<Integer> getDeclaredEnemies(int teamId) {
         return relationsById.values().stream()
                 .filter(r -> r.getRelationType() == RelationType.ENEMY && r.getTeamId1() == teamId)
-                .map(TeamRelation::getTeamId2)
+                .map(r -> r.getTeamId2())
                 .collect(Collectors.toList());
     }
 

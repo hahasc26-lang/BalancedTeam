@@ -456,8 +456,8 @@ public class NotificationGui {
                                     bcMap.put("TEAM1", finalRequesterTeam.getName());
                                     bcMap.put("TEAM2", currentTeam.getName());
 
-                                    Map<String, String> protMap = new HashMap<>();
-                                    protMap.put("TIME", String.valueOf(protectionSeconds));
+                                    Map<String, String> bcProtMap = new HashMap<>();
+                                    bcProtMap.put("TIME", String.valueOf(protectionSeconds));
 
                                     // 全服广播停战
                                     for (Player p : Bukkit.getOnlinePlayers()) {

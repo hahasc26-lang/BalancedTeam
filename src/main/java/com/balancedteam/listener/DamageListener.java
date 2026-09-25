@@ -215,14 +215,22 @@ public class DamageListener implements Listener {
         }
         if (!hasHarmful) {
             try {
-                if (event.getEntity().getBasePotionData() != null) {
-                    org.bukkit.potion.PotionType pt = event.getEntity().getBasePotionData().getType();
-                    if (pt != null) {
-                        for (PotionEffect pe : pt.getPotionEffects()) {
-                            if (isHarmfulEffect(pe.getType())) {
-                                hasHarmful = true;
-                                break;
-                            }
+                // 优先使用新 API（Bukkit 1.20.5+），降级兼容旧版本
+                org.bukkit.potion.PotionType pt = null;
+                try {
+                    pt = event.getEntity().getPotionType();
+                } catch (Throwable ignored) {
+                    @SuppressWarnings("deprecation")
+                    org.bukkit.potion.PotionData basePotionData = event.getEntity().getBasePotionData();
+                    if (basePotionData != null) {
+                        pt = basePotionData.getType();
+                    }
+                }
+                if (pt != null) {
+                    for (PotionEffect pe : pt.getPotionEffects()) {
+                        if (isHarmfulEffect(pe.getType())) {
+                            hasHarmful = true;
+                            break;
                         }
                     }
                 }
@@ -276,12 +284,21 @@ public class DamageListener implements Listener {
      */
     public static boolean isHarmfulEffect(PotionEffectType type) {
         if (type == null) return false;
-        String name = type.getName();
+        // getKey().getKey() 返回命名空间键（如 "poison"），转大写得到与旧 getName() 相同的字符串
+        String name;
+        try {
+            name = type.getKey().getKey().toUpperCase();
+        } catch (Throwable e) {
+            // 安全倒退：旧版本 API 可能没有 getKey，则退回废弃方法
+            @SuppressWarnings("deprecation")
+            String fallback = type.getName();
+            name = fallback;
+        }
         return name.equals("HARM") || name.equals("POISON") || name.equals("WITHER")
                 || name.equals("SLOW") || name.equals("WEAKNESS") || name.equals("BLINDNESS")
                 || name.equals("CONFUSION") || name.equals("HUNGER") || name.equals("LEVITATION")
                 || name.equals("UNLUCK") || name.equals("DARKNESS") || name.equals("BAD_OMEN")
-                || name.equals("SLOW_DIGGING");
+                || name.equals("SLOW_DIGGING") || name.equals("SLOWNESS") || name.equals("INSTANT_DAMAGE");
     }
 
     /**
@@ -326,9 +343,15 @@ public class DamageListener implements Listener {
         }
         if (damager instanceof LightningStrike) {
             LightningStrike lightning = (LightningStrike) damager;
-            Entity causingEntity = lightning.getCausingEntity();
-            if (causingEntity instanceof Player) {
-                return causingEntity.getUniqueId();
+            try {
+                // getCausingEntity() 仅在部分服务端版本中存在，使用反射兼容
+                java.lang.reflect.Method m = LightningStrike.class.getMethod("getCausingEntity");
+                Object causingEntity = m.invoke(lightning);
+                if (causingEntity instanceof Player) {
+                    return ((Player) causingEntity).getUniqueId();
+                }
+            } catch (Throwable ignored) {
+                // 当前服务端版本不支持此方法，忽略
             }
         }
         if (damager instanceof Tameable) {
