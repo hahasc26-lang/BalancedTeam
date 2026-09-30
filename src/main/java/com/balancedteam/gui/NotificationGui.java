@@ -117,7 +117,8 @@ public class NotificationGui {
                 if (targetTeam == null) continue;
 
                 OfflinePlayer inviter = Bukkit.getOfflinePlayer(invite.getInviterUuid());
-                String inviterName = inviter.getName() != null ? inviter.getName() : "未知玩家";
+                String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+                String inviterName = inviter.getName() != null ? inviter.getName() : unknownText;
 
                 Map<String, String> itemMap = new HashMap<>();
                 itemMap.put("TEAM", targetTeam.getName());

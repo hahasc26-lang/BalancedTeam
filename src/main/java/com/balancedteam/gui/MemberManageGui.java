@@ -82,7 +82,8 @@ public class MemberManageGui {
             int slot = i - startIndex;
 
             OfflinePlayer op = Bukkit.getOfflinePlayer(targetMember.getUuid());
-            String targetName = op.getName() != null ? op.getName() : "未知";
+            String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+            String targetName = op.getName() != null ? op.getName() : unknownText;
             String status = op.isOnline() ? onlineStatus : offlineStatus;
             String roleDisplayName = plugin.getConfigManager().getRoleDisplayName(player, targetMember.getRole());
             String joinDate = TimeUtil.formatDate(player, targetMember.getJoinedAt());

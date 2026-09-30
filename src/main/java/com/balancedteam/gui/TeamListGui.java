@@ -50,7 +50,8 @@ public class TeamListGui {
             int slot = i - startIndex;
 
             OfflinePlayer leader = Bukkit.getOfflinePlayer(team.getLeaderUuid());
-            String leaderName = leader.getName() != null ? leader.getName() : "未知";
+            String unknownLeader = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+            String leaderName = leader.getName() != null ? leader.getName() : unknownLeader;
 
             int onlineCount = 0;
             for (UUID u : team.getMembers().keySet()) {

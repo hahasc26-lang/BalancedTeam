@@ -86,7 +86,8 @@ public class TeamSelectGui {
             boolean hasPendingRequest = plugin.getRelationManager().hasPendingAllyRequest(myTeam.getId(), targetTeam.getId());
 
             OfflinePlayer leader = Bukkit.getOfflinePlayer(targetTeam.getLeaderUuid());
-            String leaderName = leader.getName() != null ? leader.getName() : "未知";
+            String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+            String leaderName = leader.getName() != null ? leader.getName() : unknownText;
 
             Map<String, String> itemMap = new HashMap<>();
             itemMap.put("TEAM", targetTeam.getName());
@@ -181,12 +182,12 @@ public class TeamSelectGui {
                     String formattedRem = TimeUtil.formatDuration(player, remaining);
                     Map<String, String> protMap = new HashMap<>(itemMap);
                     protMap.put("TIME", formattedRem);
-                    String name = MessageUtil.color("&e🛡 战后保护中: &f" + targetTeam.getName());
+                    String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_PROTECTED_NAME, protMap);
                     List<String> lore = Arrays.asList(
-                            MessageUtil.color("&7两队目前处于停战保护期中"),
-                            MessageUtil.color("&7剩余保护时间: &e" + formattedRem),
+                            plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_PROTECTED_LORE1, protMap),
+                            plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_PROTECTED_LORE2, protMap),
                             "",
-                            MessageUtil.color("&c✖ 战后保护期内禁止重新宣战")
+                            plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.TEAM_SELECT_ITEM_PROTECTED_LORE3, protMap)
                     );
                     item = new ItemBuilder(Material.SHIELD).name(name).lore(lore).build();
                     holder.setClickHandler(slot, e -> {

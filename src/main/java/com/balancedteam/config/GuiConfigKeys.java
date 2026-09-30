@@ -243,4 +243,24 @@ public final class GuiConfigKeys {
     public static final String TEAM_SELECT_BACK_BUTTON = "gui.team_select.back_button";
     public static final String TEAM_SELECT_PREV_PAGE = "gui.team_select.prev_page";
     public static final String TEAM_SELECT_NEXT_PAGE = "gui.team_select.next_page";
+    public static final String TEAM_SELECT_ITEM_PROTECTED_NAME = "gui.team_select.item_protected_name";
+    public static final String TEAM_SELECT_ITEM_PROTECTED_LORE1 = "gui.team_select.item_protected_lore1";
+    public static final String TEAM_SELECT_ITEM_PROTECTED_LORE2 = "gui.team_select.item_protected_lore2";
+    public static final String TEAM_SELECT_ITEM_PROTECTED_LORE3 = "gui.team_select.item_protected_lore3";
+
+    // ==========================================
+    // 12. 敌对管理界面 - 停战求和与交战扩展
+    // ==========================================
+    public static final String ENEMY_MANAGE_TRUCE_INCOMING_TITLE = "gui.enemy_manage.truce_incoming_title";
+    public static final String ENEMY_MANAGE_TRUCE_INCOMING_REMAINING = "gui.enemy_manage.truce_incoming_remaining";
+    public static final String ENEMY_MANAGE_TRUCE_INCOMING_ACCEPT = "gui.enemy_manage.truce_incoming_accept";
+    public static final String ENEMY_MANAGE_TRUCE_INCOMING_DENY = "gui.enemy_manage.truce_incoming_deny";
+    public static final String ENEMY_MANAGE_TRUCE_OUTGOING_TITLE = "gui.enemy_manage.truce_outgoing_title";
+    public static final String ENEMY_MANAGE_TRUCE_OUTGOING_REMAINING = "gui.enemy_manage.truce_outgoing_remaining";
+    public static final String ENEMY_MANAGE_TRUCE_OUTGOING_CANCEL = "gui.enemy_manage.truce_outgoing_cancel";
+    public static final String ENEMY_MANAGE_STATUS_AT_WAR = "gui.enemy_manage.status_at_war";
+    public static final String ENEMY_MANAGE_ACTION_REQUEST_TRUCE = "gui.enemy_manage.action_request_truce";
+    public static final String ENEMY_MANAGE_STATUS_THEY_DECLARED = "gui.enemy_manage.status_they_declared";
+    public static final String ENEMY_MANAGE_ACTION_DECLARE_WAR = "gui.enemy_manage.action_declare_war";
+    public static final String ENEMY_MANAGE_ACTION_REQUEST_TRUCE_ALT = "gui.enemy_manage.action_request_truce_alt";
 }

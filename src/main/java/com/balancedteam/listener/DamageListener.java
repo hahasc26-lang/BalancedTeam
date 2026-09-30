@@ -60,7 +60,7 @@ public class DamageListener implements Listener {
         Entity damager = event.getDamager();
         boolean isCrystalDamage = damager instanceof EnderCrystal;
 
-        UUID attackerUuid = getAttackerUuid(damager);
+        UUID attackerUuid = getAttackerUuid(damager, event);
         if (attackerUuid == null || attackerUuid.equals(victim.getUniqueId())) {
             return;
         }
@@ -138,12 +138,51 @@ public class DamageListener implements Listener {
             return;
         }
 
-        // 检查药水是否包含有害/负面效果
+        // 检查药水是否包含有害/负面效果 (同时检查 Custom Effects 与 PotionMeta 基础药水类型)
         boolean hasHarmful = false;
         for (PotionEffect effect : event.getPotion().getEffects()) {
             if (isHarmfulEffect(effect.getType())) {
                 hasHarmful = true;
                 break;
+            }
+        }
+        if (!hasHarmful) {
+            try {
+                org.bukkit.inventory.ItemStack item = event.getPotion().getItem();
+                if (item != null && item.getItemMeta() instanceof org.bukkit.inventory.meta.PotionMeta) {
+                    org.bukkit.inventory.meta.PotionMeta meta = (org.bukkit.inventory.meta.PotionMeta) item.getItemMeta();
+                    for (PotionEffect pe : meta.getCustomEffects()) {
+                        if (isHarmfulEffect(pe.getType())) {
+                            hasHarmful = true;
+                            break;
+                        }
+                    }
+                    if (!hasHarmful) {
+                        try {
+                            org.bukkit.potion.PotionType pt = meta.getBasePotionType();
+                            if (pt != null) {
+                                for (PotionEffect pe : pt.getPotionEffects()) {
+                                    if (isHarmfulEffect(pe.getType())) {
+                                        hasHarmful = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (Throwable ignored) {
+                            @SuppressWarnings("deprecation")
+                            org.bukkit.potion.PotionData data = meta.getBasePotionData();
+                            if (data != null && data.getType() != null) {
+                                for (PotionEffect pe : data.getType().getPotionEffects()) {
+                                    if (isHarmfulEffect(pe.getType())) {
+                                        hasHarmful = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Throwable ignored) {
             }
         }
         if (!hasHarmful) {
@@ -259,16 +298,16 @@ public class DamageListener implements Listener {
 
             if (victimTeam.getId() == attackerTeam.getId()) {
                 if (!plugin.getConfigManager().isFriendlyFireActive(victimTeam)) {
-                    iterator.remove();
+                    safeRemove(iterator);
                     sendDamageWarning(attacker, "team_ff_protected", victim.getName());
                 }
             } else if (plugin.getRelationManager().isAlly(victimTeam.getId(), attackerTeam.getId())) {
                 if (!plugin.getConfigManager().isAllyFriendlyFireAllowed()) {
-                    iterator.remove();
+                    safeRemove(iterator);
                     sendDamageWarning(attacker, "ally_ff_protected", victim.getName());
                 }
             } else if (plugin.getRelationManager().isUnderPostWarProtection(victimTeam.getId(), attackerTeam.getId())) {
-                iterator.remove();
+                safeRemove(iterator);
                 long remaining = plugin.getRelationManager().getPostWarProtectionRemainingSeconds(victimTeam.getId(), attackerTeam.getId());
                 Map<String, String> map = new HashMap<>();
                 map.put("PLAYER", victim.getName());
@@ -279,30 +318,78 @@ public class DamageListener implements Listener {
         }
     }
 
+    private void safeRemove(Iterator<?> iterator) {
+        try {
+            iterator.remove();
+        } catch (Throwable ignored) {
+        }
+    }
+
+    private static final java.util.Set<String> HARMFUL_EFFECT_NAMES = new java.util.HashSet<>(java.util.Arrays.asList(
+            // 原版负面效果 (旧名 / 常见名)
+            "HARM", "POISON", "WITHER", "SLOW", "WEAKNESS", "BLINDNESS",
+            "CONFUSION", "HUNGER", "LEVITATION", "UNLUCK", "DARKNESS",
+            "BAD_OMEN", "SLOW_DIGGING",
+            // 原版负面效果 (NamespacedKey / 规范名)
+            "INSTANT_DAMAGE", "HARMING", "SLOWNESS", "MINING_FATIGUE", "NAUSEA",
+            // 1.21+ / 26.x 新增药水与预兆效果
+            "OOZING", "INFESTED", "WEAVING", "WIND_CHARGED", "RAID_OMEN", "TRIAL_OMEN"
+    ));
+
     /**
-     * 判断药水效果是否为有害减益效果
+     * 判断药水效果是否为有害减益效果 (全面兼容 1.20.x 至 26.3 新增命名空间与药水类型)
      */
     public static boolean isHarmfulEffect(PotionEffectType type) {
         if (type == null) return false;
-        // getKey().getKey() 返回命名空间键（如 "poison"），转大写得到与旧 getName() 相同的字符串
-        String name;
         try {
-            name = type.getKey().getKey().toUpperCase();
-        } catch (Throwable e) {
-            // 安全倒退：旧版本 API 可能没有 getKey，则退回废弃方法
-            @SuppressWarnings("deprecation")
-            String fallback = type.getName();
-            name = fallback;
+            String key = type.getKey().getKey().toUpperCase(java.util.Locale.ROOT);
+            if (HARMFUL_EFFECT_NAMES.contains(key)) {
+                return true;
+            }
+        } catch (Throwable ignored) {
         }
-        return name.equals("HARM") || name.equals("POISON") || name.equals("WITHER")
-                || name.equals("SLOW") || name.equals("WEAKNESS") || name.equals("BLINDNESS")
-                || name.equals("CONFUSION") || name.equals("HUNGER") || name.equals("LEVITATION")
-                || name.equals("UNLUCK") || name.equals("DARKNESS") || name.equals("BAD_OMEN")
-                || name.equals("SLOW_DIGGING") || name.equals("SLOWNESS") || name.equals("INSTANT_DAMAGE");
+        try {
+            @SuppressWarnings("deprecation")
+            String name = type.getName();
+            if (name != null && HARMFUL_EFFECT_NAMES.contains(name.toUpperCase(java.util.Locale.ROOT))) {
+                return true;
+            }
+        } catch (Throwable ignored) {
+        }
+        return false;
     }
 
     /**
-     * 解析实际攻击者玩家 UUID（支持近战、弹射物、药水、滞留云、末影水晶、TNT、引雷闪电及驯服宠物）
+     * 解析实际攻击者玩家 UUID（支持近战、弹射物、药水、滞留云、末影水晶、TNT、TNT矿车、引雷闪电、驯服宠物及 26.3 DamageSource）
+     */
+    public UUID getAttackerUuid(Entity damager, EntityDamageByEntityEvent event) {
+        UUID attackerUuid = getAttackerUuid(damager);
+        if (attackerUuid != null) {
+            return attackerUuid;
+        }
+
+        // 适配 1.20.4+ / 1.21+ / 26.3 统一 DamageSource API (反射安全调用)
+        if (event != null) {
+            try {
+                java.lang.reflect.Method m = event.getClass().getMethod("getDamageSource");
+                Object damageSource = m.invoke(event);
+                if (damageSource != null) {
+                    java.lang.reflect.Method causingMethod = damageSource.getClass().getMethod("getCausingEntity");
+                    Object causing = causingMethod.invoke(damageSource);
+                    if (causing instanceof Player) {
+                        return ((Player) causing).getUniqueId();
+                    } else if (causing instanceof Entity) {
+                        return getAttackerUuid((Entity) causing);
+                    }
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 解析实际攻击者玩家 UUID（支持近战、弹射物、药水、滞留云、末影水晶、TNT、TNT矿车、引雷闪电及驯服宠物）
      * 即便引爆者或攻击者在伤害计算瞬间离线或死亡，也能准确返回 UUID 供队伍校验
      */
     public UUID getAttackerUuid(Entity damager) {
@@ -339,6 +426,16 @@ public class DamageListener implements Listener {
             Entity source = ((TNTPrimed) damager).getSource();
             if (source instanceof Player) {
                 return source.getUniqueId();
+            }
+        }
+        if (damager instanceof org.bukkit.entity.minecart.ExplosiveMinecart) {
+            try {
+                java.lang.reflect.Method m = damager.getClass().getMethod("getSource");
+                Object source = m.invoke(damager);
+                if (source instanceof Player) {
+                    return ((Player) source).getUniqueId();
+                }
+            } catch (Throwable ignored) {
             }
         }
         if (damager instanceof LightningStrike) {

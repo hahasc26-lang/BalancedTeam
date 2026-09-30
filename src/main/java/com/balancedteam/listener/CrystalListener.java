@@ -118,6 +118,10 @@ public class CrystalListener implements Listener {
             String lowerKey = formatLocationKey(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ());
             pending = pendingPlacements.remove(lowerKey);
         }
+        if (pending == null) {
+            String upperKey = formatLocationKey(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ());
+            pending = pendingPlacements.remove(upperKey);
+        }
 
         if (pending != null && (System.currentTimeMillis() - pending.getTimestamp() < 3000L)) {
             recordPlacer(crystal.getUniqueId(), pending.getPlayerId());
@@ -336,9 +340,11 @@ public class CrystalListener implements Listener {
             // 清理过期引爆记录 (30秒后即便未被正常销毁也自动清除)
             crystalDetonators.entrySet().removeIf(entry -> now - entry.getValue().getTimestamp() > 30000L);
 
-            // 清理长期未被引爆的水晶放置记录 (30分钟未被引爆且世界中不再有效)
-            if (crystalPlacers.size() > 2000) {
+            // 清理长期未被引爆的水晶放置记录 (无条件清理超过 1 小时的记录，当记录数较多时清理 30 分钟记录)
+            if (crystalPlacers.size() > 500) {
                 crystalPlacers.entrySet().removeIf(entry -> now - entry.getValue().getTimestamp() > 1800000L);
+            } else {
+                crystalPlacers.entrySet().removeIf(entry -> now - entry.getValue().getTimestamp() > 3600000L);
             }
         }, 1200L, 1200L);
     }

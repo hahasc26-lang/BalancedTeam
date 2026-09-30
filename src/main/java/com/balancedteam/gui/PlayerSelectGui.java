@@ -113,7 +113,8 @@ public class PlayerSelectGui {
             } else if (inOtherTeam) {
                 // 已加入其他队伍
                 Team otherTeam = plugin.getTeamManager().getTeamByPlayer(target.getUniqueId());
-                String otherTeamName = otherTeam != null ? otherTeam.getName() : "未知队伍";
+                String unknownTeam = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+                String otherTeamName = otherTeam != null ? otherTeam.getName() : unknownTeam;
                 itemMap.put("TEAM", otherTeamName);
 
                 String name = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.PLAYER_SELECT_ITEM_IN_TEAM_NAME, itemMap);

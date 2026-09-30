@@ -40,7 +40,8 @@ public class TeamDetailGui {
 
         // 1. 队长信息卡 (槽位 11)
         OfflinePlayer leader = Bukkit.getOfflinePlayer(team.getLeaderUuid());
-        String leaderName = leader.getName() != null ? leader.getName() : "未知";
+        String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+        String leaderName = leader.getName() != null ? leader.getName() : unknownText;
         String leaderStatus = leader.isOnline() ? plugin.getConfigManager().getRawMessage(player, "status.online")
                 : plugin.getConfigManager().getRawMessage(player, "status.offline");
         String ffStatus = plugin.getConfigManager().isFriendlyFireActive(team)
@@ -72,7 +73,7 @@ public class TeamDetailGui {
         List<String> memberLore = team.getMembers().values().stream()
                 .map(m -> {
                     OfflinePlayer op = Bukkit.getOfflinePlayer(m.getUuid());
-                    String name = op.getName() != null ? op.getName() : "未知";
+                    String name = op.getName() != null ? op.getName() : unknownText;
                     String status = op.isOnline() ? onlineIcon : offlineIcon;
                     String roleName = plugin.getConfigManager().getRoleDisplayName(player, m.getRole());
                     return status + " &7[" + roleName + "&7] &f" + name;

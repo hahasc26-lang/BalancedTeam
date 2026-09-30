@@ -540,6 +540,18 @@ gui:
     back_button: "&c« Back to Dashboard"
     prev_page: "&a« Prev Page ({PAGE})"
     next_page: "&aNext Page ({PAGE}) »"
+    truce_incoming_title: "&f🕊 &aTarget team has sent a peace/truce request!"
+    truce_incoming_remaining: "&7Time remaining to decide: &e{TIME}"
+    truce_incoming_accept: "&a▶ Left-Click: Accept truce (enter protection)"
+    truce_incoming_deny: "&c▶ Right-Click: Reject truce"
+    truce_outgoing_title: "&e⌛ Outgoing truce request pending (waiting for response)"
+    truce_outgoing_remaining: "&7Validity remaining: &e{TIME}"
+    truce_outgoing_cancel: "&c▶ Click to cancel truce request"
+    status_at_war: "&c⚔ Mutual state of war (requires mutual agreement to end)"
+    action_request_truce: "&f▶ Click to send peace/truce request"
+    status_they_declared: "&c⚠ They unilaterally declared war on your team"
+    action_declare_war: "&e▶ Left-Click: Declare war (engage in combat)"
+    action_request_truce_alt: "&f▶ Right-Click: Send peace/truce request"
 
   # 7. Notification Center GUI
   notification:
@@ -726,3 +738,7 @@ gui:
     back_button: "&c« Back"
     prev_page: "&a« Prev Page ({PAGE})"
     next_page: "&aNext Page ({PAGE}) »"
+    item_protected_name: "&e🛡 In Post-War Protection: &f{TEAM}"
+    item_protected_lore1: "&7Both teams are currently in post-war protection"
+    item_protected_lore2: "&7Remaining protection: &e{TIME}"
+    item_protected_lore3: "&c✖ Re-declaring war is forbidden during protection"

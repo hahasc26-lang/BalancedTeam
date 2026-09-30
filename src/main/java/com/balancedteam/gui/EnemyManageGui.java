@@ -80,33 +80,37 @@ public class EnemyManageGui {
 
             if (hasIncomingTruce) {
                 long rem = plugin.getRelationManager().getTruceRequestRemainingSeconds(enemyTeam.getId(), team.getId());
+                Map<String, String> timeMap = new HashMap<>(itemMap);
+                timeMap.put("TIME", TimeUtil.formatDuration(player, rem));
                 itemLore.add("");
-                itemLore.add(MessageUtil.color("&f🕊 &a对方已向我方发送停战求和申请！"));
-                itemLore.add(MessageUtil.color("&7剩余考虑时间: &e" + rem + " &7秒"));
+                itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_TRUCE_INCOMING_TITLE, timeMap));
+                itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_TRUCE_INCOMING_REMAINING, timeMap));
                 if (isOfficerOrLeader) {
-                    itemLore.add(MessageUtil.color("&a▶ 左键点击: 同意停战 (开启战后保护)"));
-                    itemLore.add(MessageUtil.color("&c▶ 右键点击: 拒绝求和"));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_TRUCE_INCOMING_ACCEPT, timeMap));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_TRUCE_INCOMING_DENY, timeMap));
                 }
             } else if (hasOutgoingTruce) {
                 long rem = plugin.getRelationManager().getTruceRequestRemainingSeconds(team.getId(), enemyTeam.getId());
+                Map<String, String> timeMap = new HashMap<>(itemMap);
+                timeMap.put("TIME", TimeUtil.formatDuration(player, rem));
                 itemLore.add("");
-                itemLore.add(MessageUtil.color("&e⌛ 我方已发起停战求和 (等待对方同意)"));
-                itemLore.add(MessageUtil.color("&7有效时间剩余: &e" + rem + " &7秒"));
+                itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_TRUCE_OUTGOING_TITLE, timeMap));
+                itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_TRUCE_OUTGOING_REMAINING, timeMap));
                 if (isOfficerOrLeader) {
-                    itemLore.add(MessageUtil.color("&c▶ 点击撤销求和申请"));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_TRUCE_OUTGOING_CANCEL, timeMap));
                 }
             } else if (declaredByUs) {
                 itemLore.add("");
-                itemLore.add(MessageUtil.color("&c⚔ 双方处于交战状态 (需双方同意方可解除)"));
+                itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_STATUS_AT_WAR, itemMap));
                 if (isOfficerOrLeader) {
-                    itemLore.add(MessageUtil.color("&f▶ 点击发起停战求和申请"));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_ACTION_REQUEST_TRUCE, itemMap));
                 }
             } else {
                 itemLore.add("");
-                itemLore.add(MessageUtil.color("&c⚠ 对方单方面向我方宣战"));
+                itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_STATUS_THEY_DECLARED, itemMap));
                 if (isOfficerOrLeader) {
-                    itemLore.add(MessageUtil.color("&e▶ 左键点击: 向对方宣战 (迎战)"));
-                    itemLore.add(MessageUtil.color("&f▶ 右键点击: 发起停战求和申请"));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_ACTION_DECLARE_WAR, itemMap));
+                    itemLore.add(plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.ENEMY_MANAGE_ACTION_REQUEST_TRUCE_ALT, itemMap));
                 }
             }
 

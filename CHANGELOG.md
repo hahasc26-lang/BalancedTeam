@@ -6,6 +6,37 @@ All notable changes to this project are documented here.
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.2] - 2026-09-30
+
+### 适配与升级 / Adaptation & Upgraded
+
+- **全面适配 Minecraft 最新 26.3 版本 (Minecraft 1.20.x - 26.3 Compatibility)**：
+  - 深度适配 Bukkit / Paper 26.3 统一 `DamageSource` API：在 `DamageListener` 中通过安全反射读取 `event.getDamageSource().getCausingEntity()`，原生支持风弹（Wind Charge / Breeze Wind Charge）、风爆冲击（Wind Burst）、重锤（Mace）爆发及新型间接爆炸伤害的实际攻击者追溯与友伤拦截；
+  - 补充对 TNT 矿车 (`ExplosiveMinecart`) 的伤害责任人精准追溯；
+  - 全面更新 `README.md` 与 Wiki 文档中的支持版本徽章及环境要求为 `Minecraft 1.20.x - 26.3`。
+
+### 核心 Bug 修复 / Core Bug Fixes
+
+- **修复负面药水判定漏洞 (Harmful Potion Detection Fix)**：
+  - 修复 `DamageListener.isHarmfulEffect` 漏判新版命名空间 ID 导致的挖掘疲劳（`MINING_FATIGUE`）与反胃（`NAUSEA`）友伤穿透漏洞；
+  - 全面补充 Minecraft 1.21+ / 26.x 战斗中新增的重要负面药水与预兆效果：渗浆（`OOZING`）、寄生（`INFESTED`）、织网（`WEAVING`）、蓄风（`WIND_CHARGED`）、袭村不祥预兆（`RAID_OMEN`）与试炼不祥预兆（`TRIAL_OMEN`）；
+  - 修复 `onPotionSplash` 仅检查自定义药水效果、导致原版酿造喷溅药水（如喷溅型伤害药水、剧毒药水、虚弱药水）因 `getEffects()` 为空而漏判穿透友伤保护的重大缺陷，深度整合 `PotionMeta` 的 `getBasePotionType()` (1.20.5+ / 26.3) 与 `getBasePotionData()` (旧版兼容) 判定。
+- **修复滞留药水云受影响实体列表移除异常 (Area Effect Cloud Resilience)**：
+  - 为 `onAreaEffectCloudApply` 的受影响实体移除逻辑增加安全防御封装，防止在特定优化端或不可变列表实现下抛出 `UnsupportedOperationException`。
+- **优化末影水晶生成坐标匹配与内存清理 (Crystal Placement & Memory Cleanup)**：
+  - `CrystalListener` 实体生成坐标匹配增强对上下各浮动 1 格（`Y - 1` 与 `Y + 1`）的双向容错，确保在所有服务端衍生版本中 100% 捕获水晶放置者；
+  - 优化末影水晶长期缓存清理策略：无条件清理超过 1 小时的未引爆历史放置记录，并在记录数超过 500 时清理 30 分钟记录，杜绝长期运行下的内存泄漏。
+
+### 多语言与界面优化 / Localization & GUI Polish
+
+- **彻底清除敌对管理与团队选择界面中的硬编码文本 (Eliminate GUI Hardcoded Strings)**：
+  - `EnemyManageGui`：彻底重构停战求和、双方交战状态、单方面宣战等 Lore 文本，移除写死的中文字符与裸露秒数拼接，全面注册为 `GuiConfigKeys` 并接入语言文件与 `TimeUtil.formatDuration` 阶梯时间；
+  - `TeamSelectGui`：将战后保护 Lore 文本全面改为从多语言文件动态加载；
+  - 全面替换所有 GUI（`TeamDetailGui`、`MemberManageGui`、`NotificationGui`、`PlayerSelectGui`、`TeamListGui`、`ConfirmGui`）中残留的 `"未知"`、`"未知队伍"`、`"未知玩家"` 硬编码文本为 `time_unit.unknown` 动态多语言获取；
+  - 同步更新三套内置语言包（`zh_CN.yml`、`zh_TW.yml`、`en_US.yml`），提供高质量本地化翻译。
+
+---
+
 ## [1.2.1] - 2026-09-19
 
 ### 重构 / Refactored

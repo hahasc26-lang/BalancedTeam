@@ -127,7 +127,8 @@ public class ConfirmGui {
             }
 
             OfflinePlayer op = Bukkit.getOfflinePlayer(targetUuid);
-            targetName = op.getName() != null ? op.getName() : "未知";
+            String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+            targetName = op.getName() != null ? op.getName() : unknownText;
         } else if (mode == Mode.TRANSFER) {
             // 转让：必须是队长
             if (!PermissionUtil.checkLeader(player, team, plugin.getConfigManager())) {
@@ -149,7 +150,8 @@ public class ConfirmGui {
             }
 
             OfflinePlayer op = Bukkit.getOfflinePlayer(targetUuid);
-            targetName = op.getName() != null ? op.getName() : "未知";
+            String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+            targetName = op.getName() != null ? op.getName() : unknownText;
         } else if (mode == Mode.PROMOTE) {
             // 提升：必须是队长
             if (!PermissionUtil.checkLeader(player, team, plugin.getConfigManager())) {
@@ -176,7 +178,8 @@ public class ConfirmGui {
             }
 
             OfflinePlayer op = Bukkit.getOfflinePlayer(targetUuid);
-            targetName = op.getName() != null ? op.getName() : "未知";
+            String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+            targetName = op.getName() != null ? op.getName() : unknownText;
         } else if (mode == Mode.DEMOTE) {
             // 降职：必须是队长
             if (!PermissionUtil.checkLeader(player, team, plugin.getConfigManager())) {
@@ -203,7 +206,8 @@ public class ConfirmGui {
             }
 
             OfflinePlayer op = Bukkit.getOfflinePlayer(targetUuid);
-            targetName = op.getName() != null ? op.getName() : "未知";
+            String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+            targetName = op.getName() != null ? op.getName() : unknownText;
         }
 
         // ── 占位符准备 ──
@@ -355,7 +359,8 @@ public class ConfirmGui {
                 }
 
                 OfflinePlayer op = Bukkit.getOfflinePlayer(targetUuid);
-                String kickedPlayerName = op.getName() != null ? op.getName() : "未知";
+                String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+                String kickedPlayerName = op.getName() != null ? op.getName() : unknownText;
 
                 // 执行踢出
                 plugin.getTeamManager().removeMember(currentTeam, targetUuid).thenAccept(success -> {
@@ -397,7 +402,8 @@ public class ConfirmGui {
                 }
 
                 OfflinePlayer op = Bukkit.getOfflinePlayer(targetUuid);
-                String targetPlayerName = op.getName() != null ? op.getName() : "未知";
+                String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+                String targetPlayerName = op.getName() != null ? op.getName() : unknownText;
 
                 // 执行转让
                 plugin.getTeamManager().transferLeader(currentTeam, targetUuid).thenAccept(success -> {
@@ -446,7 +452,8 @@ public class ConfirmGui {
                 }
 
                 OfflinePlayer op = Bukkit.getOfflinePlayer(targetUuid);
-                String targetPlayerName = op.getName() != null ? op.getName() : "未知";
+                String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+                String targetPlayerName = op.getName() != null ? op.getName() : unknownText;
 
                 // 执行提升
                 plugin.getTeamManager().setMemberRole(currentTeam, targetUuid, TeamRole.OFFICER).thenAccept(success -> {
@@ -495,7 +502,8 @@ public class ConfirmGui {
                 }
 
                 OfflinePlayer op = Bukkit.getOfflinePlayer(targetUuid);
-                String targetPlayerName = op.getName() != null ? op.getName() : "未知";
+                String unknownText = plugin.getConfigManager().getRawMessage(player, "time_unit.unknown");
+                String targetPlayerName = op.getName() != null ? op.getName() : unknownText;
 
                 // 执行降职
                 plugin.getTeamManager().setMemberRole(currentTeam, targetUuid, TeamRole.MEMBER).thenAccept(success -> {

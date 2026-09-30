@@ -540,6 +540,18 @@ gui:
     back_button: "&c« 返回控制面板"
     prev_page: "&a« 上一頁 ({PAGE})"
     next_page: "&a下一頁 ({PAGE}) »"
+    truce_incoming_title: "&f🕊 &a對方已向我方發送停戰求和申請！"
+    truce_incoming_remaining: "&7剩餘考慮時間: &e{TIME}"
+    truce_incoming_accept: "&a▶ 左鍵點擊: 同意停戰 (開啟戰後保護)"
+    truce_incoming_deny: "&c▶ 右鍵點擊: 拒絕求和"
+    truce_outgoing_title: "&e⌛ 我方已發起停戰求和 (等待對方同意)"
+    truce_outgoing_remaining: "&7有效時間剩餘: &e{TIME}"
+    truce_outgoing_cancel: "&c▶ 點擊撤銷求和申請"
+    status_at_war: "&c⚔ 雙方處於交戰狀態 (需雙方同意方可解除)"
+    action_request_truce: "&f▶ 點擊發起停戰求和申請"
+    status_they_declared: "&c⚠ 對方單方面向我方宣戰"
+    action_declare_war: "&e▶ 左鍵點擊: 向對方宣戰 (迎戰)"
+    action_request_truce_alt: "&f▶ 右鍵點擊: 發起停戰求和申請"
 
   # 7. 通知中心介面 (包含入隊邀請與同盟申請)
   notification:
@@ -726,3 +738,7 @@ gui:
     back_button: "&c« 返回管理"
     prev_page: "&a« 上一頁 ({PAGE})"
     next_page: "&a下一頁 ({PAGE}) »"
+    item_protected_name: "&e🛡 戰後保護中: &f{TEAM}"
+    item_protected_lore1: "&7兩隊目前處於停戰保護期中"
+    item_protected_lore2: "&7剩餘保護時間: &e{TIME}"
+    item_protected_lore3: "&c✖ 戰後保護期內禁止重新宣戰"

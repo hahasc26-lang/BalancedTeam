@@ -540,6 +540,18 @@ gui:
     back_button: "&c« 返回控制面板"
     prev_page: "&a« 上一页 ({PAGE})"
     next_page: "&a下一页 ({PAGE}) »"
+    truce_incoming_title: "&f🕊 &a对方已向我方发送停战求和申请！"
+    truce_incoming_remaining: "&7剩余考虑时间: &e{TIME}"
+    truce_incoming_accept: "&a▶ 左键点击: 同意停战 (开启战后保护)"
+    truce_incoming_deny: "&c▶ 右键点击: 拒绝求和"
+    truce_outgoing_title: "&e⌛ 我方已发起停战求和 (等待对方同意)"
+    truce_outgoing_remaining: "&7有效时间剩余: &e{TIME}"
+    truce_outgoing_cancel: "&c▶ 点击撤销求和申请"
+    status_at_war: "&c⚔ 双方处于交战状态 (需双方同意方可解除)"
+    action_request_truce: "&f▶ 点击发起停战求和申请"
+    status_they_declared: "&c⚠ 对方单方面向我方宣战"
+    action_declare_war: "&e▶ 左键点击: 向对方宣战 (迎战)"
+    action_request_truce_alt: "&f▶ 右键点击: 发起停战求和申请"
 
   # 7. 通知中心界面 (包含入队邀请与同盟申请)
   notification:
@@ -726,3 +738,7 @@ gui:
     back_button: "&c« 返回管理"
     prev_page: "&a« 上一页 ({PAGE})"
     next_page: "&a下一页 ({PAGE}) »"
+    item_protected_name: "&e🛡 战后保护中: &f{TEAM}"
+    item_protected_lore1: "&7两队目前处于停战保护期中"
+    item_protected_lore2: "&7剩余保护时间: &e{TIME}"
+    item_protected_lore3: "&c✖ 战后保护期内禁止重新宣战"
