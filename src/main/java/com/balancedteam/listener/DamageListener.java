@@ -158,36 +158,25 @@ public class DamageListener implements Listener {
                         }
                     }
                     if (!hasHarmful) {
-                        boolean resolved = false;
+                        // 1. 尝试 1.20.5+ 的 getBasePotionType()
                         try {
                             java.lang.reflect.Method m = meta.getClass().getMethod("getBasePotionType");
-                            Object ptObj = m.invoke(meta);
-                            if (ptObj instanceof org.bukkit.potion.PotionType) {
-                                org.bukkit.potion.PotionType pt = (org.bukkit.potion.PotionType) ptObj;
-                                for (PotionEffect pe : pt.getPotionEffects()) {
-                                    if (isHarmfulEffect(pe.getType())) {
-                                        hasHarmful = true;
-                                        resolved = true;
-                                        break;
-                                    }
-                                }
+                            Object pt = m.invoke(meta);
+                            if (pt != null && isHarmfulPotionType(pt)) {
+                                hasHarmful = true;
                             }
                         } catch (Throwable ignored) {
                         }
-                        if (!resolved) {
-                            try {
-                                @SuppressWarnings("deprecation")
-                                org.bukkit.potion.PotionData data = meta.getBasePotionData();
-                                if (data != null && data.getType() != null) {
-                                    for (PotionEffect pe : data.getType().getPotionEffects()) {
-                                        if (isHarmfulEffect(pe.getType())) {
-                                            hasHarmful = true;
-                                            break;
-                                        }
-                                    }
-                                }
-                            } catch (Throwable ignored) {
+                    }
+                    if (!hasHarmful) {
+                        // 2. 尝试 1.16.5 ~ 1.20.4 的 getBasePotionData()
+                        try {
+                            @SuppressWarnings("deprecation")
+                            org.bukkit.potion.PotionData data = meta.getBasePotionData();
+                            if (data != null && data.getType() != null && isHarmfulPotionType(data.getType())) {
+                                hasHarmful = true;
                             }
+                        } catch (Throwable ignored) {
                         }
                     }
                 }
@@ -263,32 +252,24 @@ public class DamageListener implements Listener {
         }
         if (!hasHarmful) {
             try {
-                // 优先使用新 API（Bukkit 1.20.5+ 反射），降级兼容 1.16.5 ~ 1.20.4 旧版本 getBasePotionData()
-                org.bukkit.potion.PotionType pt = null;
+                // 1. 尝试 1.20.5+ 的 getBasePotionType()
                 try {
                     java.lang.reflect.Method m = event.getEntity().getClass().getMethod("getBasePotionType");
-                    Object ptObj = m.invoke(event.getEntity());
-                    if (ptObj instanceof org.bukkit.potion.PotionType) {
-                        pt = (org.bukkit.potion.PotionType) ptObj;
+                    Object pt = m.invoke(event.getEntity());
+                    if (pt != null && isHarmfulPotionType(pt)) {
+                        hasHarmful = true;
                     }
                 } catch (Throwable ignored) {
                 }
-                if (pt == null) {
+                // 2. 尝试 1.16.5 ~ 1.20.4 的 getBasePotionData()
+                if (!hasHarmful) {
                     try {
                         @SuppressWarnings("deprecation")
                         org.bukkit.potion.PotionData basePotionData = event.getEntity().getBasePotionData();
-                        if (basePotionData != null) {
-                            pt = basePotionData.getType();
+                        if (basePotionData != null && basePotionData.getType() != null && isHarmfulPotionType(basePotionData.getType())) {
+                            hasHarmful = true;
                         }
                     } catch (Throwable ignored) {
-                    }
-                }
-                if (pt != null) {
-                    for (PotionEffect pe : pt.getPotionEffects()) {
-                        if (isHarmfulEffect(pe.getType())) {
-                            hasHarmful = true;
-                            break;
-                        }
                     }
                 }
             } catch (Throwable ignored) {
@@ -341,6 +322,52 @@ public class DamageListener implements Listener {
             iterator.remove();
         } catch (Throwable ignored) {
         }
+    }
+
+    /**
+     * 判断 PotionType 是否包含有害效果（全面兼容 1.16.5 的 getEffectType() 与 1.20.5+ 的 getPotionEffects()）
+     */
+    private static boolean isHarmfulPotionType(Object potionType) {
+        if (potionType == null) return false;
+        // 1. 尝试 1.20.5+ / 26.3 的 getPotionEffects()
+        try {
+            java.lang.reflect.Method m = potionType.getClass().getMethod("getPotionEffects");
+            Object effects = m.invoke(potionType);
+            if (effects instanceof java.util.Collection) {
+                for (Object effect : (java.util.Collection<?>) effects) {
+                    if (effect instanceof PotionEffect) {
+                        if (isHarmfulEffect(((PotionEffect) effect).getType())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        // 2. 尝试 1.16.5 ~ 1.20.4 的 getEffectType()
+        try {
+            java.lang.reflect.Method m = potionType.getClass().getMethod("getEffectType");
+            Object effectType = m.invoke(potionType);
+            if (effectType instanceof PotionEffectType) {
+                if (isHarmfulEffect((PotionEffectType) effectType)) {
+                    return true;
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        // 3. 兜底：匹配枚举名称 (如 POISON, HARM, SLOWNESS, WEAKNESS, TURTLE_MASTER 等)
+        try {
+            if (potionType instanceof Enum) {
+                String name = ((Enum<?>) potionType).name().toUpperCase(java.util.Locale.ROOT);
+                if (name.contains("HARM") || name.contains("POISON") || name.contains("WEAKNESS")
+                        || name.contains("SLOW") || name.contains("OOZING") || name.contains("INFESTED")
+                        || name.contains("WEAVING") || name.contains("WIND_CHARGED")) {
+                    return true;
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        return false;
     }
 
     private static final java.util.Set<String> HARMFUL_EFFECT_NAMES = new java.util.HashSet<>(java.util.Arrays.asList(

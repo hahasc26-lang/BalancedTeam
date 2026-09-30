@@ -287,15 +287,11 @@ public class ClientLanguageManager {
             return resolveLanguageCode(pref);
         }
 
-        // 自动检测模式：读取客户端 locale (优先标准 API，回退 spigot() 兼容 1.16.5 旧版本)
+        // 自动检测模式：读取客户端 locale (Bukkit 1.12+ 原生标准 API)
         String clientLocale = null;
         try {
             clientLocale = player.getLocale();
-        } catch (Throwable t) {
-            try {
-                clientLocale = player.spigot().getLocale();
-            } catch (Throwable ignored) {}
-        }
+        } catch (Throwable ignored) {}
 
         return resolveLanguageCode(clientLocale);
     }

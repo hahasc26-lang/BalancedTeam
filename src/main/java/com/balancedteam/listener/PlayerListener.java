@@ -31,12 +31,11 @@ public class PlayerListener implements Listener {
         if (langMgr != null) {
             String clientLocale = "unknown";
             try {
-                clientLocale = player.getLocale();
-            } catch (Throwable t) {
-                try {
-                    clientLocale = player.spigot().getLocale();
-                } catch (Throwable ignored) {}
-            }
+                String loc = player.getLocale();
+                if (loc != null) {
+                    clientLocale = loc;
+                }
+            } catch (Throwable ignored) {}
             String effectiveCode = langMgr.getEffectiveLanguageCode(player);
             com.balancedteam.util.PluginLogger.info(
                     com.balancedteam.util.PluginLogger.LogKey.PLAYER_JOIN_LOCALE,
