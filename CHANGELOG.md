@@ -37,6 +37,35 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+### Adaptation & Upgraded (English)
+
+- **Comprehensive Minecraft 26.3 Compatibility (Minecraft 1.20.x - 26.3)**:
+  - Deep adaptation for Bukkit / Paper 26.3 unified `DamageSource` API: Safely resolved `event.getDamageSource().getCausingEntity()` via reflection in `DamageListener`, natively supporting attacker attribution and friendly-fire protection for Wind Charges (Wind Charge / Breeze Wind Charge), Wind Burst enchantments, Mace smash attacks, and modern indirect explosive damages;
+  - Added accurate attacker attribution for TNT Minecarts (`ExplosiveMinecart`);
+  - Updated compatibility badges and environment requirements across `README.md` and Wiki documentation to `Minecraft 1.20.x - 26.3`.
+
+### Core Bug Fixes (English)
+
+- **Harmful Potion Detection Fix**:
+  - Fixed friendly fire penetration vulnerability where `DamageListener.isHarmfulEffect` missed modern namespaced IDs for Mining Fatigue (`MINING_FATIGUE`) and Nausea (`NAUSEA`);
+  - Fully added new combat debuffs and omen effects introduced in Minecraft 1.21+ / 26.x: Oozing (`OOZING`), Infested (`INFESTED`), Weaving (`WEAVING`), Wind Charged (`WIND_CHARGED`), Raid Omen (`RAID_OMEN`), and Trial Omen (`TRIAL_OMEN`);
+  - Fixed critical flaw where `onPotionSplash` only inspected custom potion effects (`getEffects()`), causing vanilla-brewed splash potions (e.g. Instant Damage, Poison, Weakness) with empty custom effects to bypass friendly-fire protection; seamlessly integrated `PotionMeta.getBasePotionType()` (1.20.5+ / 26.3) and `PotionMeta.getBasePotionData()` (legacy fallback).
+- **Area Effect Cloud Resilience**:
+  - Added safe defensive wrapper around affected entity iterator removal in `onAreaEffectCloudApply`, preventing `UnsupportedOperationException` on specialized server optimizations or immutable collection implementations.
+- **Crystal Placement Matching & Memory Cleanup**:
+  - Enhanced coordinate matching in `CrystalListener` with bidirectional tolerance for vertical offsets (`Y - 1` and `Y + 1`), ensuring 100% reliable crystal placer attribution across all server forks;
+  - Optimized long-term cache cleanup policy: unconditionally purge unexploded crystal placements older than 1 hour, and purge entries older than 30 minutes when tracker size exceeds 500 entries, preventing potential memory accumulation over prolonged server uptime.
+
+### Localization & GUI Polish (English)
+
+- **Eliminated GUI Hardcoded Strings**:
+  - `EnemyManageGui`: Completely refactored lore text for peace requests, mutual war states, and unilateral war declarations; removed hardcoded Chinese characters and raw second values, registering them under `GuiConfigKeys` with dynamic language file resolution and `TimeUtil.formatDuration` tiered formatting;
+  - `TeamSelectGui`: Migrated post-war protection item lore to load dynamically from client language files;
+  - Systematically replaced legacy hardcoded `"未知"` / `"未知队伍"` / `"未知玩家"` fallback strings across all GUIs (`TeamDetailGui`, `MemberManageGui`, `NotificationGui`, `PlayerSelectGui`, `TeamListGui`, `ConfirmGui`) with dynamic `time_unit.unknown` lookups;
+  - Synchronized and updated all three built-in language files (`zh_CN.yml`, `zh_TW.yml`, `en_US.yml`) with high-fidelity translations.
+
+---
+
 ## [1.2.1] - 2026-09-19
 
 ### 重构 / Refactored
