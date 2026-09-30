@@ -203,7 +203,7 @@ public class PlayerSelectGui {
         // 手动输入玩家名按钮 (槽位 48)
         String manualName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.PLAYER_SELECT_MANUAL_INPUT_NAME);
         List<String> manualLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.PLAYER_SELECT_MANUAL_INPUT_LORE, Collections.emptyMap());
-        ItemStack manualItem = new ItemBuilder(Material.SPYGLASS).name(manualName).lore(manualLore).build();
+        ItemStack manualItem = new ItemBuilder("SPYGLASS", Material.COMPASS).name(manualName).lore(manualLore).build();
         inv.setItem(48, manualItem);
         holder.setClickHandler(48, e -> {
             SoundUtil.playClick(player);

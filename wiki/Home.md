@@ -1,8 +1,8 @@
 # Welcome to the BalancedTeam Wiki
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Minecraft-1.20.x--26.3-brightgreen?style=flat-square&logo=minecraft" alt="Minecraft Version">
-  <img src="https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk" alt="Java 21">
+  <img src="https://img.shields.io/badge/Minecraft-1.16.5--26.3-brightgreen?style=flat-square&logo=minecraft" alt="Minecraft Version">
+  <img src="https://img.shields.io/badge/Java-11%20%7C%2017%20%7C%2021-orange?style=flat-square&logo=openjdk" alt="Java 11+">
   <img src="https://img.shields.io/badge/Platform-Bukkit%20%7C%20Spigot%20%7C%20Paper-purple?style=flat-square" alt="Platform">
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License">
 </p>

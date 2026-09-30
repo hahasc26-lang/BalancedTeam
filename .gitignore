@@ -154,6 +154,7 @@ package.json
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+server.js
 .dev.env.json
 .vite/
 dist/

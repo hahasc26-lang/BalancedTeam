@@ -1,7 +1,7 @@
 name: BalancedTeam
 version: '${project.version}'
 main: com.balancedteam.BalancedTeamPlugin
-api-version: '1.20'
+api-version: '1.16'
 author: haha
 description: High-performance Clan/Team plugin for Anarchy servers with MySQL, GUI and balanced combat.
 

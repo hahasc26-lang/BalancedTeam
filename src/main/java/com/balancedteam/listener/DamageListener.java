@@ -158,26 +158,35 @@ public class DamageListener implements Listener {
                         }
                     }
                     if (!hasHarmful) {
+                        boolean resolved = false;
                         try {
-                            org.bukkit.potion.PotionType pt = meta.getBasePotionType();
-                            if (pt != null) {
+                            java.lang.reflect.Method m = meta.getClass().getMethod("getBasePotionType");
+                            Object ptObj = m.invoke(meta);
+                            if (ptObj instanceof org.bukkit.potion.PotionType) {
+                                org.bukkit.potion.PotionType pt = (org.bukkit.potion.PotionType) ptObj;
                                 for (PotionEffect pe : pt.getPotionEffects()) {
                                     if (isHarmfulEffect(pe.getType())) {
                                         hasHarmful = true;
+                                        resolved = true;
                                         break;
                                     }
                                 }
                             }
                         } catch (Throwable ignored) {
-                            @SuppressWarnings("deprecation")
-                            org.bukkit.potion.PotionData data = meta.getBasePotionData();
-                            if (data != null && data.getType() != null) {
-                                for (PotionEffect pe : data.getType().getPotionEffects()) {
-                                    if (isHarmfulEffect(pe.getType())) {
-                                        hasHarmful = true;
-                                        break;
+                        }
+                        if (!resolved) {
+                            try {
+                                @SuppressWarnings("deprecation")
+                                org.bukkit.potion.PotionData data = meta.getBasePotionData();
+                                if (data != null && data.getType() != null) {
+                                    for (PotionEffect pe : data.getType().getPotionEffects()) {
+                                        if (isHarmfulEffect(pe.getType())) {
+                                            hasHarmful = true;
+                                            break;
+                                        }
                                     }
                                 }
+                            } catch (Throwable ignored) {
                             }
                         }
                     }
@@ -254,15 +263,24 @@ public class DamageListener implements Listener {
         }
         if (!hasHarmful) {
             try {
-                // 优先使用新 API（Bukkit 1.20.5+），降级兼容旧版本
+                // 优先使用新 API（Bukkit 1.20.5+ 反射），降级兼容 1.16.5 ~ 1.20.4 旧版本 getBasePotionData()
                 org.bukkit.potion.PotionType pt = null;
                 try {
-                    pt = event.getEntity().getBasePotionType();
+                    java.lang.reflect.Method m = event.getEntity().getClass().getMethod("getBasePotionType");
+                    Object ptObj = m.invoke(event.getEntity());
+                    if (ptObj instanceof org.bukkit.potion.PotionType) {
+                        pt = (org.bukkit.potion.PotionType) ptObj;
+                    }
                 } catch (Throwable ignored) {
-                    @SuppressWarnings("deprecation")
-                    org.bukkit.potion.PotionData basePotionData = event.getEntity().getBasePotionData();
-                    if (basePotionData != null) {
-                        pt = basePotionData.getType();
+                }
+                if (pt == null) {
+                    try {
+                        @SuppressWarnings("deprecation")
+                        org.bukkit.potion.PotionData basePotionData = event.getEntity().getBasePotionData();
+                        if (basePotionData != null) {
+                            pt = basePotionData.getType();
+                        }
+                    } catch (Throwable ignored) {
                     }
                 }
                 if (pt != null) {

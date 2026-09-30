@@ -10,10 +10,15 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### 适配与升级 / Adaptation & Upgraded
 
-- **全面适配 Minecraft 最新 26.3 版本 (Minecraft 1.20.x - 26.3 Compatibility)**：
+- **全面向下兼容至 Minecraft 1.16.5 并适配最新 26.3 版本 (Minecraft 1.16.5 - 26.3 Full Compatibility)**：
+  - 将 `plugin.yml` 的 `api-version` 调整为 `'1.16'`，确保插件在 Minecraft 1.16.5 服务端中不会因 API 版本过高被拒绝加载，同时向上完美兼容 1.17 至 26.3；
+  - 解决 1.16.5 环境下不存在 `Material.SPYGLASS`（望远镜）导致的 `NoSuchFieldError`：在 `ItemBuilder` 中引入版本安全枚举匹配机制 `getSafeMaterial`，在 1.16.5 优雅降级回退至 `Material.COMPASS`（指南针）；
+  - 对 `DamageListener` 中 `PotionMeta` 与 `AreaEffectCloud` 的 `getBasePotionType()`（1.20.5+）调用全面升级为安全反射，低版本无缝回退至 1.16.5 的 `getBasePotionData()`，彻底消除旧版 JVM 类链接验证异常；
+  - 增强 `ClientLanguageManager` 与 `PlayerListener` 的语言环境自动探测：增加对旧版 `player.spigot().getLocale()` 的降级兼容；
   - 深度适配 Bukkit / Paper 26.3 统一 `DamageSource` API：在 `DamageListener` 中通过安全反射读取 `event.getDamageSource().getCausingEntity()`，原生支持风弹（Wind Charge / Breeze Wind Charge）、风爆冲击（Wind Burst）、重锤（Mace）爆发及新型间接爆炸伤害的实际攻击者追溯与友伤拦截；
   - 补充对 TNT 矿车 (`ExplosiveMinecart`) 的伤害责任人精准追溯；
-  - 全面更新 `README.md` 与 Wiki 文档中的支持版本徽章及环境要求为 `Minecraft 1.20.x - 26.3`。
+  - 将构建配置升级为面向 Java 11 字节码输出（`<java.version>11</java.version>`），原生兼容 Java 11、17 及 21 运行环境；
+  - 全面更新 `README.md` 与 Wiki 文档中的支持版本徽章及环境要求为 `Minecraft 1.16.5 - 26.3`、`Java 11 | 17 | 21`。
 
 ### 核心 Bug 修复 / Core Bug Fixes
 
@@ -39,10 +44,15 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Adaptation & Upgraded (English)
 
-- **Comprehensive Minecraft 26.3 Compatibility (Minecraft 1.20.x - 26.3)**:
+- **Minecraft 1.16.5 Downward Compatibility & Modern 26.3 Adaptation (Minecraft 1.16.5 - 26.3)**:
+  - Adjusted `api-version` in `plugin.yml` to `'1.16'`, ensuring Minecraft 1.16.5 servers will not reject the plugin due to unsupported API version, while maintaining flawless upwards compatibility with 1.17 through 26.3;
+  - Resolved `NoSuchFieldError` on 1.16.5 servers caused by nonexistent `Material.SPYGLASS`: introduced `ItemBuilder.getSafeMaterial` fallback mechanism to gracefully downgrade to `Material.COMPASS` on older versions;
+  - Fully upgraded `getBasePotionType()` (1.20.5+) invocations in `DamageListener` for both `PotionMeta` and `AreaEffectCloud` to safe reflection, falling back to legacy `getBasePotionData()` on 1.16.5 without classloader linking issues;
+  - Enhanced client locale auto-detection in `ClientLanguageManager` and `PlayerListener` with fallback to `player.spigot().getLocale()` for legacy 1.16.5 Spigot / CraftBukkit servers;
   - Deep adaptation for Bukkit / Paper 26.3 unified `DamageSource` API: Safely resolved `event.getDamageSource().getCausingEntity()` via reflection in `DamageListener`, natively supporting attacker attribution and friendly-fire protection for Wind Charges (Wind Charge / Breeze Wind Charge), Wind Burst enchantments, Mace smash attacks, and modern indirect explosive damages;
   - Added accurate attacker attribution for TNT Minecarts (`ExplosiveMinecart`);
-  - Updated compatibility badges and environment requirements across `README.md` and Wiki documentation to `Minecraft 1.20.x - 26.3`.
+  - Configured Maven build target to Java 11 bytecode (`<java.version>11</java.version>`), natively running on Java 11, 17, and 21 runtime environments;
+  - Updated compatibility badges and environment requirements across `README.md` and Wiki documentation to `Minecraft 1.16.5 - 26.3` and `Java 11 | 17 | 21`.
 
 ### Core Bug Fixes (English)
 

@@ -29,6 +29,26 @@ public class ItemBuilder {
         this.meta = itemStack.getItemMeta();
     }
 
+    /**
+     * 安全获取 Material，若当前服务端版本不存在该枚举值则降级回退
+     * 完美向下兼容低版本（如 1.16.5 无 SPYGLASS 等新物品）
+     */
+    public static Material getSafeMaterial(String name, Material fallback) {
+        if (name == null || name.isEmpty()) {
+            return fallback;
+        }
+        try {
+            Material mat = Material.matchMaterial(name);
+            return mat != null ? mat : fallback;
+        } catch (Throwable ignored) {
+            return fallback;
+        }
+    }
+
+    public ItemBuilder(String materialName, Material fallback) {
+        this(getSafeMaterial(materialName, fallback));
+    }
+
     public ItemBuilder(Material material, int amount) {
         this.itemStack = new ItemStack(material, amount);
         this.meta = itemStack.getItemMeta();
