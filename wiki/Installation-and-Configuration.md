@@ -9,7 +9,7 @@ This guide walks you through installing, configuring, and optimizing **BalancedT
 | Requirement | Minimum / Recommended |
 | :--- | :--- |
 | **Java Version** | **Java 11**, **Java 17**, or **Java 21** |
-| **Server Platform** | Bukkit, Spigot, Paper, Purpur (1.16.5 - 26.3) |
+| **Server Platform** | Bukkit, Spigot, Paper, Purpur (1.16+ / 1.16 - 26.3) |
 | **Database** | Built-in SQLite (Zero-config) or MySQL 5.7+ / 8.0+ / MariaDB 10.3+ |
 | **Optional Dependencies** | [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) (v2.12.0+) |
 

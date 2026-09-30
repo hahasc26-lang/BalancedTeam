@@ -1,7 +1,7 @@
 # BalancedTeam
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Minecraft-1.16--26.3-brightgreen?style=flat-square&logo=minecraft" alt="Minecraft Version">
+  <img src="https://img.shields.io/badge/Minecraft-1.16%2B-brightgreen?style=flat-square&logo=minecraft" alt="Minecraft Version">
   <img src="https://img.shields.io/badge/Java-11%20%7C%2017%20%7C%2021-orange?style=flat-square&logo=openjdk" alt="Java 11+">
   <img src="https://img.shields.io/badge/Build-Maven-blue?style=flat-square&logo=apache-maven" alt="Maven">
   <img src="https://img.shields.io/badge/PlaceholderAPI-Supported-blueviolet?style=flat-square" alt="PlaceholderAPI">
@@ -25,7 +25,7 @@
 <a name="english"></a>
 
 
-A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive** Minecraft servers. Compatible with Bukkit / Spigot / Paper with native **PlaceholderAPI** integration.
+A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive** Minecraft servers (Minecraft 1.16+). Compatible with Bukkit / Spigot / Paper with native **PlaceholderAPI** integration.
 
 ---
 
@@ -234,7 +234,7 @@ If you find this project helpful, consider buying me a coffee!
   <b>中文</b> | <a href="#english">English</a>
 </p>
 
-专为**无规则 (Anarchy)** 及**生存竞技**服务器设计的高性能团队插件，兼容 Bukkit / Spigot / Paper，原生支持 **PlaceholderAPI**。
+专为**无规则 (Anarchy)** 及**生存竞技**服务器设计的高性能团队插件（支持 **Minecraft 1.16 及以上版本**），兼容 Bukkit / Spigot / Paper，原生支持 **PlaceholderAPI**。
 
 ---
 

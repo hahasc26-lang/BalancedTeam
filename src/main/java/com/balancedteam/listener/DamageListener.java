@@ -169,7 +169,7 @@ public class DamageListener implements Listener {
                         }
                     }
                     if (!hasHarmful) {
-                        // 2. 尝试 1.16.5 ~ 1.20.4 的 getBasePotionData()
+                        // 2. 尝试 1.16+ ~ 1.20.4 的 getBasePotionData()
                         try {
                             @SuppressWarnings("deprecation")
                             org.bukkit.potion.PotionData data = meta.getBasePotionData();
@@ -261,7 +261,7 @@ public class DamageListener implements Listener {
                     }
                 } catch (Throwable ignored) {
                 }
-                // 2. 尝试 1.16.5 ~ 1.20.4 的 getBasePotionData()
+                // 2. 尝试 1.16+ ~ 1.20.4 的 getBasePotionData()
                 if (!hasHarmful) {
                     try {
                         @SuppressWarnings("deprecation")
@@ -325,7 +325,7 @@ public class DamageListener implements Listener {
     }
 
     /**
-     * 判断 PotionType 是否包含有害效果（全面兼容 1.16.5 的 getEffectType() 与 1.20.5+ 的 getPotionEffects()）
+     * 判断 PotionType 是否包含有害效果（全面兼容 1.16+ 的 getEffectType() 与 1.20.5+ 的 getPotionEffects()）
      */
     private static boolean isHarmfulPotionType(Object potionType) {
         if (potionType == null) return false;
@@ -344,7 +344,7 @@ public class DamageListener implements Listener {
             }
         } catch (Throwable ignored) {
         }
-        // 2. 尝试 1.16.5 ~ 1.20.4 的 getEffectType()
+        // 2. 尝试 1.16+ ~ 1.20.4 的 getEffectType()
         try {
             java.lang.reflect.Method m = potionType.getClass().getMethod("getEffectType");
             Object effectType = m.invoke(potionType);

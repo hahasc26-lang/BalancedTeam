@@ -31,7 +31,7 @@ public class ItemBuilder {
 
     /**
      * 安全获取 Material，若当前服务端版本不存在该枚举值则降级回退
-     * 完美向下兼容低版本（如 1.16.5 无 SPYGLASS 等新物品）
+     * 完美向下兼容低版本（如 1.16+ 无 SPYGLASS 等新物品）
      */
     public static Material getSafeMaterial(String name, Material fallback) {
         if (name == null || name.isEmpty()) {
