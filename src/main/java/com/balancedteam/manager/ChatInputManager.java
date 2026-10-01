@@ -105,7 +105,7 @@ public class ChatInputManager {
         }
 
         String input = message.trim();
-        if ("cancel".equalsIgnoreCase(input) || "取消".equals(input) || "exit".equalsIgnoreCase(input)) {
+        if (isCancelInput(player, input)) {
             String cancelMsg = plugin.getConfigManager().getRawMessage(player, "gui.player_select.chat_cancel");
             if (cancelMsg != null && !cancelMsg.isEmpty()) {
                 MessageUtil.sendMessage(player, cancelMsg);
@@ -149,5 +149,19 @@ public class ChatInputManager {
         if (session != null && session.timeoutTask != null) {
             session.timeoutTask.cancel();
         }
+    }
+
+    private boolean isCancelInput(Player player, String input) {
+        if (input == null || input.isEmpty()) {
+            return false;
+        }
+        if ("cancel".equalsIgnoreCase(input) || "exit".equalsIgnoreCase(input) || "quit".equalsIgnoreCase(input)) {
+            return true;
+        }
+        if ("取消".equals(input)) {
+            return true;
+        }
+        String langCancel = plugin.getConfigManager().getRawMessage(player, "chat_input_cancel_keyword");
+        return langCancel != null && !langCancel.isEmpty() && !langCancel.startsWith("&c[Missing message:") && langCancel.equalsIgnoreCase(input);
     }
 }

@@ -142,8 +142,8 @@ public class TeamMenuGui {
         }
 
         String statusPrefix = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.MENU_FF_STATUS_PREFIX);
-        if (statusPrefix == null || statusPrefix.isEmpty()) {
-            statusPrefix = "&7当前状态: ";
+        if (statusPrefix == null || statusPrefix.isEmpty() || statusPrefix.startsWith("&c[Missing message:")) {
+            statusPrefix = "&7Status: ";
         }
         List<String> ffLore = new ArrayList<>();
         ffLore.add(statusPrefix + ffStatusText);

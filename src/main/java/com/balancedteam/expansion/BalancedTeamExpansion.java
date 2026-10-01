@@ -1,6 +1,8 @@
 package com.balancedteam.expansion;
 
 import com.balancedteam.BalancedTeamPlugin;
+import com.balancedteam.model.RelationStatus;
+import com.balancedteam.model.RelationType;
 import com.balancedteam.model.Team;
 import com.balancedteam.model.TeamMember;
 import com.balancedteam.util.TimeUtil;
@@ -184,6 +186,7 @@ public class BalancedTeamExpansion extends PlaceholderExpansion {
             switch (lower) {
                 case "name":
                 case "team_name":
+                    return plugin.getConfigManager().getNoneTeamName(onlinePlayer);
                 case "id":
                 case "team_id":
                 case "tag":
@@ -240,6 +243,13 @@ public class BalancedTeamExpansion extends PlaceholderExpansion {
 
                 default:
                     // 玩家无团队时的关系查询统一返回 NONE 或 false
+                    if (lower.startsWith("relation_status_formatted_") || lower.startsWith("relation_status_team_formatted_")) {
+                        return "";
+                    }
+                    if (lower.startsWith("relation_status_")) return "NONE";
+                    if (lower.startsWith("relation_formatted_") || lower.startsWith("relation_team_formatted_")) {
+                        return plugin.getConfigManager().getRawMessage(onlinePlayer, "relation.none");
+                    }
                     if (lower.startsWith("relation_")) return "NONE";
                     if (lower.startsWith("is_ally_") || lower.startsWith("is_enemy_") || lower.startsWith("is_same_team_")) return "false";
                     return "";
@@ -368,6 +378,97 @@ public class BalancedTeamExpansion extends PlaceholderExpansion {
         // 4. 外交关系与玩家间关系判断占位符
         // =========================================================================
 
+        // 与指定团队的关系状态 (多语言格式化展示): %balancedteam_relation_status_team_formatted_<targetTeamName>%
+        if (lower.startsWith("relation_status_team_formatted_")) {
+            String targetTeamName = params.substring("relation_status_team_formatted_".length());
+            Team targetTeam = plugin.getTeamManager().getTeamByName(targetTeamName);
+            if (targetTeam == null || targetTeam.getId() == team.getId()) return "";
+            if (plugin.getRelationManager().isAlly(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().isEnemy(team.getId(), targetTeam.getId())) {
+                return plugin.getConfigManager().getRelationStatusDisplayName(onlinePlayer, RelationStatus.ACCEPTED);
+            }
+            if (plugin.getRelationManager().hasPendingAllyRequest(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().hasPendingAllyRequest(targetTeam.getId(), team.getId())
+                    || plugin.getRelationManager().hasPendingTruceRequest(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().hasPendingTruceRequest(targetTeam.getId(), team.getId())) {
+                return plugin.getConfigManager().getRelationStatusDisplayName(onlinePlayer, RelationStatus.PENDING);
+            }
+            return "";
+        }
+
+        // 与指定团队的关系状态: %balancedteam_relation_status_team_<targetTeamName>%
+        if (lower.startsWith("relation_status_team_")) {
+            String targetTeamName = params.substring("relation_status_team_".length());
+            Team targetTeam = plugin.getTeamManager().getTeamByName(targetTeamName);
+            if (targetTeam == null || targetTeam.getId() == team.getId()) return "NONE";
+            if (plugin.getRelationManager().isAlly(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().isEnemy(team.getId(), targetTeam.getId())) {
+                return RelationStatus.ACCEPTED.name();
+            }
+            if (plugin.getRelationManager().hasPendingAllyRequest(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().hasPendingAllyRequest(targetTeam.getId(), team.getId())
+                    || plugin.getRelationManager().hasPendingTruceRequest(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().hasPendingTruceRequest(targetTeam.getId(), team.getId())) {
+                return RelationStatus.PENDING.name();
+            }
+            return "NONE";
+        }
+
+        // 与指定玩家的关系状态 (多语言格式化展示): %balancedteam_relation_status_formatted_<targetPlayerName>%
+        if (lower.startsWith("relation_status_formatted_")) {
+            String targetPlayerName = params.substring("relation_status_formatted_".length());
+            UUID targetUuid = getUuidByPlayerName(targetPlayerName);
+            if (targetUuid == null) return "";
+            Team targetTeam = plugin.getTeamManager().getTeamByPlayer(targetUuid);
+            if (targetTeam == null || targetTeam.getId() == team.getId()) return "";
+            if (plugin.getRelationManager().isAlly(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().isEnemy(team.getId(), targetTeam.getId())) {
+                return plugin.getConfigManager().getRelationStatusDisplayName(onlinePlayer, RelationStatus.ACCEPTED);
+            }
+            if (plugin.getRelationManager().hasPendingAllyRequest(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().hasPendingAllyRequest(targetTeam.getId(), team.getId())
+                    || plugin.getRelationManager().hasPendingTruceRequest(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().hasPendingTruceRequest(targetTeam.getId(), team.getId())) {
+                return plugin.getConfigManager().getRelationStatusDisplayName(onlinePlayer, RelationStatus.PENDING);
+            }
+            return "";
+        }
+
+        // 与指定玩家的关系状态: %balancedteam_relation_status_<targetPlayerName>%
+        if (lower.startsWith("relation_status_")) {
+            String targetPlayerName = params.substring("relation_status_".length());
+            UUID targetUuid = getUuidByPlayerName(targetPlayerName);
+            if (targetUuid == null) return "NONE";
+            Team targetTeam = plugin.getTeamManager().getTeamByPlayer(targetUuid);
+            if (targetTeam == null || targetTeam.getId() == team.getId()) return "NONE";
+            if (plugin.getRelationManager().isAlly(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().isEnemy(team.getId(), targetTeam.getId())) {
+                return RelationStatus.ACCEPTED.name();
+            }
+            if (plugin.getRelationManager().hasPendingAllyRequest(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().hasPendingAllyRequest(targetTeam.getId(), team.getId())
+                    || plugin.getRelationManager().hasPendingTruceRequest(team.getId(), targetTeam.getId())
+                    || plugin.getRelationManager().hasPendingTruceRequest(targetTeam.getId(), team.getId())) {
+                return RelationStatus.PENDING.name();
+            }
+            return "NONE";
+        }
+
+        // 与指定团队的关系 (多语言格式化展示): %balancedteam_relation_team_formatted_<targetTeamName>%
+        if (lower.startsWith("relation_team_formatted_")) {
+            String targetTeamName = params.substring("relation_team_formatted_".length());
+            Team targetTeam = plugin.getTeamManager().getTeamByName(targetTeamName);
+            if (targetTeam == null) return plugin.getConfigManager().getRawMessage(onlinePlayer, "relation.none");
+            if (targetTeam.getId() == team.getId()) return plugin.getConfigManager().getRawMessage(onlinePlayer, "relation.same_team");
+            if (plugin.getRelationManager().isAlly(team.getId(), targetTeam.getId())) {
+                return plugin.getConfigManager().getRelationDisplayName(onlinePlayer, RelationType.ALLY);
+            }
+            if (plugin.getRelationManager().isEnemy(team.getId(), targetTeam.getId())) {
+                return plugin.getConfigManager().getRelationDisplayName(onlinePlayer, RelationType.ENEMY);
+            }
+            return plugin.getConfigManager().getRawMessage(onlinePlayer, "relation.none");
+        }
+
         // 与指定团队的关系: %balancedteam_relation_team_<targetTeamName>%
         if (lower.startsWith("relation_team_")) {
             String targetTeamName = params.substring("relation_team_".length());
@@ -377,6 +478,23 @@ public class BalancedTeamExpansion extends PlaceholderExpansion {
             if (plugin.getRelationManager().isAlly(team.getId(), targetTeam.getId())) return "ALLY";
             if (plugin.getRelationManager().isEnemy(team.getId(), targetTeam.getId())) return "ENEMY";
             return "NONE";
+        }
+
+        // 与指定玩家的关系 (多语言格式化展示): %balancedteam_relation_formatted_<targetPlayerName>%
+        if (lower.startsWith("relation_formatted_")) {
+            String targetPlayerName = params.substring("relation_formatted_".length());
+            UUID targetUuid = getUuidByPlayerName(targetPlayerName);
+            if (targetUuid == null) return plugin.getConfigManager().getRawMessage(onlinePlayer, "relation.none");
+            Team targetTeam = plugin.getTeamManager().getTeamByPlayer(targetUuid);
+            if (targetTeam == null) return plugin.getConfigManager().getRawMessage(onlinePlayer, "relation.none");
+            if (targetTeam.getId() == team.getId()) return plugin.getConfigManager().getRawMessage(onlinePlayer, "relation.same_team");
+            if (plugin.getRelationManager().isAlly(team.getId(), targetTeam.getId())) {
+                return plugin.getConfigManager().getRelationDisplayName(onlinePlayer, RelationType.ALLY);
+            }
+            if (plugin.getRelationManager().isEnemy(team.getId(), targetTeam.getId())) {
+                return plugin.getConfigManager().getRelationDisplayName(onlinePlayer, RelationType.ENEMY);
+            }
+            return plugin.getConfigManager().getRawMessage(onlinePlayer, "relation.none");
         }
 
         // 与指定玩家的关系: %balancedteam_relation_<targetPlayerName>%

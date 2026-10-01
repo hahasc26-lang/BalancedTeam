@@ -232,8 +232,22 @@ status:
   offline: "&7○ Offline"
   member_online: "&a●"
   member_offline: "&7○"
+  none_team: "&7No Team"
   none_ally: "&7(No Allies)"
   none_enemy: "&7(No Enemies)"
+
+# -------------------------------------------------------------------
+# Relation & Status Displays
+# -------------------------------------------------------------------
+relation:
+  ally: "&aAlly"
+  enemy: "&cEnemy"
+  none: "&7Neutral"
+  same_team: "&bSame Team"
+
+relation_status:
+  pending: "&ePending"
+  accepted: "&aEstablished"
 
 # -------------------------------------------------------------------
 # Time and Duration Unit Formatting

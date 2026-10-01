@@ -1,19 +1,57 @@
 package com.balancedteam.model;
 
+import com.balancedteam.BalancedTeamPlugin;
+import org.bukkit.command.CommandSender;
+
 /**
  * 团队间外交关系类型枚举
  */
 public enum RelationType {
-    ALLY("盟友"),
-    ENEMY("敌对");
+    ALLY("Ally"),
+    ENEMY("Enemy");
 
-    private final String displayName;
+    private final String fallbackName;
 
-    RelationType(String displayName) {
-        this.displayName = displayName;
+    RelationType(String fallbackName) {
+        this.fallbackName = fallbackName;
     }
 
+    public String getFallbackName() {
+        return fallbackName;
+    }
+
+    /**
+     * 获取外交关系展示名称（优先从当前插件配置的多语言系统获取，回退至安全英文名称）
+     */
     public String getDisplayName() {
-        return displayName;
+        BalancedTeamPlugin plugin = BalancedTeamPlugin.getInstance();
+        if (plugin != null && plugin.getConfigManager() != null) {
+            return plugin.getConfigManager().getRelationDisplayName(this);
+        }
+        return fallbackName;
+    }
+
+    /**
+     * 根据发送者客户端语言从语言配置文件中获取外交关系展示名称
+     *
+     * @param plugin 主插件实例
+     * @param sender 消息接收者（可为 Player 或 ConsoleCommandSender）
+     * @return 语言文件中定义的外交关系名称
+     */
+    public String getDisplayName(BalancedTeamPlugin plugin, CommandSender sender) {
+        if (plugin != null && plugin.getConfigManager() != null) {
+            return plugin.getConfigManager().getRelationDisplayName(sender, this);
+        }
+        return getDisplayName();
+    }
+
+    /**
+     * 根据发送者客户端语言从语言配置文件中获取外交关系展示名称
+     *
+     * @param sender 消息接收者
+     * @return 语言文件中定义的外交关系名称
+     */
+    public String getDisplayName(CommandSender sender) {
+        return getDisplayName(BalancedTeamPlugin.getInstance(), sender);
     }
 }

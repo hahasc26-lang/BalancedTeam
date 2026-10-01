@@ -99,9 +99,7 @@ public class TeamListGui {
         if (allTeams.isEmpty()) {
             String emptyName = plugin.getConfigManager().getRawMessage(player, GuiConfigKeys.LIST_EMPTY_ITEM_NAME);
             List<String> emptyLore = plugin.getConfigManager().getMessageList(player, GuiConfigKeys.LIST_EMPTY_ITEM_LORE);
-            PagedGuiHelper.setupEmptyPlaceholder(inv, 22, Material.PAPER,
-                    emptyName != null && !emptyName.isEmpty() ? emptyName : "&7(暂无已创建的团队)",
-                    emptyLore != null && !emptyLore.isEmpty() ? emptyLore : Collections.singletonList("&7输入 /team create <团队名称> 创建全服第一个团队！"));
+            PagedGuiHelper.setupEmptyPlaceholder(inv, 22, Material.PAPER, emptyName, emptyLore);
         }
 
         // 底部控制栏 (槽位 45-53) 背景填充

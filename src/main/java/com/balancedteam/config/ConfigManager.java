@@ -1,6 +1,8 @@
 package com.balancedteam.config;
 
 import com.balancedteam.BalancedTeamPlugin;
+import com.balancedteam.model.RelationStatus;
+import com.balancedteam.model.RelationType;
 import com.balancedteam.model.TeamRole;
 import com.balancedteam.util.MessageUtil;
 import org.bukkit.command.CommandSender;
@@ -265,20 +267,94 @@ public class ConfigManager {
     public String getRoleDisplayName(CommandSender sender, TeamRole role) {
         if (role == null)
             return getRawMessage(sender, "role.unknown");
+        String msg;
         switch (role) {
             case LEADER:
-                return getRawMessage(sender, "role.leader");
+                msg = getRawMessage(sender, "role.leader");
+                break;
             case OFFICER:
-                return getRawMessage(sender, "role.officer");
+                msg = getRawMessage(sender, "role.officer");
+                break;
             case MEMBER:
-                return getRawMessage(sender, "role.member");
+                msg = getRawMessage(sender, "role.member");
+                break;
             default:
-                return getRawMessage(sender, "role.unknown");
+                msg = getRawMessage(sender, "role.unknown");
+                break;
         }
+        if (msg == null || msg.startsWith("&c[Missing message:")) {
+            return role.getFallbackName();
+        }
+        return msg;
     }
 
     public String getRoleDisplayName(TeamRole role) {
         return getRoleDisplayName((CommandSender) null, role);
+    }
+
+    // =========================================================================
+    // 外交关系类型与状态多语言展示
+    // =========================================================================
+
+    public String getRelationDisplayName(CommandSender sender, RelationType type) {
+        if (type == null)
+            return getRawMessage(sender, "relation.none");
+        String msg;
+        switch (type) {
+            case ALLY:
+                msg = getRawMessage(sender, "relation.ally");
+                break;
+            case ENEMY:
+                msg = getRawMessage(sender, "relation.enemy");
+                break;
+            default:
+                msg = getRawMessage(sender, "relation.none");
+                break;
+        }
+        if (msg == null || msg.startsWith("&c[Missing message:")) {
+            return type.getFallbackName();
+        }
+        return msg;
+    }
+
+    public String getRelationDisplayName(RelationType type) {
+        return getRelationDisplayName((CommandSender) null, type);
+    }
+
+    public String getRelationStatusDisplayName(CommandSender sender, RelationStatus status) {
+        if (status == null)
+            return "";
+        String msg;
+        switch (status) {
+            case PENDING:
+                msg = getRawMessage(sender, "relation_status.pending");
+                break;
+            case ACCEPTED:
+                msg = getRawMessage(sender, "relation_status.accepted");
+                break;
+            default:
+                return status.getFallbackName();
+        }
+        if (msg == null || msg.startsWith("&c[Missing message:")) {
+            return status.getFallbackName();
+        }
+        return msg;
+    }
+
+    public String getRelationStatusDisplayName(RelationStatus status) {
+        return getRelationStatusDisplayName((CommandSender) null, status);
+    }
+
+    public String getNoneTeamName(CommandSender sender) {
+        String msg = getRawMessage(sender, "status.none_team");
+        if (msg == null || msg.startsWith("&c[Missing message:")) {
+            return "&7No Team";
+        }
+        return msg;
+    }
+
+    public String getNoneTeamName() {
+        return getNoneTeamName((CommandSender) null);
     }
 
     // =========================================================================
