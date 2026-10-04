@@ -4,7 +4,6 @@
   <img src="https://img.shields.io/badge/Minecraft-1.16%2B-brightgreen?style=flat-square&logo=minecraft" alt="Minecraft Version">
   <img src="https://img.shields.io/badge/Java-11%20%7C%2017%20%7C%2021-orange?style=flat-square&logo=openjdk" alt="Java 11+">
   <img src="https://img.shields.io/badge/Build-Maven-blue?style=flat-square&logo=apache-maven" alt="Maven">
-  <img src="https://img.shields.io/badge/PlaceholderAPI-Supported-blueviolet?style=flat-square" alt="PlaceholderAPI">
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License">
   <img src="https://img.shields.io/badge/Platform-Paper%20%7C%20Purpur%20%7C%20Spigot%20%7C%20Bukkit-purple?style=flat-square" alt="Platform">
 </p>
@@ -25,7 +24,7 @@
 <a name="english"></a>
 
 
-A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive** Minecraft servers (Minecraft 1.16+). Compatible with Bukkit / Spigot / Paper with native **PlaceholderAPI** integration.
+> A high-performance Clan/Team plugin for **Anarchy** and **survival-competitive** Minecraft servers (Minecraft 1.16+). Compatible with Bukkit / Spigot / Paper.
 
 ---
 
