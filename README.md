@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/Build-Maven-blue?style=flat-square&logo=apache-maven" alt="Maven">
   <img src="https://img.shields.io/badge/PlaceholderAPI-Supported-blueviolet?style=flat-square" alt="PlaceholderAPI">
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License">
-  <img src="https://img.shields.io/badge/Platform-Bukkit%20%7C%20Spigot%20%7C%20Paper-purple?style=flat-square" alt="Platform">
+  <img src="https://img.shields.io/badge/Platform-Paper%20%7C%20Purpur%20%7C%20Spigot%20%7C%20Bukkit-purple?style=flat-square" alt="Platform">
 </p>
 
 <p align="center">
