@@ -1,7 +1,6 @@
 package com.balancedteam.manager;
 
 import com.balancedteam.BalancedTeamPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
