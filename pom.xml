@@ -98,6 +98,24 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <!-- 优化 Jar 体积：不打包文档 (.md) 与 Maven 描述符元数据 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+                    <excludes>
+                        <exclude>**/*.md</exclude>
+                        <exclude>**/wiki/**</exclude>
+                        <exclude>**/docs/**</exclude>
+                        <exclude>**/CHANGELOG*</exclude>
+                        <exclude>**/README*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -162,6 +180,12 @@
                                                 <exclude>META-INF/*.DSA</exclude>
                                                 <exclude>META-INF/*.RSA</exclude>
                                                 <exclude>META-INF/maven/**</exclude>
+                                                <exclude>**/*.md</exclude>
+                                                <exclude>**/wiki/**</exclude>
+                                                <exclude>**/docs/**</exclude>
+                                                <exclude>**/README*</exclude>
+                                                <exclude>**/CHANGELOG*</exclude>
+                                                <exclude>**/LICENSE*</exclude>
                                             </excludes>
                                         </filter>
                                     </filters>

@@ -13,6 +13,7 @@
 
 - **PlaceholderAPI 玩家名忽略大小写快捷匹配 (PAPI Case-Insensitive Lookup Optimization)**：将 `BalancedTeamExpansion.getUuidByPlayerName` 与 `Team.getMemberByName` 中的 `Bukkit.getPlayerExact` 升级为 `Bukkit.getPlayer`；解决计分板或聊天模板传入全小写玩家名（如 `%balancedteam_relation_steve%`）时因大小写敏感导致在线查找返回 null 继而触发全队遍历的开销，实现 $O(1)$ 级在线玩家忽略大小写精准匹配。
 - **团队名称正则预编译与注入防御 (Pre-Compiled Name Regex & Defensive Filtering)**：在 `ConfigManager` 中预编译并高速缓存 `compiledNamePattern` 对象，消除了 `TeamManager.isValidTeamName` 在玩家创建/重命名团队时重复执行 `Pattern.compile(...)` 的正则编译开销；新增对颜色符号（`&`/`§`）的防御性过滤，并提供语法错填时的自动优雅回退机制。
+- **构建产物瘦身与文档剥离 (Minimized Jar Build Artifact Size)**：在 `pom.xml` 中配置 `maven-jar-plugin` 与 `maven-shade-plugin` 显式剥离所有 Markdown 文档（`**/*.md`）、Wiki 目录（`**/wiki/**`）及 Maven 描述符元数据（`addMavenDescriptor: false`），确保打包输出的插件 JAR 产物达到极限微小体积。
 
 ### 修复 / Fixed
 
