@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **PlaceholderAPI Case-Insensitive Lookup Optimization**: Upgraded `getUuidByPlayerName` in `BalancedTeamExpansion` and `getMemberByName` in `Team` from `Bukkit.getPlayerExact` to `Bukkit.getPlayer`. Resolves case-sensitivity mismatch when placeholders contain lowercase player names (e.g., `%balancedteam_relation_steve%`), achieving instant O(1) online player resolution without fallback team iteration loops.
 - **Pre-Compiled Name Regex Pattern & Defensive Filtering**: Pre-compiled and cached `compiledNamePattern` in `ConfigManager`, eliminating repeated `Pattern.compile(...)` overhead in `TeamManager.isValidTeamName`. Added defensive color code (`&`/`§`) filtering and automatic fallback to default regex if an invalid pattern syntax is configured.
+- **Minimized Jar Build Artifact Size**: Configured `maven-jar-plugin` and `maven-shade-plugin` in `pom.xml` to explicitly exclude Markdown documentation (`**/*.md`), wiki directories (`**/wiki/**`), and Maven descriptor metadata (`addMavenDescriptor: false`), ensuring ultra-compact plugin jar releases.
 
 ### Fixed
 
