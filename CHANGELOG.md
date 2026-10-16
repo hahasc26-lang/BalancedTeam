@@ -5,6 +5,23 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4] - 2026-10-13
+
+### Added
+
+- **Native Folia Support**: Introduced `TaskScheduler` platform abstraction layer, enabling seamless native support for PaperMC's multi-threaded regionized server Folia alongside standard Bukkit/Paper/Purpur servers. Added `folia-supported: true` in `plugin.yml`.
+
+### Changed
+
+- **PlaceholderAPI Case-Insensitive Lookup Optimization**: Upgraded `getUuidByPlayerName` in `BalancedTeamExpansion` and `getMemberByName` in `Team` from `Bukkit.getPlayerExact` to `Bukkit.getPlayer`. Resolves case-sensitivity mismatch when placeholders contain lowercase player names (e.g., `%balancedteam_relation_steve%`), achieving instant O(1) online player resolution without fallback team iteration loops.
+- **Pre-Compiled Name Regex Pattern & Defensive Filtering**: Pre-compiled and cached `compiledNamePattern` in `ConfigManager`, eliminating repeated `Pattern.compile(...)` overhead in `TeamManager.isValidTeamName`. Added defensive color code (`&`/`§`) filtering and automatic fallback to default regex if an invalid pattern syntax is configured.
+
+### Fixed
+
+- **In-Memory Expired Data Purging**: Enhanced `cleanExpired`, `cleanExpiredTruceRequests`, and `cleanExpiredProtections` across `RelationManager`, `InviteManager`, and `ApplicationManager` to actively purge expired entries from in-memory concurrent maps alongside DAO database cleanup, eliminating memory accumulation under prolonged server uptime.
+
+---
+
 ## [1.2.3] - 2026-10-01
 
 ### Added

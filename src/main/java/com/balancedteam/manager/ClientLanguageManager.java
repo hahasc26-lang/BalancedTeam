@@ -348,7 +348,7 @@ public class ClientLanguageManager {
             playerPreferences.put(uuid, resolved);
         }
         // 异步保存偏好
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::saveUserPreferences);
+        com.balancedteam.util.TaskScheduler.runAsync(plugin, this::saveUserPreferences);
     }
 
     /**

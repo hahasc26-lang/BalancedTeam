@@ -577,7 +577,7 @@ public class BalancedTeamExpansion extends PlaceholderExpansion {
      */
     private UUID getUuidByPlayerName(String playerName) {
         if (playerName == null || playerName.isEmpty()) return null;
-        Player online = Bukkit.getPlayerExact(playerName);
+        Player online = Bukkit.getPlayer(playerName);
         if (online != null) {
             return online.getUniqueId();
         }

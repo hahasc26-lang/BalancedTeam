@@ -147,8 +147,6 @@ bukkit.yml
 data/
 
 # ------------------------------------------------------------------------------
-# 6. Environment & Web/Node Artifacts (Prevent AI Studio / Node Pollution)
-# ------------------------------------------------------------------------------
 node_modules/
 package.json
 package-lock.json

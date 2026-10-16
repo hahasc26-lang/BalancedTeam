@@ -93,12 +93,13 @@ public class TeamManager {
      * 校验团队名称是否合法
      */
     public boolean isValidTeamName(String name) {
-        if (name == null) return false;
+        if (name == null || name.trim().isEmpty()) return false;
+        // 防御性过滤颜色代码（避免注入 &a 或 §a 影响界面排版）
+        if (name.contains("&") || name.contains("§")) return false;
         int min = plugin.getConfigManager().getNameMinLength();
         int max = plugin.getConfigManager().getNameMaxLength();
         if (name.length() < min || name.length() > max) return false;
-        String regex = plugin.getConfigManager().getNameRegex();
-        return Pattern.compile(regex).matcher(name).matches();
+        return plugin.getConfigManager().getNamePattern().matcher(name).matches();
     }
 
     /**

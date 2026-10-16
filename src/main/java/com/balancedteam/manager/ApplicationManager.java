@@ -80,6 +80,10 @@ public class ApplicationManager {
      * 清理过期入队申请
      */
     public void cleanExpired(long now) {
+        pendingApplications.entrySet().removeIf(entry -> {
+            entry.getValue().entrySet().removeIf(subEntry -> subEntry.getValue().isExpired());
+            return entry.getValue().isEmpty();
+        });
         if (applicationDao != null) {
             applicationDao.cleanExpiredApplications(now);
         }

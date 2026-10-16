@@ -121,7 +121,7 @@ public class Team {
      */
     public TeamMember getMemberByName(String playerName) {
         if (playerName == null || playerName.isEmpty()) return null;
-        org.bukkit.entity.Player online = org.bukkit.Bukkit.getPlayerExact(playerName);
+        org.bukkit.entity.Player online = org.bukkit.Bukkit.getPlayer(playerName);
         if (online != null && hasMember(online.getUniqueId())) {
             return getMember(online.getUniqueId());
         }

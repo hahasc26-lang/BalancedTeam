@@ -44,6 +44,9 @@ public class ConfigManager {
         // 3. 同步时间格式与单位到 TimeUtil
         com.balancedteam.util.TimeUtil.setDateFormat(getDateFormat(), getTimezone());
         syncTimeUnits();
+
+        // 4. 预编译团队名称正则对象
+        compileNamePattern();
     }
 
     /**
@@ -397,8 +400,29 @@ public class ConfigManager {
         return config.getInt("balance.name_max_length", 16);
     }
 
+    private java.util.regex.Pattern compiledNamePattern;
+
     public String getNameRegex() {
         return config.getString("balance.name_regex", "^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$");
+    }
+
+    public java.util.regex.Pattern getNamePattern() {
+        if (compiledNamePattern == null) {
+            compileNamePattern();
+        }
+        return compiledNamePattern;
+    }
+
+    public void compileNamePattern() {
+        String regex = getNameRegex();
+        try {
+            this.compiledNamePattern = java.util.regex.Pattern.compile(regex);
+        } catch (Throwable t) {
+            if (plugin != null && plugin.getLogger() != null) {
+                plugin.getLogger().warning("Invalid name_regex pattern: " + regex + ", falling back to default pattern.");
+            }
+            this.compiledNamePattern = java.util.regex.Pattern.compile("^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$");
+        }
     }
 
     public int getInviteTimeout() {

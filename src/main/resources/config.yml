@@ -68,7 +68,12 @@ balance:
   name_min_length: 2
   # Maximum character length for team names
   name_max_length: 16
-  # Regular expression pattern for validating team names (supports alphanumeric characters, underscores, and Chinese characters)
+  # Regular expression pattern for validating team names.
+  # Pre-set pattern examples:
+  #   - "^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$" : Alphanumeric, underscores, and Chinese characters (Default, recommended)
+  #   - "^[a-zA-Z0-9_]+$"                : Pure English letters, numbers, and underscores (For English/International servers)
+  #   - "^[a-zA-Z0-9_ \\u4e00-\\u9fa5]+$": Allows spaces between words (e.g. "Red Dragon")
+  #   - "^.+$"                           : Allows any non-control characters (least restrictive)
   name_regex: "^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$"
   # Team invite expiration timeout in seconds
   invite_timeout_seconds: 3600

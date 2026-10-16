@@ -83,18 +83,27 @@ public class RelationManager {
      * 清理过期同盟申请
      */
     public void cleanExpired(long now) {
+        pendingAllyRequests.entrySet().removeIf(entry -> {
+            entry.getValue().entrySet().removeIf(subEntry -> now > subEntry.getValue());
+            return entry.getValue().isEmpty();
+        });
         if (allyRequestDao != null) {
             allyRequestDao.cleanExpiredRequests(now);
         }
     }
 
     public void cleanExpiredTruceRequests(long now) {
+        pendingTruceRequests.entrySet().removeIf(entry -> {
+            entry.getValue().entrySet().removeIf(subEntry -> now > subEntry.getValue());
+            return entry.getValue().isEmpty();
+        });
         if (truceDao != null) {
             truceDao.cleanExpiredTruceRequests(now);
         }
     }
 
     public void cleanExpiredProtections(long now) {
+        postWarProtections.entrySet().removeIf(entry -> now > entry.getValue());
         if (truceDao != null) {
             truceDao.cleanExpiredProtections(now);
         }

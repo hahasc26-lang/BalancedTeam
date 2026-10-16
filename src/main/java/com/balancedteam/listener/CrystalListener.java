@@ -56,7 +56,7 @@ public class CrystalListener implements Listener {
     private final Map<UUID, Long> warnCooldowns = new ConcurrentHashMap<>();
 
     // 定期清理定时任务
-    private BukkitTask cleanupTask;
+    private com.balancedteam.util.TaskScheduler.TaskWrapper cleanupTask;
 
     public CrystalListener(BalancedTeamPlugin plugin) {
         this.plugin = plugin;
@@ -323,7 +323,7 @@ public class CrystalListener implements Listener {
     }
 
     private void scheduleRemoval(UUID crystalId, long delayTicks) {
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        com.balancedteam.util.TaskScheduler.runGlobalTaskLater(plugin, () -> {
             crystalPlacers.remove(crystalId);
             crystalDetonators.remove(crystalId);
         }, delayTicks);
@@ -331,7 +331,7 @@ public class CrystalListener implements Listener {
 
     private void startCleanupTask() {
         // 每 60 秒定期清理超过 30 分钟未爆炸的历史放置记录与超过 10 秒的预放置记录，防止内存泄漏
-        this.cleanupTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        this.cleanupTask = com.balancedteam.util.TaskScheduler.runTimerAsync(plugin, () -> {
             long now = System.currentTimeMillis();
 
             // 清理过期预放置记录 (5秒有效)
@@ -346,7 +346,7 @@ public class CrystalListener implements Listener {
             } else {
                 crystalPlacers.entrySet().removeIf(entry -> now - entry.getValue().getTimestamp() > 3600000L);
             }
-        }, 1200L, 1200L);
+        }, 60, 60);
     }
 
     public void clear() {

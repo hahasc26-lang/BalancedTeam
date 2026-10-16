@@ -73,6 +73,10 @@ public class InviteManager {
      * 清理过期邀请
      */
     public void cleanExpired(long now) {
+        pendingInvites.entrySet().removeIf(entry -> {
+            entry.getValue().entrySet().removeIf(subEntry -> subEntry.getValue().isExpired());
+            return entry.getValue().isEmpty();
+        });
         if (inviteDao != null) {
             inviteDao.cleanExpiredInvites(now);
         }

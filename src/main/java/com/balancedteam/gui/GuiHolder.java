@@ -75,7 +75,7 @@ public class GuiHolder implements InventoryHolder {
         if (Bukkit.isPrimaryThread()) {
             refreshAction.accept(player);
         } else {
-            Bukkit.getScheduler().runTask(BalancedTeamPlugin.getInstance(), () -> {
+            com.balancedteam.util.TaskScheduler.runEntityTask(BalancedTeamPlugin.getInstance(), player, () -> {
                 if (player.isOnline()) {
                     refreshAction.accept(player);
                 }

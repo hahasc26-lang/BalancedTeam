@@ -3,6 +3,23 @@
 所有版本的重要变更均记录于此。  
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 
+## [1.2.4] - 2026-10-13
+
+### 新增 / Added
+
+- **原生 Folia 多线程服务端兼容 (Native Folia Support)**：引入 `TaskScheduler` 平台任务调度抽象层，自动识别 Folia 线程区域调度器（Global Region / Entity / Async Scheduler），实现对 PaperMC Folia 多线程架构的原生完美兼容；`plugin.yml` 显式声明 `folia-supported: true`。
+
+### 变更 / Changed
+
+- **PlaceholderAPI 玩家名忽略大小写快捷匹配 (PAPI Case-Insensitive Lookup Optimization)**：将 `BalancedTeamExpansion.getUuidByPlayerName` 与 `Team.getMemberByName` 中的 `Bukkit.getPlayerExact` 升级为 `Bukkit.getPlayer`；解决计分板或聊天模板传入全小写玩家名（如 `%balancedteam_relation_steve%`）时因大小写敏感导致在线查找返回 null 继而触发全队遍历的开销，实现 $O(1)$ 级在线玩家忽略大小写精准匹配。
+- **团队名称正则预编译与注入防御 (Pre-Compiled Name Regex & Defensive Filtering)**：在 `ConfigManager` 中预编译并高速缓存 `compiledNamePattern` 对象，消除了 `TeamManager.isValidTeamName` 在玩家创建/重命名团队时重复执行 `Pattern.compile(...)` 的正则编译开销；新增对颜色符号（`&`/`§`）的防御性过滤，并提供语法错填时的自动优雅回退机制。
+
+### 修复 / Fixed
+
+- **内存过期数据同步剔除 (In-Memory Expired Data Purging)**：增强 `RelationManager`、`InviteManager` 与 `ApplicationManager` 的 `cleanExpired` 定时清理逻辑，在执行数据库（DAO）表清理的同时同步剔除内存映射中已过期的同盟申请、停战求和、战后保护、入队邀请与入队申请记录，彻底防止长期开服下的内存积攒。
+
+---
+
 ## [1.2.3] - 2026-10-01
 
 ### 变更 / Changed

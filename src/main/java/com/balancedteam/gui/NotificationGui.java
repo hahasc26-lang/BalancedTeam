@@ -198,7 +198,7 @@ public class NotificationGui {
                                     }
                                 }
 
-                                Bukkit.getScheduler().runTask(plugin, () -> TeamMenuGui.open(plugin, player));
+                                com.balancedteam.util.TaskScheduler.runEntityTask(plugin, player, () -> TeamMenuGui.open(plugin, player));
                             } else {
                                 SoundUtil.playError(player);
                                 MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "database_error"));

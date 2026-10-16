@@ -31,7 +31,7 @@ public class ChatInputManager {
     public static class InputSession {
         private final Consumer<String> onInput;
         private final Runnable onCancel;
-        private BukkitTask timeoutTask;
+        private com.balancedteam.util.TaskScheduler.TaskWrapper timeoutTask;
 
         public InputSession(Consumer<String> onInput, Runnable onCancel) {
             this.onInput = onInput;
@@ -54,7 +54,7 @@ public class ChatInputManager {
         InputSession session = new InputSession(onInput, onCancel);
 
         // 30 秒超时自动取消
-        session.timeoutTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        session.timeoutTask = com.balancedteam.util.TaskScheduler.runEntityTaskLater(plugin, player, () -> {
             InputSession removed = activeSessions.remove(uuid);
             if (removed != null) {
                 MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "chat_input_timeout"));
@@ -113,13 +113,13 @@ public class ChatInputManager {
                 MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "chat_input_cancelled"));
             }
             if (session.onCancel != null) {
-                Bukkit.getScheduler().runTask(plugin, session.onCancel);
+                com.balancedteam.util.TaskScheduler.runEntityTask(plugin, player, session.onCancel);
             }
             return true;
         }
 
         if (session.onInput != null) {
-            Bukkit.getScheduler().runTask(plugin, () -> session.onInput.accept(input));
+            com.balancedteam.util.TaskScheduler.runEntityTask(plugin, player, () -> session.onInput.accept(input));
         }
 
         return true;
@@ -139,7 +139,7 @@ public class ChatInputManager {
                 MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "chat_input_cancelled"));
             }
             if (session.onCancel != null) {
-                Bukkit.getScheduler().runTask(plugin, session.onCancel);
+                com.balancedteam.util.TaskScheduler.runEntityTask(plugin, player, session.onCancel);
             }
         }
     }
