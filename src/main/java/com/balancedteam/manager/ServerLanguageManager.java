@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,6 +20,17 @@ public class ServerLanguageManager {
     public static final List<String> BUILTIN_SERVER_LANGUAGES = Collections.unmodifiableList(
             Arrays.asList("zh_CN", "zh_TW", "en_US", "ja_JP", "ru_RU", "de_DE", "es_ES")
     );
+
+    private static final Map<String, String> BUILTIN_DISPLAY_NAMES = new ConcurrentHashMap<>();
+    static {
+        BUILTIN_DISPLAY_NAMES.put("zh_cn", "简体中文");
+        BUILTIN_DISPLAY_NAMES.put("zh_tw", "繁體中文");
+        BUILTIN_DISPLAY_NAMES.put("en_us", "English");
+        BUILTIN_DISPLAY_NAMES.put("ja_jp", "日本語");
+        BUILTIN_DISPLAY_NAMES.put("ru_ru", "Русский");
+        BUILTIN_DISPLAY_NAMES.put("de_de", "Deutsch");
+        BUILTIN_DISPLAY_NAMES.put("es_es", "Español");
+    }
 
     private final BalancedTeamPlugin plugin;
 
@@ -66,7 +78,25 @@ public class ServerLanguageManager {
     }
 
     /**
-     * 解析服务端语言代码 (精确匹配 -> 前缀模糊匹配 -> 兜底默认语言)
+     * 设置服务端/控制台语言，并选择是否同步持久化至 config.yml
+     *
+     * @param rawCode 目标语言代码 (如 "zh_CN", "en_US")
+     * @param saveToConfig 是否保存到 config.yml
+     */
+    public synchronized void setServerLanguage(String rawCode, boolean saveToConfig) {
+        String normalized = resolveServerLanguage(rawCode);
+        String canonical = getCanonicalCode(normalized);
+        this.serverLanguage = normalized;
+        this.serverLanguageCanonical = canonical;
+
+        if (saveToConfig && plugin.getConfig() != null) {
+            plugin.getConfig().set("server_messages_language", canonical);
+            plugin.saveConfig();
+        }
+    }
+
+    /**
+     * 解析服务端语言代码 (精确匹配 -> 前缀模糊匹配 -> 客户端外置语言包匹配 -> 兜底默认语言)
      */
     public String resolveServerLanguage(String rawCode) {
         if (rawCode == null || rawCode.trim().isEmpty()) {
@@ -103,7 +133,18 @@ public class ServerLanguageManager {
             return "es_es";
         }
 
-        // 3. 回退到服务端默认语言
+        // 3. 检查客户端加载的外置语言包
+        if (plugin != null && plugin.getClientLanguageManager() != null) {
+            for (Map<String, String> item : plugin.getClientLanguageManager().getAvailableLanguages()) {
+                String cCode = item.get("code");
+                if (cCode != null && (cCode.equalsIgnoreCase(norm) || cCode.startsWith(norm + "_"))) {
+                    registerCanonicalCode(cCode, item.get("canonical"));
+                    return cCode;
+                }
+            }
+        }
+
+        // 4. 回退到服务端默认语言
         return normalizeCode(DEFAULT_SERVER_LANGUAGE);
     }
 
@@ -138,6 +179,39 @@ public class ServerLanguageManager {
     }
 
     /**
+     * 获取语言标准大小写代码 (如 "zh_CN", "en_US")
+     */
+    public String getCanonicalCode(String rawCode) {
+        if (rawCode == null) return DEFAULT_SERVER_LANGUAGE;
+        String norm = normalizeCode(rawCode);
+        if (canonicalCodes.containsKey(norm)) {
+            return canonicalCodes.get(norm);
+        }
+        if (plugin != null && plugin.getClientLanguageManager() != null) {
+            String c = plugin.getClientLanguageManager().getCanonicalCode(norm);
+            if (c != null && !c.equalsIgnoreCase(norm)) {
+                return c;
+            }
+        }
+        return rawCode.trim();
+    }
+
+    /**
+     * 获取语言友好显示名称 (如 "简体中文", "English")
+     */
+    public String getDisplayName(String rawCode) {
+        if (rawCode == null) return "Unknown";
+        String norm = normalizeCode(rawCode);
+        if (plugin != null && plugin.getClientLanguageManager() != null) {
+            String clientName = plugin.getClientLanguageManager().getDisplayName(norm);
+            if (clientName != null && !clientName.equalsIgnoreCase(norm) && !clientName.equalsIgnoreCase(getCanonicalCode(norm))) {
+                return clientName;
+            }
+        }
+        return BUILTIN_DISPLAY_NAMES.getOrDefault(norm, getCanonicalCode(norm));
+    }
+
+    /**
      * 注册或更新一个规范大小写的语言代码映射
      */
     public void registerCanonicalCode(String normalized, String canonical) {
@@ -148,7 +222,49 @@ public class ServerLanguageManager {
      * 检查给定的语言是否为支持的服务端语言
      */
     public boolean isSupported(String code) {
-        if (code == null) return false;
-        return canonicalCodes.containsKey(normalizeCode(code));
+        if (code == null || code.trim().isEmpty()) return false;
+        String norm = normalizeCode(code);
+        if (canonicalCodes.containsKey(norm)) {
+            return true;
+        }
+        if (norm.startsWith("zh") || norm.startsWith("en") || norm.startsWith("ja")
+                || norm.startsWith("ru") || norm.startsWith("de") || norm.startsWith("es")) {
+            return true;
+        }
+        if (plugin != null && plugin.getClientLanguageManager() != null) {
+            return plugin.getClientLanguageManager().getAvailableLanguages().stream()
+                    .anyMatch(m -> m.get("code").equalsIgnoreCase(norm) || m.get("canonical").equalsIgnoreCase(code.trim()));
+        }
+        return false;
+    }
+
+    /**
+     * 获取全量服务端支持的语言列表 (包含内置 7 国语言与客户端已加载的自定义语言包)
+     */
+    public List<Map<String, String>> getSupportedLanguages() {
+        List<Map<String, String>> list = new java.util.ArrayList<>();
+        Set<String> seen = new java.util.HashSet<>();
+
+        // 1. 内置 7 种语言
+        for (String lang : BUILTIN_SERVER_LANGUAGES) {
+            String norm = normalizeCode(lang);
+            seen.add(norm);
+            Map<String, String> item = new java.util.LinkedHashMap<>();
+            item.put("code", norm);
+            item.put("canonical", lang);
+            item.put("name", getDisplayName(norm));
+            list.add(item);
+        }
+
+        // 2. 客户端语言包中额外加载的语言
+        if (plugin != null && plugin.getClientLanguageManager() != null) {
+            for (Map<String, String> m : plugin.getClientLanguageManager().getAvailableLanguages()) {
+                String c = m.get("code");
+                if (c != null && seen.add(c)) {
+                    list.add(m);
+                }
+            }
+        }
+        return list;
     }
 }

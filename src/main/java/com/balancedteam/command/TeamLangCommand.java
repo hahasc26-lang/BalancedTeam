@@ -2,6 +2,7 @@ package com.balancedteam.command;
 
 import com.balancedteam.BalancedTeamPlugin;
 import com.balancedteam.manager.ClientLanguageManager;
+import com.balancedteam.manager.ServerLanguageManager;
 import com.balancedteam.util.MessageUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -38,7 +39,8 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
      */
     public static boolean handleLangCommand(BalancedTeamPlugin plugin, CommandSender sender, String[] args) {
         ClientLanguageManager langMgr = plugin.getClientLanguageManager();
-        if (langMgr == null) {
+        ServerLanguageManager serverLangMgr = plugin.getServerLanguageManager();
+        if (langMgr == null && serverLangMgr == null) {
             MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_not_initialized"));
             return true;
         }
@@ -61,7 +63,12 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
 
             case "auto":
                 if (!(sender instanceof Player)) {
-                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "player_only"));
+                    // 控制台设置 auto：根据系统 Locale 自动检测
+                    setConsoleLanguageAuto(plugin, sender);
+                    return true;
+                }
+                if (langMgr == null) {
+                    MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_not_initialized"));
                     return true;
                 }
                 Player pAuto = (Player) sender;
@@ -86,9 +93,13 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
                 if (plugin.getServerLanguageManager() != null) {
                     plugin.getServerLanguageManager().load();
                 }
-                langMgr.load();
+                if (langMgr != null) {
+                    langMgr.load();
+                }
+                int count = serverLangMgr != null ? serverLangMgr.getSupportedLanguages().size()
+                        : (langMgr != null ? langMgr.getAvailableLanguages().size() : 0);
                 Map<String, String> reloadMap = new HashMap<>();
-                reloadMap.put("COUNT", String.valueOf(langMgr.getAvailableLanguages().size()));
+                reloadMap.put("COUNT", String.valueOf(count));
                 MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_reload_success", reloadMap));
                 break;
 
@@ -110,9 +121,15 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
     }
 
     private static void setLanguage(BalancedTeamPlugin plugin, CommandSender sender, String rawCode) {
-        ClientLanguageManager langMgr = plugin.getClientLanguageManager();
         if (!(sender instanceof Player)) {
-            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "player_only"));
+            // 控制台执行：直接切换控制台/服务端语言
+            setConsoleLanguage(plugin, sender, rawCode);
+            return;
+        }
+
+        ClientLanguageManager langMgr = plugin.getClientLanguageManager();
+        if (langMgr == null) {
+            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_not_initialized"));
             return;
         }
 
@@ -150,26 +167,111 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
         MessageUtil.sendMessage(player, plugin.getConfigManager().getMessage(player, "lang_set_success", map));
     }
 
+    /**
+     * 控制台切换语言：直接切换控制台/服务端语言并保存至 config.yml
+     */
+    private static void setConsoleLanguage(BalancedTeamPlugin plugin, CommandSender sender, String rawCode) {
+        if (rawCode.equalsIgnoreCase("auto")) {
+            setConsoleLanguageAuto(plugin, sender);
+            return;
+        }
+
+        ServerLanguageManager serverLangMgr = plugin.getServerLanguageManager();
+        if (serverLangMgr == null) {
+            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_not_initialized"));
+            return;
+        }
+
+        if (!serverLangMgr.isSupported(rawCode)) {
+            Map<String, String> map = new HashMap<>();
+            map.put("CODE", rawCode);
+            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_not_found", map));
+            return;
+        }
+
+        // 更新服务端/控制台语言并持久化至 config.yml
+        serverLangMgr.setServerLanguage(rawCode, true);
+        plugin.getConfigManager().syncTimeUnits();
+
+        String activeCanonical = serverLangMgr.getServerLanguageCanonical();
+        String displayName = serverLangMgr.getDisplayName(activeCanonical);
+
+        Map<String, String> map = new HashMap<>();
+        map.put("CODE", activeCanonical);
+        map.put("NAME", displayName);
+
+        String successMsg = plugin.getConfigManager().getMessage(sender, "lang_set_console_success", map);
+        if (successMsg == null || successMsg.contains("Missing message")) {
+            successMsg = plugin.getConfigManager().getMessage(sender, "lang_set_success", map);
+        }
+        MessageUtil.sendMessage(sender, successMsg);
+    }
+
+    /**
+     * 控制台切换为根据服务端 JVM / 操作系统环境 Locale 自动检测
+     */
+    private static void setConsoleLanguageAuto(BalancedTeamPlugin plugin, CommandSender sender) {
+        ServerLanguageManager serverLangMgr = plugin.getServerLanguageManager();
+        if (serverLangMgr == null) {
+            MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_not_initialized"));
+            return;
+        }
+
+        String sysLocale = Locale.getDefault().toString();
+        String resolved = serverLangMgr.resolveServerLanguage(sysLocale);
+        serverLangMgr.setServerLanguage(resolved, true);
+        plugin.getConfigManager().syncTimeUnits();
+
+        String activeCanonical = serverLangMgr.getServerLanguageCanonical();
+        String displayName = serverLangMgr.getDisplayName(activeCanonical);
+
+        Map<String, String> autoMap = new HashMap<>();
+        autoMap.put("LOCALE", sysLocale);
+        autoMap.put("CODE", activeCanonical);
+        autoMap.put("NAME", displayName);
+
+        String successMsg = plugin.getConfigManager().getMessage(sender, "lang_set_console_auto_success", autoMap);
+        if (successMsg == null || successMsg.contains("Missing message")) {
+            successMsg = plugin.getConfigManager().getMessage(sender, "lang_set_auto_success", autoMap);
+        }
+        MessageUtil.sendMessage(sender, successMsg);
+    }
+
     private static void sendLangStatus(BalancedTeamPlugin plugin, CommandSender sender) {
         ClientLanguageManager langMgr = plugin.getClientLanguageManager();
-        String activeCode = langMgr.getEffectiveLanguageCode(sender);
-        String clientLocale = "Console";
-        String mode = plugin.getConfigManager().getRawMessage(sender, "lang_mode_auto");
+        ServerLanguageManager serverLangMgr = plugin.getServerLanguageManager();
+        String activeCode = langMgr != null ? langMgr.getEffectiveLanguageCode(sender) : "en_us";
+        String clientLocale;
+        String mode;
 
         if (sender instanceof Player) {
             Player p = (Player) sender;
+            clientLocale = "unknown";
             try {
                 clientLocale = p.getLocale();
             } catch (Throwable ignored) {}
-            if (!langMgr.isAutoMode(p.getUniqueId())) {
+            if (langMgr != null && !langMgr.isAutoMode(p.getUniqueId())) {
+                mode = plugin.getConfigManager().getRawMessage(sender, "lang_mode_manual");
+            } else {
+                mode = plugin.getConfigManager().getRawMessage(sender, "lang_mode_auto");
+            }
+        } else {
+            mode = plugin.getConfigManager().getRawMessage(sender, "lang_mode_console");
+            if (mode == null || mode.contains("Missing message")) {
                 mode = plugin.getConfigManager().getRawMessage(sender, "lang_mode_manual");
             }
+            clientLocale = "Server (" + Locale.getDefault().toString() + ")";
         }
+
+        String canonicalCode = serverLangMgr != null ? serverLangMgr.getCanonicalCode(activeCode)
+                : (langMgr != null ? langMgr.getCanonicalCode(activeCode) : activeCode);
+        String dispName = serverLangMgr != null ? serverLangMgr.getDisplayName(activeCode)
+                : (langMgr != null ? langMgr.getDisplayName(activeCode) : canonicalCode);
 
         Map<String, String> map = new HashMap<>();
         map.put("MODE", mode);
-        map.put("LANG", langMgr.getCanonicalCode(activeCode));
-        map.put("LANG_NAME", langMgr.getDisplayName(activeCode));
+        map.put("LANG", canonicalCode);
+        map.put("LANG_NAME", dispName);
         map.put("LOCALE", clientLocale);
 
         MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_current_status", map));
@@ -178,17 +280,22 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
 
     private static void sendLangList(BalancedTeamPlugin plugin, CommandSender sender) {
         ClientLanguageManager langMgr = plugin.getClientLanguageManager();
-        String activeCode = langMgr.getEffectiveLanguageCode(sender);
+        ServerLanguageManager serverLangMgr = plugin.getServerLanguageManager();
+        String activeCode = langMgr != null ? langMgr.getEffectiveLanguageCode(sender) : "en_us";
 
         MessageUtil.sendMessage(sender, plugin.getConfigManager().getMessage(sender, "lang_list_header"));
         String activeTag = plugin.getConfigManager().getRawMessage(sender, "lang_list_active_tag");
 
-        for (Map<String, String> item : langMgr.getAvailableLanguages()) {
+        List<Map<String, String>> langs = serverLangMgr != null
+                ? serverLangMgr.getSupportedLanguages()
+                : (langMgr != null ? langMgr.getAvailableLanguages() : Collections.emptyList());
+
+        for (Map<String, String> item : langs) {
             String code = item.get("code");
             String canonical = item.get("canonical");
             String name = item.get("name");
 
-            boolean isActive = code.equalsIgnoreCase(activeCode);
+            boolean isActive = code != null && code.equalsIgnoreCase(activeCode);
             Map<String, String> itemMap = new HashMap<>();
             itemMap.put("CODE", canonical);
             itemMap.put("NAME", name);
@@ -201,7 +308,7 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
     private static void sendLangHelp(BalancedTeamPlugin plugin, CommandSender sender) {
         List<String> list = plugin.getConfigManager().getMessageList(sender, "lang_help", Collections.emptyMap());
         for (String line : list) {
-            sender.sendMessage(line);
+            MessageUtil.sendMessage(sender, line);
         }
     }
 
@@ -210,25 +317,32 @@ public class TeamLangCommand implements CommandExecutor, TabCompleter {
      */
     public static List<String> getTabCompletions(BalancedTeamPlugin plugin, CommandSender sender, String[] args) {
         ClientLanguageManager langMgr = plugin.getClientLanguageManager();
-        if (langMgr == null) return Collections.emptyList();
+        ServerLanguageManager serverLangMgr = plugin.getServerLanguageManager();
+        if (langMgr == null && serverLangMgr == null) return Collections.emptyList();
+
+        Set<String> allLangs = new LinkedHashSet<>();
+        if (serverLangMgr != null) {
+            allLangs.addAll(ServerLanguageManager.BUILTIN_SERVER_LANGUAGES);
+        }
+        if (langMgr != null) {
+            for (Map<String, String> item : langMgr.getAvailableLanguages()) {
+                allLangs.add(item.get("canonical"));
+            }
+        }
 
         if (args.length == 1) {
             List<String> list = new ArrayList<>(Arrays.asList("list", "auto", "help"));
             if (sender.hasPermission("balancedteam.admin")) {
                 list.add("reload");
             }
-            for (Map<String, String> item : langMgr.getAvailableLanguages()) {
-                list.add(item.get("canonical"));
-            }
+            list.addAll(allLangs);
             String prefix = args[0].toLowerCase();
             return list.stream().filter(s -> s.toLowerCase().startsWith(prefix)).collect(Collectors.toList());
         }
 
         if (args.length == 2 && args[0].equalsIgnoreCase("set")) {
             List<String> list = new ArrayList<>(Collections.singletonList("auto"));
-            for (Map<String, String> item : langMgr.getAvailableLanguages()) {
-                list.add(item.get("canonical"));
-            }
+            list.addAll(allLangs);
             String prefix = args[1].toLowerCase();
             return list.stream().filter(s -> s.toLowerCase().startsWith(prefix)).collect(Collectors.toList());
         }

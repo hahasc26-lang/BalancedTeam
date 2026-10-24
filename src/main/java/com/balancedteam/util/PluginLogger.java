@@ -297,6 +297,17 @@ public class PluginLogger {
                 "[Lang] Игрок {0} вошел, язык клиента: {1} -> примененный язык: {2} ({3})",
                 "[Lang] Spieler {0} beigetreten, Client-Sprache: {1} -> passende Sprache: {2} ({3})",
                 "[Lang] Jugador {0} conectado, configuración regional: {1} -> idioma aplicado: {2} ({3})"
+        ),
+
+        // Config Manager
+        CONFIG_INVALID_NAME_REGEX(
+                "[Config] 检测到非法的团队名称正则表达式: {0}，已自动回退到默认正则！",
+                "[Config] 檢測到非法的團隊名稱正則表達式: {0}，已自動回退到預設正則！",
+                "[Config] Invalid name_regex pattern: {0}, falling back to default pattern!",
+                "[Config] 不正なチーム名正規表現パターンを検出しました: {0}。デフォルトの正規表現に戻します！",
+                "[Config] Обнаружен недопустимый шаблон name_regex: {0}, возврат к шаблону по умолчанию!",
+                "[Config] Ungültiges name_regex-Muster erkannt: {0}, Standardmuster wird verwendet!",
+                "[Config] ¡Patrón de name_regex no válido: {0}, volviendo al patrón predeterminado!"
         );
 
         private final String zhCn;

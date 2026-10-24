@@ -64,10 +64,10 @@ This page provides an exhaustive reference for all player and administrator comm
 
 | Command | Arguments | Description | Permission |
 | :--- | :--- | :--- | :--- |
-| `/teamlang` | *(None)* | Displays your active language code, detection mode, and help. | `balancedteam.use` |
-| `/teamlang list` | *(None)* | Lists all loaded language packs supported by the server. | `balancedteam.use` |
-| `/teamlang <code|auto>` | `<zh_CN\|zh_TW\|en_US\|auto>` | Sets your personal language or resets to client auto-detection. | `balancedteam.use` |
-| `/teamlang reload` | *(None)* | Hot-reloads all language configuration files from disk. | `balancedteam.admin` |
+| `/teamlang` | *(None)* | Displays active language code, detection mode, and help (supports player and console). | `balancedteam.use` / Console |
+| `/teamlang list` | *(None)* | Lists all loaded language packs supported by the server (aggregates built-in server languages & custom packs). | `balancedteam.use` / Console |
+| `/teamlang <code|auto>` | `<zh_CN\|zh_TW\|en_US\|auto>` | Sets personal language preference for players; when executed from server console, directly switches console/server language and persists to `config.yml`. | `balancedteam.use` / Console |
+| `/teamlang reload` | *(None)* | Hot-reloads all language configuration files from disk. | `balancedteam.admin` / Console |
 
 ---
 

@@ -3,6 +3,29 @@
 所有版本的重要变更均记录于此。  
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。  
 
+## [1.2.5] - 2026-10-24
+
+### 新增 / Added
+
+- **控制台直接设置控制台/服务端语言 (Console Direct Language Switching)**：
+  - 重构 `TeamLangCommand` 指令处理链路，消除控制台执行 `/teamlang <code|auto>` 与 `/teamlang set <code|auto>` 时的 `player_only` 限制；
+  - 控制台执行语言切换时，直接热更新 `ServerLanguageManager` 服务端语言环境，并自动同步持久化写入 `config.yml` 的 `server_messages_language` 设置项，使后续控制台日志（`PluginLogger`）与终端交互立即以新语言呈现，并在服务器重启后依然生效；
+  - 控制台支持执行 `/teamlang auto`，自动基于服务端 JVM / 宿主机操作系统的 `Locale.getDefault()` 检测环境并匹配最佳服务端语言；
+  - 控制台执行 `/teamlang` 查看状态时，清晰展示控制台模式与宿主机系统 Locale，同时 `/teamlang list` 与指令 Tab 补全自动聚合服务端内置 7 国语言（zh_CN、zh_TW、en_US、ja_JP、ru_RU、de_DE、es_ES）与 `lang/` 目录下全部外置语言包。
+
+### 修复与优化 / Fixed & Optimized
+
+- **全面清除控制台日志硬编码 (Eliminate Console Logging Hardcoded Text)**：
+  - 排查全项目控制台输出，修复 `ConfigManager.compileNamePattern` 中正则解析失败告警写死英文字符串的问题；
+  - 在 `PluginLogger.LogKey` 中新增 `CONFIG_INVALID_NAME_REGEX`，完整提供 7 种语言的本地化文本，确保控制台所有启动、配置加载、数据库与系统生命周期日志全量受服务端多语言系统管控。
+
+### 变更 / Changed
+
+- **版本号升级 `1.2.4` → `1.2.5` (Version Bump)**：
+  - `pom.xml` 版本号升级至 `1.2.5`。
+
+---
+
 ## [1.2.4] - 2026-10-13
 
 ### 新增 / Added

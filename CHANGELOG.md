@@ -5,6 +5,29 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.5] - 2026-10-24
+
+### Added
+
+- **Console Direct Language Switching**:
+  - Refactored `TeamLangCommand` execution flow to eliminate the `player_only` restriction when running `/teamlang <code|auto>` or `/teamlang set <code|auto>` from the server console.
+  - Console command executions directly hot-switch the server environment language (`ServerLanguageManager`), persisting the updated code into `server_messages_language` in `config.yml` automatically so all console logs (`PluginLogger`) and console command messages immediately transition to the target language and persist across server restarts.
+  - Added console auto-detection support via `/teamlang auto`, detecting host JVM and operating system locale (`Locale.getDefault()`) and matching to the best available server language.
+  - Upgraded `/teamlang` status display for console senders with host environment locale information, and unified `/teamlang list` and Tab completion to aggregate built-in 7 server languages (`zh_CN`, `zh_TW`, `en_US`, `ja_JP`, `ru_RU`, `de_DE`, `es_ES`) and external custom language packs.
+
+### Fixed & Optimized
+
+- **Eliminated Hardcoded Console Logging Strings**:
+  - Inspected all console outputs across the codebase and eliminated the hardcoded English warning string in `ConfigManager.compileNamePattern`.
+  - Added `CONFIG_INVALID_NAME_REGEX` to `PluginLogger.LogKey` with full 7-language support (`zh_CN`, `zh_TW`, `en_US`, `ja_JP`, `ru_RU`, `de_DE`, `es_ES`), ensuring 100% of console lifecycle and warning messages are governed by the localization system.
+
+### Changed
+
+- **Version Bump `1.2.4` → `1.2.5`**:
+  - Bumped version in `pom.xml` to `1.2.5`.
+
+---
+
 ## [1.2.4] - 2026-10-13
 
 ### Added

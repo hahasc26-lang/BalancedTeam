@@ -91,12 +91,12 @@ Adding support for a new language (e.g., Japanese `ja_JP`, Russian `ru_RU`, Fren
 
 ---
 
-## Player Commands for Language Switching
-
-- **`/teamlang`**: View active language code, client detection status, and help.
-- **`/teamlang list`**: Displays all supported language packs loaded on the server.
-- **`/teamlang <code|auto>`**: Manually switch to a specific pack (e.g. `/teamlang en_US`) or reset to client auto-detection (`/teamlang auto`).
-- **`/teamlang reload`**: Hot-reload all language files from disk (Requires `balancedteam.admin`).
+## Commands for Language Switching
+ 
+- **`/teamlang`**: View active language code, client detection status, or console environment locale.
+- **`/teamlang list`**: Displays all supported language packs loaded on the server (aggregating built-in server languages and external packs).
+- **`/teamlang <code|auto>`**: Manually switch language (e.g. `/teamlang en_US`) or reset to auto-detection (`/teamlang auto`). When run in the server console, directly switches the server logging/console language and persists it to `server_messages_language` in `config.yml`.
+- **`/teamlang reload`**: Hot-reload all language files from disk (Requires `balancedteam.admin` or console).
 
 ---
 

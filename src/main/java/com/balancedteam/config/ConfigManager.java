@@ -5,6 +5,7 @@ import com.balancedteam.model.RelationStatus;
 import com.balancedteam.model.RelationType;
 import com.balancedteam.model.TeamRole;
 import com.balancedteam.util.MessageUtil;
+import com.balancedteam.util.PluginLogger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -418,9 +419,7 @@ public class ConfigManager {
         try {
             this.compiledNamePattern = java.util.regex.Pattern.compile(regex);
         } catch (Throwable t) {
-            if (plugin != null && plugin.getLogger() != null) {
-                plugin.getLogger().warning("Invalid name_regex pattern: " + regex + ", falling back to default pattern.");
-            }
+            PluginLogger.warning(PluginLogger.LogKey.CONFIG_INVALID_NAME_REGEX, regex);
             this.compiledNamePattern = java.util.regex.Pattern.compile("^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$");
         }
     }
